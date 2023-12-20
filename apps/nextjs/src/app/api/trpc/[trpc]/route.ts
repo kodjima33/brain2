@@ -2,8 +2,6 @@ import { createNextApiHandler } from "@trpc/server/adapters/next";
 
 import { appRouter, createTRPCContext } from "@brain2/api";
 
-export const runtime = "edge";
-
 /**
  * Configure basic CORS headers
  * You should extend this to match your needs
