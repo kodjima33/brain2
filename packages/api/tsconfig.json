@@ -1,5 +1,5 @@
 {
-  "extends": "@brain2/tsconfig/base.json",
+  "extends": "@brain2/tsconfig/node.json",
   "compilerOptions": {
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },

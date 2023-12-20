@@ -1,13 +1,14 @@
 import type { TRPCErrorResponse } from "@trpc/server/rpc";
 import { cache } from "react";
 import { headers } from "next/headers";
+import { auth } from "@clerk/nextjs";
 import { createTRPCClient, loggerLink, TRPCClientError } from "@trpc/client";
 import { callProcedure } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
+import { createTRPCContextWithAuth } from "node_modules/@brain2/api/src/trpc";
 import SuperJSON from "superjson";
 
-import { appRouter, createTRPCContext } from "@brain2/api";
-import { auth } from "@brain2/auth";
+import { appRouter } from "@brain2/api";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -16,11 +17,9 @@ import { auth } from "@brain2/auth";
 const createContext = cache(async () => {
   const heads = new Headers(headers());
   heads.set("x-trpc-source", "rsc");
+  const clerkAuth = auth();
 
-  return createTRPCContext({
-    session: await auth(),
-    headers: heads,
-  });
+  return createTRPCContextWithAuth(clerkAuth);
 });
 
 export const api = createTRPCClient<typeof appRouter>({

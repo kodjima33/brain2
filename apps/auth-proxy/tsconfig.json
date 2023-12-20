@@ -1,4 +1,0 @@
-{
-  "extends": "@brain2/tsconfig/base.json",
-  "include": ["routes"]
-}

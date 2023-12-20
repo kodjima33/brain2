@@ -1,7 +1,6 @@
-import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { createNextApiHandler } from "@trpc/server/adapters/next";
 
 import { appRouter, createTRPCContext } from "@brain2/api";
-import { auth } from "@brain2/auth";
 
 export const runtime = "edge";
 
@@ -24,23 +23,9 @@ export function OPTIONS() {
   return response;
 }
 
-const handler = auth(async (req) => {
-  const response = await fetchRequestHandler({
-    endpoint: "/api/trpc",
-    router: appRouter,
-    req,
-    createContext: () =>
-      createTRPCContext({
-        session: req.auth,
-        headers: req.headers,
-      }),
-    onError({ error, path }) {
-      console.error(`>>> tRPC Error on '${path}'`, error);
-    },
-  });
-
-  setCorsHeaders(response);
-  return response;
-});
+const handler = createNextApiHandler({
+  router: appRouter,
+  createContext: createTRPCContext
+})
 
 export { handler as GET, handler as POST };
