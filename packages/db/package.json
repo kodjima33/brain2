@@ -1,39 +1,44 @@
 {
-  "name": "@acme/db",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
+  "name": "@brain2/db",
+  "version": "1.0.0",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "eslint .",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "push": "drizzle-kit push:mysql",
-    "studio": "drizzle-kit studio",
-    "typecheck": "tsc --noEmit"
+    "build": "tsup",
+    "clean": "rimraf .turbo node_modules dist",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "tsx src/seed.ts",
+    "dev": "tsup --watch",
+    "format": "prisma format",
+    "generate": "prisma generate",
+    "lint": "eslint \"src/**/*.ts\"",
+    "prebuild": "npm run generate",
+    "predev": "npm run generate",
+    "studio": "prisma studio"
   },
   "dependencies": {
-    "@planetscale/database": "^1.11.0",
-    "drizzle-orm": "^0.29.1"
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@prisma/client": "^5.6.0",
+    "@t3-oss/env-core": "^0.7.1",
+    "core": "link:@t3-oss/env/core",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:^0.2.0",
-    "@acme/prettier-config": "workspace:^0.1.0",
-    "@acme/tsconfig": "workspace:^0.1.0",
-    "dotenv-cli": "^7.3.0",
-    "drizzle-kit": "^0.20.7",
+    "@brain2/eslint-config": "workspace:^0.2.0",
+    "@brain2/prettier-config": "workspace:^0.1.0",
+    "@brain2/tsconfig": "workspace:^0.1.0",
+    "@types/node": "^20.10.0",
     "eslint": "^8.56.0",
-    "prettier": "^3.1.1",
+    "prisma": "^5.6.0",
+    "rimraf": "^3.0.2",
+    "tsup": "^5.11.13",
     "typescript": "^5.3.3"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@acme/eslint-config/base"
-    ]
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }
