@@ -1,5 +1,5 @@
 {
-  "name": "create-t3-turbo",
+  "name": "brain2",
   "private": true,
   "engines": {
     "node": ">=20.10"
@@ -21,11 +21,11 @@
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
-    "@acme/prettier-config": "workspace:^0.1.0",
+    "@brain2/prettier-config": "workspace:^0.1.0",
     "@turbo/gen": "^1.11.2",
     "prettier": "^3.1.1",
     "turbo": "^1.11.2",
     "typescript": "^5.3.3"
   },
-  "prettier": "@acme/prettier-config"
+  "prettier": "@brain2/prettier-config"
 }
