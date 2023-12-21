@@ -40,5 +40,12 @@
     "rimraf": "^3.0.2",
     "tsup": "^5.11.13",
     "typescript": "^5.3.3"
-  }
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@brain2/eslint-config/base"
+    ]
+  },
+  "prettier": "@brain2/prettier-config"
 }

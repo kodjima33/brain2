@@ -1,5 +1,5 @@
 import { init } from "@paralleldrive/cuid2";
-import { prisma } from ".";
+import type { prisma } from ".";
 
 const createCuid = init({
   random: Math.random,

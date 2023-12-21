@@ -13,7 +13,7 @@ import { ZodError } from "zod";
 
 import { prisma } from "@brain2/db";
 import type { NextApiRequest } from "next";
-import { auth } from "@clerk/nextjs";
+import type { auth } from "@clerk/nextjs";
 
 /**
  * 1. CONTEXT
