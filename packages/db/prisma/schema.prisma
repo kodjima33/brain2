@@ -7,11 +7,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Placeholder model entry
-model User {
-  id        String   @id @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String?
+// No model for a user since auth is handled by Clerk
+// Assume we get a unique userId for each user
+
+model Preferences {
+  id        String         @id @map("_id")
+  resources UserResource[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+type UserResource {
+  url         String
+  title       String
+  description String
+  active      Boolean @default(true)
+}
+
+// Represents a single audio recording
+model AudioBlob {
+  id            String  @id @map("_id")
+  transcription String?
+  owner         String // userId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parentNotes Note[]
+
+  @@index([owner])
+}
+
+// Represents a synthesized digest of audio recording(s)
+// This can either be a single note or a digest over a collection of notes
+model Note {
+  id    String @id @map("_id")
+  owner String //userId
+
+  content    String
+  digestSpan NoteDigestSpan
+
+  recordingIds String[]
+  recordings   AudioBlob @relation(fields: [recordingIds], references: [id])
+
+  children NoteDigest[] @relation("childNote")
+  parents  NoteDigest[] @relation("parentNote")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Represents the span of a note digest
+// e.g. if a note represents a digest over an entire day's notes
+enum NoteDigestSpan {
+  SINGLE
+  DAILY
+  WEEKLY
+}
+
+// Join collection for Note many-to-many self-relation
+model NoteDigest {
+  id String @id @map("_id")
+
+  childId String
+  child   Note   @relation("childNote", fields: [childId], references: [id])
+
+  parentId String
+  parent   Note   @relation("parentNote", fields: [parentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([childId, parentId])
 }
