@@ -1,9 +1,9 @@
 import type { ExpoConfig } from "@expo/config";
 
 const defineConfig = (): ExpoConfig => ({
-  name: "expo",
-  slug: "expo",
-  scheme: "expo",
+  name: "Brain²",
+  slug: "brain2",
+  scheme: "brain2",
   version: "0.1.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
