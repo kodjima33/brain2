@@ -1,26 +1,20 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
+import { CircleUserRoundIcon, MenuIcon } from "lucide-react-native";
 
 const Index = () => {
   return (
-    <SafeAreaView className="bg-[#1F104A]">
+    <SafeAreaView className="bg-white">
       {/* Changes page title visible on the header */}
-      <Stack.Screen options={{ title: "Home Page" }} />
-      <View className="h-full w-full p-4">
+      <Stack.Screen options={{ title: "Brain²" }} />
+      <View className="h-full w-full">
         {/* Header */}
-        <View className="flex flex-row items-center justify-between">
-          
-        </View>
-        <Text className="pb-2 text-center text-5xl font-bold text-white">
-          Create <Text className="text-pink-400">T3</Text> Turbo
-        </Text>
-
-        <View className="py-2">
-          <Text className="font-semibold italic text-white">
-            Press on a post
-          </Text>
+        <View className="flex flex-row items-center justify-between w-full px-4">
+          <MenuIcon className="text-black basis-1/12" />
+          <TextInput className="basis-8/12 border border-black rounded-full h-10 px-4 py-2" placeholder="Search..." />
+          <CircleUserRoundIcon className="text-black basis-1/12" />
         </View>
       </View>
     </SafeAreaView>
