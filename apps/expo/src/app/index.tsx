@@ -1,14 +1,13 @@
+import { DrawerItem, createDrawerNavigator } from "@react-navigation/drawer";
 import type {
   DrawerContentComponentProps,
   DrawerNavigationHelpers,
 } from "@react-navigation/drawer/lib/typescript/src/types";
+import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
 import React from "react";
 import { Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack } from "expo-router";
-import { createDrawerNavigator, DrawerItem } from "@react-navigation/drawer";
-import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
 
 const Drawer = createDrawerNavigator();
 

@@ -1,4 +1,5 @@
 import { init } from "@paralleldrive/cuid2";
+
 import type { prisma } from ".";
 
 const createCuid = init({
@@ -10,7 +11,10 @@ const createCuid = init({
  * Mapping of Prisma models to their prefixes
  */
 const prefixes: Record<PrismaModelName, string> = {
-  "user": "usr",
+  preferences: "pref",
+  audioBlob: "ablb",
+  note: "note",
+  noteDigest: "nd",
 };
 
 /**
@@ -25,6 +29,9 @@ export function generateId(modelName: PrismaModelName): string {
 /**
  * A type representing the name of a model in our prisma schema
  */
-export type PrismaModelName = Exclude<{
-  [Key in keyof typeof prisma]: Key extends `$${string}` ? never : Key
-}[keyof typeof prisma], symbol>;
+export type PrismaModelName = Exclude<
+  {
+    [Key in keyof typeof prisma]: Key extends `$${string}` ? never : Key;
+  }[keyof typeof prisma],
+  symbol
+>;

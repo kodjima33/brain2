@@ -2,12 +2,10 @@
   "name": "@brain2/db",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsup",
     "clean": "rimraf .turbo node_modules dist",

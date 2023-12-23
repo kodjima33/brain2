@@ -18,6 +18,8 @@ model Preferences {
   updatedAt DateTime @updatedAt
 }
 
+// Represents a URL resource that a user configured
+// We may scrape these resources for content
 type UserResource {
   url         String
   title       String
