@@ -25,7 +25,7 @@ const defineConfig = (): ExpoConfig => ({
     package: "your.bundle.identifier",
     adaptiveIcon: {
       foregroundImage: "./assets/icon.png",
-      backgroundColor: "#1F104A",
+      backgroundColor: "#FFFFFF",
     },
   },
   // extra: {
