@@ -7,7 +7,7 @@ import { Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createDrawerNavigator, DrawerItem } from "@react-navigation/drawer";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
 
 import type { Note } from "@brain2/db/client";
@@ -30,14 +30,27 @@ interface ContentPageProps {
 }
 
 function ContentPage({ navigation }: ContentPageProps) {
-  const { data: notes } = useQuery({
+  const queryClient = useQueryClient();
+
+  const { data: notes, error: queryError } = useQuery({
     queryKey: ["notes"],
     queryFn: getNotes,
   });
 
+  if (queryError) {
+    console.error("[getNotes] Query error:", queryError);
+  }
+
+
   const { mutate } = useMutation({
     mutationFn: createNote,
+    onSuccess() {
+      void queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
+    },
   });
+
 
   return (
     <SafeAreaView className="bg-white">
@@ -59,7 +72,7 @@ function ContentPage({ navigation }: ContentPageProps) {
           <CircleUserRoundIcon className="basis-1/12 text-black" />
         </View>
         {/* Content */}
-        <View>
+        <View className="flex flex-col flex-grow items-start justify-start gap-2">
           {notes?.map((note) => <NoteEntry key={note.id} note={note} />)}
         </View>
         {/* FAB */}

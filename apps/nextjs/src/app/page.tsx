@@ -17,7 +17,6 @@ async function createNote() {
 
 export default async function HomePage() {
   const notes = await prisma.note.findMany();
-  console.log("RSC notes:", notes);
 
   return (
     <main className="flex h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">

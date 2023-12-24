@@ -8,8 +8,8 @@ export default function CreateNoteButton({
   return (
     <button
       className="rounded-2xl border border-black bg-white px-4 py-2 text-black"
-      onClick={() => {
-        void createFunction();
+      onClick={async () => {
+        await createFunction();
       }}
     >
       Create note

@@ -26,6 +26,7 @@
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "lucide-react-native": "^0.300.0",
+    "luxon": "^3.4.4",
     "nativewind": "^4.0.16",
     "react": "18.2.0",
     "react-dom": "18.2.0",
