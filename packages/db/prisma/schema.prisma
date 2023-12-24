@@ -33,6 +33,7 @@ model AudioBlob {
   transcription String?
   owner         String // userId
 
+  title     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -47,6 +48,7 @@ model Note {
   id    String @id @map("_id")
   owner String //userId
 
+  title      String
   content    String
   digestSpan NoteDigestSpan
 

@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { createDrawerNavigator, DrawerItem } from "@react-navigation/drawer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
+import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
@@ -18,9 +19,14 @@ interface NoteEntryProps {
   note: Note;
 }
 function NoteEntry({ note }: NoteEntryProps) {
+  const formattedDate = DateTime.fromISO(note.createdAt.toString()).toFormat(
+    "ccc dd/MM/yyyy HH:mm:ss",
+  );
+
   return (
-    <View className="flex flex-col gap-2">
-      <Text className="text-xl">{note.createdAt.toString()}</Text>
+    <View className="flex flex-col gap-2 px-2 py-4">
+      <Text className="text-2xl font-semibold">{note.title}</Text>
+      <Text className="text-gray-700 text-md font-light">{formattedDate}</Text>
     </View>
   );
 }
@@ -41,7 +47,6 @@ function ContentPage({ navigation }: ContentPageProps) {
     console.error("[getNotes] Query error:", queryError);
   }
 
-
   const { mutate } = useMutation({
     mutationFn: createNote,
     onSuccess() {
@@ -50,7 +55,6 @@ function ContentPage({ navigation }: ContentPageProps) {
       });
     },
   });
-
 
   return (
     <SafeAreaView className="bg-white">
@@ -72,7 +76,7 @@ function ContentPage({ navigation }: ContentPageProps) {
           <CircleUserRoundIcon className="basis-1/12 text-black" />
         </View>
         {/* Content */}
-        <View className="flex flex-col flex-grow items-start justify-start gap-2">
+        <View className="flex flex-grow flex-col items-start justify-start gap-2 overflow-y-auto">
           {notes?.map((note) => <NoteEntry key={note.id} note={note} />)}
         </View>
         {/* FAB */}

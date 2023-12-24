@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { z } from "zod";
 
 import { generateId, prisma } from "@brain2/db";
@@ -11,6 +12,7 @@ export async function GET(_req: Request): Promise<Response> {
 }
 
 const createNoteSchema = z.object({
+  title: z.string().optional(),
   content: z.string(),
 });
 
@@ -18,14 +20,18 @@ const createNoteSchema = z.object({
  * Create a note
  */
 export async function POST(req: Request): Promise<Response> {
-  const json = await req.json() as unknown;
-  const { content } = createNoteSchema.parse(json);
+  const json = (await req.json()) as unknown;
+  const { title, content } = createNoteSchema.parse(json);
+  const formattedDate = DateTime.now().toFormat("dd/MM/yyyy HH:mm:ss");
+  const fallbackTitle = `New Note ${formattedDate}`;
+
   const note = await prisma.note.create({
     data: {
       id: generateId("note"),
+      title: title ?? fallbackTitle,
       content,
       owner: "",
-      digestSpan: "SINGLE"
+      digestSpan: "SINGLE",
     },
   });
   return Response.json(note);

@@ -117,6 +117,9 @@ importers:
       '@types/babel__core':
         specifier: ^7.20.4
         version: 7.20.4
+      '@types/luxon':
+        specifier: ^3.3.7
+        version: 3.3.7
       '@types/react':
         specifier: ^18.2.45
         version: 18.2.45
@@ -156,6 +159,9 @@ importers:
       cors:
         specifier: ^2.8.5
         version: 2.8.5
+      luxon:
+        specifier: ^3.4.4
+        version: 3.4.4
       next:
         specifier: ^14.0.4
         version: 14.0.4(react-dom@18.2.0)(react@18.2.0)
@@ -184,6 +190,9 @@ importers:
       '@brain2/tsconfig':
         specifier: workspace:^0.1.0
         version: link:../../tooling/typescript
+      '@types/luxon':
+        specifier: ^3.3.7
+        version: 3.3.7
       '@types/node':
         specifier: ^20.10.0
         version: 20.10.5
@@ -3293,6 +3302,10 @@ packages:
   /@types/keygrip@1.0.6:
     resolution: {integrity: sha512-lZuNAY9xeJt7Bx4t4dx0rYCDqGPW8RXhQZK1td7d4H6E9zYbLoOtjBvfwdTKpsyxQI/2jv+armjX/RW+ZNpXOQ==}
     dev: false
+
+  /@types/luxon@3.3.7:
+    resolution: {integrity: sha512-gKc9P2d4g5uYwmy4s/MO/yOVPmvHyvzka1YH6i5dM03UrFofHSmgc0D0ymbDRStFWHusk6cwwF6nhLm/ckBbbQ==}
+    dev: true
 
   /@types/mime@1.3.5:
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
