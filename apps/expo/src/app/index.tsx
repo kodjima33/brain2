@@ -1,21 +1,44 @@
-import { DrawerItem, createDrawerNavigator } from "@react-navigation/drawer";
 import type {
   DrawerContentComponentProps,
   DrawerNavigationHelpers,
 } from "@react-navigation/drawer/lib/typescript/src/types";
-import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
 import React from "react";
 import { Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { createDrawerNavigator, DrawerItem } from "@react-navigation/drawer";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
 
-const Drawer = createDrawerNavigator();
+import type { Note } from "@brain2/db/client";
+
+import { createNote, getNotes } from "~/utils/api";
+
+interface NoteEntryProps {
+  note: Note;
+}
+function NoteEntry({ note }: NoteEntryProps) {
+  return (
+    <View className="flex flex-col gap-2">
+      <Text className="text-xl">{note.createdAt.toString()}</Text>
+    </View>
+  );
+}
 
 interface ContentPageProps {
   navigation: DrawerNavigationHelpers;
 }
 
 function ContentPage({ navigation }: ContentPageProps) {
+  const { data: notes } = useQuery({
+    queryKey: ["notes"],
+    queryFn: getNotes,
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: createNote,
+  });
+
   return (
     <SafeAreaView className="bg-white">
       {/* Changes page title visible on the header */}
@@ -35,8 +58,17 @@ function ContentPage({ navigation }: ContentPageProps) {
           />
           <CircleUserRoundIcon className="basis-1/12 text-black" />
         </View>
+        {/* Content */}
+        <View>
+          {notes?.map((note) => <NoteEntry key={note.id} note={note} />)}
+        </View>
         {/* FAB */}
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={async () => {
+            console.log("Creating note");
+            mutate("Hello world");
+          }}
+        >
           <View className="flex items-center">
             <View className="rounded-full border border-black p-4">
               <MicIcon className="h-10 w-10 text-black" />
@@ -75,6 +107,8 @@ function Sidebar({ state, navigation }: DrawerContentComponentProps) {
     </SafeAreaView>
   );
 }
+
+const Drawer = createDrawerNavigator();
 
 /**
  * Index home page

@@ -14,17 +14,12 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@brain2/api": "workspace:^0.1.0",
     "@brain2/db": "workspace:*",
     "@clerk/nextjs": "^4.28.1",
     "@t3-oss/env-nextjs": "^0.7.1",
     "@tanstack/react-query": "^5.8.7",
     "@tanstack/react-query-devtools": "^5.8.7",
     "@tanstack/react-query-next-experimental": "5.8.7",
-    "@trpc/client": "next",
-    "@trpc/next": "next",
-    "@trpc/react-query": "next",
-    "@trpc/server": "next",
     "cors": "^2.8.5",
     "next": "^14.0.4",
     "react": "18.2.0",

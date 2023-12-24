@@ -7,13 +7,11 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsup",
     "clean": "rimraf .turbo node_modules dist",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx src/seed.ts",
-    "dev": "tsup --watch",
     "format": "prisma format",
     "generate": "prisma generate",
     "lint": "eslint \"src/**/*.ts\"",
