@@ -1,34 +1,14 @@
-import type {
-  DrawerNavigationHelpers
-} from "@react-navigation/drawer/lib/typescript/src/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
-import { DateTime } from "luxon";
+import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import React from "react";
-import { Text, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import type { Note } from "@brain2/db/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
 
 import Sidebar from "~/components/sidebar";
 import { createNote, getNotes } from "~/utils/api";
-
-interface NoteEntryProps {
-  note: Note;
-}
-function NoteEntry({ note }: NoteEntryProps) {
-  const formattedDate = DateTime.fromISO(note.createdAt.toString()).toFormat(
-    "ccc dd/MM/yyyy HH:mm:ss",
-  );
-
-  return (
-    <View className="flex flex-col gap-2 px-2 py-4">
-      <Text className="text-2xl font-semibold">{note.title}</Text>
-      <Text className="text-md font-light text-gray-700">{formattedDate}</Text>
-    </View>
-  );
-}
+import NoteEntry from "~/components/note-entry";
 
 interface ContentPageProps {
   navigation: DrawerNavigationHelpers;
@@ -100,9 +80,5 @@ function ContentPage({ navigation }: ContentPageProps) {
  * Index home page
  */
 export default function IndexPage() {
-  return (
-    <>
-      <Sidebar sidebarComponent={ContentPage} />
-    </>
-  );
+  return <Sidebar sidebarComponent={ContentPage} />;
 }
