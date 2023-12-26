@@ -1,14 +1,22 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
-import React from "react";
+import React, { useState } from "react";
 import { TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Audio } from "expo-av";
+import { Recording } from "expo-av/build/Audio";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
+import {
+  CircleUserRoundIcon,
+  MenuIcon,
+  MicIcon,
+  StopCircleIcon,
+} from "lucide-react-native";
 
+import NoteEntry from "~/components/note-entry";
 import Sidebar from "~/components/sidebar";
 import { createNote, getNotes } from "~/utils/api";
-import NoteEntry from "~/components/note-entry";
+import { startRecording, stopRecording } from "~/utils/audio";
 
 interface ContentPageProps {
   navigation: DrawerNavigationHelpers;
@@ -34,6 +42,8 @@ function ContentPage({ navigation }: ContentPageProps) {
       });
     },
   });
+
+  const [recording, setRecording] = useState<Recording | null>();
 
   return (
     <SafeAreaView className="bg-white">
@@ -61,13 +71,24 @@ function ContentPage({ navigation }: ContentPageProps) {
         {/* FAB */}
         <TouchableOpacity
           onPress={async () => {
-            console.log("Creating note");
-            mutate("Hello world");
+            if (recording) {
+              await stopRecording(recording);
+              setRecording(null);
+            } else {
+              const newRecording = await startRecording();
+              setRecording(newRecording);
+            }
+            // console.log("Creating note");
+            // mutate("Hello world");
           }}
         >
           <View className="flex items-center">
             <View className="rounded-full border border-black p-4">
-              <MicIcon className="h-10 w-10 text-black" />
+              {recording ? (
+                <StopCircleIcon className="h-10 w-10 text-black" />
+              ) : (
+                <MicIcon className="h-10 w-10 text-black" />
+              )}
             </View>
           </View>
         </TouchableOpacity>
