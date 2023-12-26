@@ -1,18 +1,17 @@
 import type {
-  DrawerContentComponentProps,
-  DrawerNavigationHelpers,
+  DrawerNavigationHelpers
 } from "@react-navigation/drawer/lib/typescript/src/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
+import { DateTime } from "luxon";
 import React from "react";
 import { Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { createDrawerNavigator, DrawerItem } from "@react-navigation/drawer";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CircleUserRoundIcon, MenuIcon, MicIcon } from "lucide-react-native";
-import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
+import Sidebar from "~/components/sidebar";
 import { createNote, getNotes } from "~/utils/api";
 
 interface NoteEntryProps {
@@ -26,7 +25,7 @@ function NoteEntry({ note }: NoteEntryProps) {
   return (
     <View className="flex flex-col gap-2 px-2 py-4">
       <Text className="text-2xl font-semibold">{note.title}</Text>
-      <Text className="text-gray-700 text-md font-light">{formattedDate}</Text>
+      <Text className="text-md font-light text-gray-700">{formattedDate}</Text>
     </View>
   );
 }
@@ -97,68 +96,13 @@ function ContentPage({ navigation }: ContentPageProps) {
   );
 }
 
-const screens = ["Recent", "Notes", "Digests"];
-
-/**
- * Collapsible sidebar
- */
-function Sidebar({ state, navigation }: DrawerContentComponentProps) {
-  return (
-    <SafeAreaView>
-      <View className="flex flex-col justify-center gap-5 pt-10">
-        <Text className="text-center text-4xl">Brain²</Text>
-        <View className="mx-6 border border-gray-400" />
-        <View>
-          {screens.map((screen, index) => (
-            <DrawerItem
-              key={index}
-              focused={state.index === index}
-              label={screen}
-              onPress={() => {
-                navigation.navigate(screen);
-              }}
-            />
-          ))}
-        </View>
-      </View>
-    </SafeAreaView>
-  );
-}
-
-const Drawer = createDrawerNavigator();
-
 /**
  * Index home page
  */
 export default function IndexPage() {
   return (
     <>
-      <Drawer.Navigator
-        initialRouteName="Recent"
-        drawerContent={(props) => <Sidebar {...props} />}
-      >
-        <Drawer.Screen
-          name="Recent"
-          component={ContentPage}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Drawer.Screen
-          name="Notes"
-          component={ContentPage}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Drawer.Screen
-          name="Digests"
-          component={ContentPage}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Drawer.Navigator>
+      <Sidebar sidebarComponent={ContentPage} />
     </>
   );
 }
