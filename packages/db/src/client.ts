@@ -13,7 +13,7 @@ export const prisma = new PrismaClient({
       s3Path: {
         needs: { id: true },
         compute(audioBlob: AudioBlob) {
-          return `audio/${audioBlob.id}.wav`;
+          return `audio/${audioBlob.id}.m4a`;
         },
       },
     },

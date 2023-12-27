@@ -144,6 +144,9 @@ importers:
       '@brain2/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@brain2/lib':
+        specifier: workspace:*
+        version: link:../../packages/lib
       '@clerk/nextjs':
         specifier: ^4.28.1
         version: 4.28.1(next@14.0.4)(react-dom@18.2.0)(react@18.2.0)
