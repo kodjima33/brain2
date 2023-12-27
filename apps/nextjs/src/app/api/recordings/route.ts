@@ -5,6 +5,8 @@ import { OpenAI, toFile } from "openai";
 import type { AudioBlob } from "@brain2/db";
 import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
 
+import { generateTranscriptTitle } from "~/util/generateTitle";
+
 const storageClient = new StorageClient();
 const openai = new OpenAI();
 
@@ -25,6 +27,8 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
     model: "whisper-1",
   });
 
+  const title = await generateTranscriptTitle(transcription.text);
+
   // Update audio blob with transcription
   await prisma.audioBlob.update({
     where: {
@@ -32,6 +36,7 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
     },
     data: {
       transcription: transcription.text,
+      title,
     },
   });
 }
@@ -41,8 +46,6 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
  */
 export async function POST(req: Request): Promise<Response> {
   const formData = await req.formData();
-
-  await prisma.audioBlob.deleteMany();
 
   const file = formData.get("file") as Blob | null;
   if (file == null) {
