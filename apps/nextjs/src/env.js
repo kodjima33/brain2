@@ -18,7 +18,10 @@ export const env = createEnv({
    * built with invalid env vars.
    */
   server: {
-    DATABASE_URL: z.string()
+    DATABASE_URL: z.string(),
+    AWS_REGION: z.string(),
+    AWS_ACCESS_KEY: z.string(),
+    AWS_SECRET_KEY: z.string()
   },
   /**
    * Specify your client-side environment variables schema here.
@@ -34,6 +37,9 @@ export const env = createEnv({
     VERCEL_URL: process.env.VERCEL_URL,
     PORT: process.env.PORT,
     DATABASE_URL: process.env.DATABASE_URL,
+    AWS_REGION: process.env.AWS_REGION,
+    AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
+    AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   skipValidation:
