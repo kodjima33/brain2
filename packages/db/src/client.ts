@@ -3,6 +3,8 @@ import { PrismaClient } from "@prisma/client";
 
 export * from "@prisma/client";
 
+export const AUDIO_FORMAT = "mp3"
+
 export const prisma = new PrismaClient({
   log: ["error"],
 }).$extends({
@@ -13,7 +15,7 @@ export const prisma = new PrismaClient({
       s3Path: {
         needs: { id: true },
         compute(audioBlob: AudioBlob) {
-          return `audio/${audioBlob.id}.m4a`;
+          return `audio/${audioBlob.id}.${AUDIO_FORMAT}`;
         },
       },
     },
