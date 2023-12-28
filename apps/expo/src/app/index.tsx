@@ -1,17 +1,16 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
-import React, { useState } from "react";
-import { TextInput, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Audio } from "expo-av";
-import { Recording } from "expo-av/build/Audio";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Recording } from "expo-av/build/Audio";
 import {
   CircleUserRoundIcon,
   MenuIcon,
   MicIcon,
   StopCircleIcon,
 } from "lucide-react-native";
+import React, { useState } from "react";
+import { TextInput, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import NoteEntry from "~/components/note-entry";
 import Sidebar from "~/components/sidebar";
