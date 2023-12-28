@@ -39,6 +39,18 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
       title,
     },
   });
+
+  // Create a single note with the transcription
+  await prisma.note.create({
+    data: {
+      id: generateId("note"),
+      title,
+      content: transcription.text,
+      owner: "",
+      digestSpan: "SINGLE",
+      recordingIds: [audioBlob.id],
+    },
+  });
 }
 
 /**
