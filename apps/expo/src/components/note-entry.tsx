@@ -17,7 +17,7 @@ export default function NoteEntry({ note }: NoteEntryProps) {
   );
 
   return (
-    <View className="flex flex-col gap-2 px-2 py-4">
+    <View className="flex flex-col gap-2 p-4">
       <Text className="text-2xl font-semibold">{note.title}</Text>
       <Text className="text-md font-light text-gray-700">{formattedDate}</Text>
     </View>

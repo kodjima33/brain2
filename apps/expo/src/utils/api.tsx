@@ -1,4 +1,7 @@
+import { Buffer } from "buffer";
+import type { AxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
+import axios from "axios";
 
 import type { Note } from "@brain2/db/client";
 
@@ -24,10 +27,20 @@ function getBaseUrl() {
 /**
  * Wrapper around fetch() to send requests to the API
  */
-async function sendRequest<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${getBaseUrl()}/${path}`, options);
-  const json = (await response.json()) as T;
-  return json;
+async function sendRequest<T>(
+  path: string,
+  options?: AxiosRequestConfig,
+): Promise<T> {
+  try {
+    const { data } = await axios<T>({
+      ...options,
+      url: `${getBaseUrl()}${path}`,
+    });
+    return data;
+  } catch (err) {
+    console.error("[sendReq] Failed to send request", err);
+    throw err;
+  }
 }
 
 /**
@@ -40,13 +53,30 @@ async function get<T>(path: string): Promise<T> {
 /**
  * Send a json-encoded POST request
  */
-async function post<T>(path: string, body: Record<string, unknown>): Promise<T> {
+async function post<T>(
+  path: string,
+  body: Record<string, unknown>,
+): Promise<T> {
   return sendRequest(path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body),
+    data: JSON.stringify(body),
+  });
+}
+
+/**
+ * Send a form-encoded POST request
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function postForm<T>(path: string, formData: FormData): Promise<T> {
+  return sendRequest(path, {
+    method: "POST",
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 }
 
@@ -56,4 +86,11 @@ export async function getNotes(): Promise<Note[]> {
 
 export async function createNote(content: string): Promise<void> {
   return post("/api/notes", { content });
+}
+
+export async function uploadRecording(audioUrl: string): Promise<void> {
+  const content = await fetch(audioUrl);
+  const audioBuffer = Buffer.from(await content.arrayBuffer());
+  const b64 = audioBuffer.toString("base64");
+  return post("/api/recordings", { audio: b64 });
 }

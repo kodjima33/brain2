@@ -1,21 +1,21 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import type { Recording } from "expo-av/build/Audio";
 import React, { useState } from "react";
-import { TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CircleUserRoundIcon,
   Loader2Icon,
   MenuIcon,
   MicIcon,
-  StopCircleIcon,
+  SquareIcon,
 } from "lucide-react-native";
 
 import NoteEntry from "~/components/note-entry";
 import Sidebar from "~/components/sidebar";
-import { createNote, getNotes } from "~/utils/api";
+import { getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
 
 interface ContentPageProps {
@@ -27,25 +27,16 @@ function ContentPage({ navigation }: ContentPageProps) {
 
   const {
     data: notes,
-    error: queryError,
-    isLoading,
+    error: notesError,
+    isLoading: notesLoading,
   } = useQuery({
     queryKey: ["notes"],
     queryFn: getNotes,
   });
 
-  if (queryError) {
-    console.error("[getNotes] Query error:", queryError);
+  if (notesError) {
+    console.error("[getNotes] Query error:", notesError);
   }
-
-  const { mutate } = useMutation({
-    mutationFn: createNote,
-    onSuccess() {
-      void queryClient.invalidateQueries({
-        queryKey: ["notes"],
-      });
-    },
-  });
 
   const [recording, setRecording] = useState<Recording | null>();
 
@@ -70,9 +61,14 @@ function ContentPage({ navigation }: ContentPageProps) {
         </View>
         {/* Content */}
         <View className="flex flex-grow flex-col items-start justify-start gap-2">
-          {isLoading && (
-            <View className="h-[50vh] w-full flex items-center justify-center">
-              <Loader2Icon size={48} className="text-gray-400 animate-spin" />
+          {notesLoading && (
+            <View className="flex h-[50vh] w-full items-center justify-center">
+              <Loader2Icon size={48} className="animate-spin text-gray-400" />
+            </View>
+          )}
+          {!notesLoading && notes?.length === 0 && (
+            <View className="flex h-[50vh] w-full items-center justify-center">
+              <Text className="text-gray-500 font-semibold text-xl">Nothing here yet!</Text>
             </View>
           )}
           {notes?.map((note) => <NoteEntry key={note.id} note={note} />)}
@@ -81,20 +77,29 @@ function ContentPage({ navigation }: ContentPageProps) {
         <TouchableOpacity
           onPress={async () => {
             if (recording) {
-              await stopRecording(recording);
+              const uri = await stopRecording(recording);
               setRecording(null);
+
+              if (uri) {
+                try {
+                  await uploadRecording(uri);
+                  await queryClient.invalidateQueries({
+                    queryKey: ["notes"],
+                  });
+                } catch (err) {
+                  console.error("Failed to send request", err);
+                }
+              }
             } else {
               const newRecording = await startRecording();
               setRecording(newRecording);
             }
-            // console.log("Creating note");
-            // mutate("Hello world");
           }}
         >
           <View className="flex items-center">
             <View className="rounded-full border border-black p-4">
               {recording ? (
-                <StopCircleIcon className="h-10 w-10 text-black" />
+                <SquareIcon className="h-10 w-10 text-black" />
               ) : (
                 <MicIcon className="h-10 w-10 text-black" />
               )}

@@ -6,6 +6,7 @@ import type { AudioBlob } from "@brain2/db";
 import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
 
 import { generateTranscriptTitle } from "~/util/generateTitle";
+import { z } from "zod";
 
 const storageClient = new StorageClient();
 const openai = new OpenAI();
@@ -53,22 +54,41 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
   });
 }
 
+const base64Schema = z.object({
+  audio: z.string()
+})
+
+/**
+ * Get the audio buffer from the request, either from a base64 string or a file
+ */
+async function getAudioBuffer(req: Request): Promise<Buffer> {
+  if (req.headers.get("content-type")?.includes("multipart/form-data")) {
+    // Parse formdata
+    const formData = await req.formData();
+
+    const file = formData.get("file") as Blob | null;
+    if (file == null) {
+      throw new Error("File blob is required")
+    }
+  
+    // TODO: Figure out file conversions
+    // Need to ensure that input audio is in a supported format (e.g. mp4, wav)
+    // Look into fluent-ffmpeg, but need to reconcile issue with unsupported readable streams
+    // See https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/1139
+    const audioBuffer = Buffer.from(await file.arrayBuffer());
+    return audioBuffer
+  }
+  // Decode base64 audio
+  const { audio } = base64Schema.parse(await req.json());
+  const audioBuffer = Buffer.from(audio, "base64");
+  return audioBuffer
+}
+
 /**
  * Create an audio recording
  */
 export async function POST(req: Request): Promise<Response> {
-  const formData = await req.formData();
-
-  const file = formData.get("file") as Blob | null;
-  if (file == null) {
-    return Response.json({ error: "File blob is required" }, { status: 400 });
-  }
-
-  // TODO: Figure out file conversions
-  // Need to ensure that input audio is in a supported format (e.g. mp4, wav)
-  // Look into fluent-ffmpeg, but need to reconcile issue with unsupported readable streams
-  // See https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/1139
-  const audioBuffer = Buffer.from(await file.arrayBuffer());
+  const audioBuffer = await getAudioBuffer(req);
 
   const id = generateId("audioBlob");
   const path = `audio/${id}.${AUDIO_FORMAT}`;
