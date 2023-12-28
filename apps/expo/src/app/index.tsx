@@ -1,16 +1,17 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
-import {
-  CircleUserRoundIcon,
-  MenuIcon,
-  MicIcon,
-  StopCircleIcon,
-} from "lucide-react-native";
 import React, { useState } from "react";
 import { TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  CircleUserRoundIcon,
+  Loader2Icon,
+  MenuIcon,
+  MicIcon,
+  StopCircleIcon,
+} from "lucide-react-native";
 
 import NoteEntry from "~/components/note-entry";
 import Sidebar from "~/components/sidebar";
@@ -24,7 +25,11 @@ interface ContentPageProps {
 function ContentPage({ navigation }: ContentPageProps) {
   const queryClient = useQueryClient();
 
-  const { data: notes, error: queryError } = useQuery({
+  const {
+    data: notes,
+    error: queryError,
+    isLoading,
+  } = useQuery({
     queryKey: ["notes"],
     queryFn: getNotes,
   });
@@ -64,7 +69,12 @@ function ContentPage({ navigation }: ContentPageProps) {
           <CircleUserRoundIcon className="basis-1/12 text-black" />
         </View>
         {/* Content */}
-        <View className="flex flex-grow flex-col items-start justify-start gap-2 overflow-y-auto">
+        <View className="flex flex-grow flex-col items-start justify-start gap-2">
+          {isLoading && (
+            <View className="h-[50vh] w-full flex items-center justify-center">
+              <Loader2Icon size={48} className="text-gray-400 animate-spin" />
+            </View>
+          )}
           {notes?.map((note) => <NoteEntry key={note.id} note={note} />)}
         </View>
         {/* FAB */}
