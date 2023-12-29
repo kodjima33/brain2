@@ -19,9 +19,9 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string(),
-    AWS_REGION: z.string(),
-    AWS_ACCESS_KEY: z.string(),
-    AWS_SECRET_ACCESS_KEY: z.string(),
+    AWS_S3_REGION: z.string(),
+    AWS_S3_ACCESS_KEY: z.string(),
+    AWS_S3_SECRET_ACCESS_KEY: z.string(),
     OPENAI_API_KEY: z.string()
   },
   /**
@@ -38,9 +38,9 @@ export const env = createEnv({
     VERCEL_URL: process.env.VERCEL_URL,
     PORT: process.env.PORT,
     DATABASE_URL: process.env.DATABASE_URL,
-    AWS_REGION: process.env.AWS_REGION,
-    AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
-    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_S3_REGION: process.env.AWS_S3_REGION,
+    AWS_S3_ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY,
+    AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
