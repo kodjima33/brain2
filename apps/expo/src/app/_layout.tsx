@@ -18,6 +18,7 @@ const RootLayout = () => {
         It also allows you to configure your screens 
       */}
       <Stack
+        initialRouteName="index"
         screenOptions={{
           headerShown: false,
         }}

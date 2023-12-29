@@ -78,6 +78,10 @@ async function postForm<T>(path: string, formData: FormData): Promise<T> {
   });
 }
 
+export async function getNoteById(id: string): Promise<Note> {
+  return get(`/api/notes/${id}`)
+}
+
 export async function getNotes(): Promise<Note[]> {
   return get("/api/notes");
 }

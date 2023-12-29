@@ -9,6 +9,7 @@ export default authMiddleware({
     "/((?!api|trpc))(_next.*|.+.[w]+$)",
     "/api/notes",
     "/api/recordings",
+    "/api/notes/(.+)"
   ],
 });
 

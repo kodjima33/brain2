@@ -1,17 +1,17 @@
+import { DateTime } from "luxon";
 import React from "react";
 import { Text, View } from "react-native";
-import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
-interface NoteEntryProps {
+interface NoteListItemProps {
   note: Note;
 }
 
 /**
  * A list item representing a note
  */
-export default function NoteEntry({ note }: NoteEntryProps) {
+export function NoteListItem({ note }: NoteListItemProps) {
   const formattedDate = DateTime.fromISO(note.createdAt.toString()).toFormat(
     "ccc dd/MM/yyyy HH:mm:ss",
   );

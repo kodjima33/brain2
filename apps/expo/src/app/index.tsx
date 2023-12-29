@@ -1,7 +1,7 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import type { Recording } from "expo-av/build/Audio";
 import React, { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,7 +13,7 @@ import {
   SquareIcon,
 } from "lucide-react-native";
 
-import NoteEntry from "~/components/note-entry";
+import { NoteListItem } from "~/components/note";
 import Sidebar from "~/components/sidebar";
 import { getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
@@ -22,7 +22,7 @@ interface ContentPageProps {
   navigation: DrawerNavigationHelpers;
 }
 
-function ContentPage({ navigation }: ContentPageProps) {
+export function HomePageContent({ navigation }: ContentPageProps) {
   const queryClient = useQueryClient();
 
   const {
@@ -73,7 +73,16 @@ function ContentPage({ navigation }: ContentPageProps) {
               </Text>
             </View>
           )}
-          {notes?.map((note) => <NoteEntry key={note.id} note={note} />)}
+          {notes?.map((note) => (
+            <Pressable
+              key={note.id}
+              onPress={() => {
+                navigation.navigate("NotePage", { id: note.id });
+              }}
+            >
+              <NoteListItem note={note} />
+            </Pressable>
+          ))}
         </View>
         {/* FAB */}
         <TouchableOpacity
@@ -117,5 +126,5 @@ function ContentPage({ navigation }: ContentPageProps) {
  * Index home page
  */
 export default function IndexPage() {
-  return <Sidebar sidebarComponent={ContentPage} />;
+  return <Sidebar />;
 }

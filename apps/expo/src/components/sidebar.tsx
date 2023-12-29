@@ -4,6 +4,9 @@ import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createDrawerNavigator, DrawerItem } from "@react-navigation/drawer";
 
+import { HomePageContent } from "~/app";
+import { NotePageContent } from "~/app/note/[id]";
+
 const screens = ["Recent", "Notes", "Digests"];
 
 /**
@@ -34,16 +37,10 @@ function SidebarContent({ state, navigation }: DrawerContentComponentProps) {
 
 const Drawer = createDrawerNavigator();
 
-interface SidebarProps {
-  sidebarComponent: NonNullable<
-    Parameters<typeof Drawer.Screen>[0]["component"]
-  >;
-}
-
 /**
  * Collapsible sidebar
  */
-export default function Sidebar({ sidebarComponent }: SidebarProps) {
+export default function Sidebar() {
   return (
     <>
       <Drawer.Navigator
@@ -54,12 +51,19 @@ export default function Sidebar({ sidebarComponent }: SidebarProps) {
           <Drawer.Screen
             key={screen}
             name={screen}
-            component={sidebarComponent}
+            component={HomePageContent}
             options={{
               headerShown: false,
             }}
           />
         ))}
+        <Drawer.Screen
+          name="NotePage"
+          component={NotePageContent}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Drawer.Navigator>
     </>
   );
