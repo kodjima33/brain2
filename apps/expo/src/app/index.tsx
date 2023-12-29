@@ -1,7 +1,7 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import type { Recording } from "expo-av/build/Audio";
 import React, { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -73,16 +73,18 @@ export function HomePageContent({ navigation }: ContentPageProps) {
               </Text>
             </View>
           )}
-          {notes?.map((note) => (
-            <Pressable
-              key={note.id}
-              onPress={() => {
-                navigation.navigate("NotePage", { id: note.id });
-              }}
-            >
-              <NoteListItem note={note} />
-            </Pressable>
-          ))}
+          <ScrollView>
+            {notes?.map((note) => (
+              <Pressable
+                key={note.id}
+                onPress={() => {
+                  navigation.navigate("NotePage", { id: note.id });
+                }}
+              >
+                <NoteListItem note={note} />
+              </Pressable>
+            ))}
+          </ScrollView>
         </View>
         {/* FAB */}
         <TouchableOpacity

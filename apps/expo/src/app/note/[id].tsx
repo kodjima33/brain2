@@ -1,7 +1,6 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
-import { SafeAreaView, Text, TextInput, View } from "react-native";
+import { SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useGlobalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   CircleUserRoundIcon,
@@ -25,23 +24,25 @@ function NoteView({ note }: NoteViewProps) {
   );
 
   return (
-    <View className="flex flex-col gap-2">
+    <View className="mb-5 flex flex-col gap-2">
       <Text className="text-3xl">{note.title}</Text>
       <Text className="text-sm font-light text-gray-500">{formattedDate}</Text>
-      <Text className="text-md flex-grow whitespace-pre">{note.content}</Text>
+      <ScrollView className="flex-grow">
+        <Text className="whitespace-pre text-lg">{note.content}</Text>
+      </ScrollView>
     </View>
   );
 }
 
 interface NotePageContentProps {
   navigation: DrawerNavigationHelpers;
-  route: {
+  route?: {
     params: Record<string, string>;
   };
 }
 
 export function NotePageContent({ navigation, route }: NotePageContentProps) {
-  const { id } = route.params;
+  const id = route?.params?.id;
   if (!id || typeof id !== "string") throw new Error("unreachable");
 
   const {
