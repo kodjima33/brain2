@@ -2,9 +2,10 @@ import {
   GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
-  S3Client
+  S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
 import { env } from "@brain2/lib";
 
 export const Buckets = {
@@ -36,7 +37,7 @@ export default class StorageClient {
         new HeadObjectCommand({
           Bucket: bucketName,
           Key: fileName,
-        })
+        }),
       );
       return true;
     } catch (e) {
@@ -50,14 +51,14 @@ export default class StorageClient {
   async uploadFile(
     fileName: string,
     content: string | Buffer,
-    bucketName: string = Buckets.DEFAULT
+    bucketName: string = Buckets.DEFAULT,
   ) {
     await this.client.send(
       new PutObjectCommand({
         Bucket: bucketName,
         Key: fileName,
         Body: content,
-      })
+      }),
     );
   }
 
@@ -67,7 +68,7 @@ export default class StorageClient {
   async generateSignedUrl(
     fileName: string,
     bucketName: string = Buckets.DEFAULT,
-    ttlSeconds: number = 15 * 60
+    ttlSeconds: number = 15 * 60,
   ): Promise<string> {
     const command = new GetObjectCommand({
       Bucket: bucketName,

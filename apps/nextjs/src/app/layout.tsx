@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 
 import "~/styles/globals.css";
 
-
 import { env } from "~/env";
 
 const fontSans = Inter({

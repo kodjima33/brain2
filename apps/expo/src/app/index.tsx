@@ -68,7 +68,9 @@ function ContentPage({ navigation }: ContentPageProps) {
           )}
           {!notesLoading && notes?.length === 0 && (
             <View className="flex h-[50vh] w-full items-center justify-center">
-              <Text className="text-gray-500 font-semibold text-xl">Nothing here yet!</Text>
+              <Text className="text-xl font-semibold text-gray-500">
+                Nothing here yet!
+              </Text>
             </View>
           )}
           {notes?.map((note) => <NoteEntry key={note.id} note={note} />)}

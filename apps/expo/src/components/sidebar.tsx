@@ -1,10 +1,8 @@
-import { DrawerItem, createDrawerNavigator } from "@react-navigation/drawer";
-import type {
-  DrawerContentComponentProps
-} from "@react-navigation/drawer/lib/typescript/src/types";
+import type { DrawerContentComponentProps } from "@react-navigation/drawer/lib/typescript/src/types";
 import React from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { createDrawerNavigator, DrawerItem } from "@react-navigation/drawer";
 
 const screens = ["Recent", "Notes", "Digests"];
 
@@ -37,7 +35,9 @@ function SidebarContent({ state, navigation }: DrawerContentComponentProps) {
 const Drawer = createDrawerNavigator();
 
 interface SidebarProps {
-  sidebarComponent: NonNullable<Parameters<typeof Drawer.Screen>[0]["component"]>;
+  sidebarComponent: NonNullable<
+    Parameters<typeof Drawer.Screen>[0]["component"]
+  >;
 }
 
 /**

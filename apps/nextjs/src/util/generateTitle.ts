@@ -9,9 +9,9 @@ const chatModel = new ChatOpenAI({
 const prompt =
   "You will be provided with audio recording transcripts. Provide a concise 3-5 word title for the recording. Make sure to emphasize any important terms or highlights from the transcript.";
 
-  /**
-   * Create a title for a transcript
-   */
+/**
+ * Create a title for a transcript
+ */
 export async function generateTranscriptTitle(
   transcription: string,
 ): Promise<string> {

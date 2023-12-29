@@ -4,7 +4,7 @@ import CreateNoteButton from "~/components/create-note-button";
 
 async function createNote() {
   "use server";
-  
+
   await prisma.note.create({
     data: {
       id: generateId("note"),

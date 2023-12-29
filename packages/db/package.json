@@ -7,17 +7,18 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "clean": "rimraf .turbo node_modules dist",
+    "clean": "rm -rf .turbo node_modules",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx src/seed.ts",
-    "format": "prisma format",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
     "generate": "prisma generate",
-    "lint": "eslint \"src/**/*.ts\"",
+    "lint": "eslint .",
     "prebuild": "npm run generate",
     "predev": "npm run generate",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",

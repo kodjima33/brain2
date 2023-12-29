@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 export * from "@prisma/client";
 
-export const AUDIO_FORMAT = "mp3"
+export const AUDIO_FORMAT = "mp3";
 
 export const prisma = new PrismaClient({
   log: ["error"],

@@ -1,6 +1,6 @@
-import { DateTime } from "luxon";
 import React from "react";
 import { Text, View } from "react-native";
+import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
