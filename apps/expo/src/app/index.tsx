@@ -43,7 +43,7 @@ export function HomePageContent({ navigation }: ContentPageProps) {
   return (
     <SafeAreaView className="bg-white">
       {/* Changes page title visible on the header */}
-      <View className="flex h-full w-full flex-col justify-between pb-5">
+      <View className="h-full w-full flex flex-col justify-between pb-5">
         {/* Header */}
         <View className="flex w-full flex-row items-center justify-between px-4">
           <TouchableOpacity
@@ -60,7 +60,7 @@ export function HomePageContent({ navigation }: ContentPageProps) {
           <CircleUserRoundIcon className="basis-1/12 text-black" />
         </View>
         {/* Content */}
-        <View className="flex flex-grow flex-col items-start justify-start gap-2">
+        <View className="flex flex-grow flex-col max-h-[80vh] items-start justify-start gap-2">
           {notesLoading && (
             <View className="flex h-[50vh] w-full items-center justify-center">
               <Loader2Icon size={48} className="animate-spin text-gray-400" />
