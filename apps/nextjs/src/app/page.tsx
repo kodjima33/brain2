@@ -11,6 +11,7 @@ async function createNote() {
       owner: "",
       content: "Hello world!",
       digestSpan: "SINGLE",
+      title: "Dummy note",
     },
   });
 }
