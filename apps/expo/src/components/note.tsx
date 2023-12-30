@@ -17,7 +17,7 @@ export function NoteListItem({ note }: NoteListItemProps) {
   );
 
   return (
-    <View className="flex flex-col gap-2 p-4">
+    <View className="flex flex-col gap-2 py-2 px-4 bg-gray-100 rounded-xl shadow-sm">
       <Text className="text-2xl font-semibold">{note.title}</Text>
       <Text className="text-md font-light text-gray-700">{formattedDate}</Text>
     </View>
