@@ -33,11 +33,12 @@ model AudioBlob {
   transcription String?
   owner         String // userId
 
+  noteId String @unique
+  note   Note   @relation(fields: [noteId], references: [id])
+
   title     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  parentNotes Note[]
 
   @@index([owner])
 }
@@ -51,13 +52,12 @@ model Note {
   title      String
   content    String
   digestSpan NoteDigestSpan
-
-  recordingIds String[]
-  recordings   AudioBlob @relation(fields: [recordingIds], references: [id])
+  recording  AudioBlob?
 
   children NoteDigest[] @relation("childNote")
   parents  NoteDigest[] @relation("parentNote")
 
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

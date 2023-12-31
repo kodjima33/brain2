@@ -31,6 +31,7 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
   const title = await generateTranscriptTitle(transcription.text);
 
   // Update audio blob with transcription
+  // Create a single note with the transcription
   await prisma.audioBlob.update({
     where: {
       id: audioBlob.id,
@@ -38,18 +39,13 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
     data: {
       transcription: transcription.text,
       title,
-    },
-  });
-
-  // Create a single note with the transcription
-  await prisma.note.create({
-    data: {
-      id: generateId("note"),
-      title,
-      content: transcription.text,
-      owner: "",
-      digestSpan: "SINGLE",
-      recordingIds: [audioBlob.id],
+      note: {
+        update: {
+          title,
+          content: transcription.text,
+          active: true,
+        },
+      },
     },
   });
 }
@@ -101,6 +97,16 @@ export async function POST(req: Request): Promise<Response> {
         id,
         title,
         owner: "",
+        note: {
+          create: {
+            id: generateId("note"),
+            title,
+            content: "",
+            owner: "",
+            digestSpan: "SINGLE",
+            active: false,
+          },
+        },
       },
     }),
     storageClient.uploadFile(path, audioBuffer),
