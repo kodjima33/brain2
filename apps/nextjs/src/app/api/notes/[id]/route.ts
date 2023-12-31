@@ -18,3 +18,15 @@ export async function GET(
   const note = await prisma.note.findUnique({ where: { id } });
   return Response.json(note);
 }
+
+/**
+ * Delete a note by ID
+ */
+export async function DELETE(
+  _req: NextApiRequest,
+  { params }: { params: { id: string } },
+): Promise<Response> {
+  const { id } = getNoteSchema.parse(params);
+  const note = await prisma.note.delete({ where: { id } });
+  return Response.json(note);
+}

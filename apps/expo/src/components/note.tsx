@@ -1,11 +1,20 @@
-import { DateTime } from "luxon";
 import React from "react";
 import { Text, View } from "react-native";
+import { TrashIcon } from "lucide-react-native";
+import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
 interface NoteListItemProps {
   note: Note;
+}
+
+export function NoteListItemRightSwipeActions() {
+  return (
+    <View className="flex w-full flex-grow flex-col items-end justify-center gap-2 bg-red-500 px-4 py-2 shadow-sm">
+      <TrashIcon className="border-black-2 h-8 w-8 border text-white" />
+    </View>
+  );
 }
 
 /**
@@ -17,7 +26,7 @@ export function NoteListItem({ note }: NoteListItemProps) {
   );
 
   return (
-    <View className="flex flex-col gap-2 py-2 px-4 bg-gray-100 rounded-xl shadow-sm">
+    <View className="flex flex-col gap-2 bg-white px-4 py-2">
       <Text className="text-2xl font-semibold">{note.title}</Text>
       <Text className="text-md font-light text-gray-700">{formattedDate}</Text>
     </View>

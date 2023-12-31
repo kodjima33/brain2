@@ -1,10 +1,10 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import type { Recording } from "expo-av/build/Audio";
 import React, { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import { Swipeable, TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CircleUserRoundIcon,
   Loader2Icon,
@@ -13,9 +13,11 @@ import {
   SquareIcon,
 } from "lucide-react-native";
 
-import { NoteListItem } from "~/components/note";
+import { Note } from "@brain2/db/client";
+
+import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
 import Sidebar from "~/components/sidebar";
-import { getNotes, uploadRecording } from "~/utils/api";
+import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
 
 interface ContentPageProps {
@@ -37,6 +39,27 @@ export function HomePageContent({ navigation }: ContentPageProps) {
   if (notesError) {
     console.error("[getNotes] Query error:", notesError);
   }
+
+  const { mutate: deleteNote } = useMutation({
+    mutationFn: deleteNoteById,
+    onMutate: async (noteId) => {
+      await queryClient.cancelQueries({ queryKey: ["notes"] });
+
+      const staleNotes: Note[] = queryClient.getQueryData(["notes"])!;
+      queryClient.setQueryData(
+        ["notes"],
+        staleNotes.filter((note) => note.id !== noteId),
+      );
+
+      return { staleNotes };
+    },
+    onError: (_err, _noteId, context) => {
+      queryClient.setQueryData(["notes"], context?.staleNotes);
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+  });
 
   const [recording, setRecording] = useState<Recording | null>();
 
@@ -73,20 +96,27 @@ export function HomePageContent({ navigation }: ContentPageProps) {
               </Text>
             </View>
           )}
-          <ScrollView>
-            <View className="flex flex-col gap-2">
-              {notes?.map((note) => (
-                <Pressable
-                  key={note.id}
-                  onPress={() => {
-                    navigation.navigate("NotePage", { id: note.id });
-                  }}
+          <FlatList
+            data={notes}
+            keyExtractor={(note) => note.id}
+            renderItem={({ item: note }) => (
+              <Pressable
+                onPress={() => {
+                  navigation.navigate("NotePage", { id: note.id });
+                }}
+              >
+                <Swipeable
+                  renderRightActions={NoteListItemRightSwipeActions}
+                  onSwipeableOpen={() => deleteNote(note.id)}
                 >
                   <NoteListItem note={note} />
-                </Pressable>
-              ))}
-            </View>
-          </ScrollView>
+                </Swipeable>
+              </Pressable>
+            )}
+            ItemSeparatorComponent={() => (
+              <View className="h-[1px] bg-gray-400" />
+            )}
+          />
         </View>
         {/* FAB */}
         <TouchableOpacity

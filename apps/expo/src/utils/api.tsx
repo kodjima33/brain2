@@ -17,7 +17,7 @@ function getBaseUrl() {
 
   if (!localhost) {
     // Vercel host
-    return "https://brain2-psi.vercel.app"
+    return "https://brain2-psi.vercel.app";
   }
   return `http://${localhost}:3000`;
 }
@@ -65,6 +65,22 @@ async function post<T>(
 }
 
 /**
+ * Send a json-encoded DELETE request
+ */
+async function del<T>(
+  path: string,
+  body?: Record<string, unknown>,
+): Promise<T> {
+  return sendRequest(path, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: body != null ? JSON.stringify(body) : undefined,
+  });
+}
+
+/**
  * Send a form-encoded POST request
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -79,7 +95,11 @@ async function postForm<T>(path: string, formData: FormData): Promise<T> {
 }
 
 export async function getNoteById(id: string): Promise<Note> {
-  return get(`/api/notes/${id}`)
+  return get(`/api/notes/${id}`);
+}
+
+export async function deleteNoteById(id: string): Promise<Note> {
+  return del(`/api/notes/${id}`);
 }
 
 export async function getNotes(): Promise<Note[]> {
