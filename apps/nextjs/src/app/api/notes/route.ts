@@ -7,7 +7,11 @@ import { generateId, prisma } from "@brain2/db";
  * Get all notes
  */
 export async function GET(_req: Request): Promise<Response> {
-  const notes = await prisma.note.findMany();
+  const notes = await prisma.note.findMany({
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
   return Response.json(notes);
 }
 
