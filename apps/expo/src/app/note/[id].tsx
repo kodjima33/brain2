@@ -1,6 +1,7 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
+import { useCallback, useState } from "react";
 import { SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { RefreshControl, TouchableOpacity } from "react-native-gesture-handler";
 import { useQuery } from "@tanstack/react-query";
 import {
   CircleUserRoundIcon,
@@ -16,9 +17,18 @@ import { getNoteById } from "~/utils/api";
 
 interface NoteViewProps {
   note: Note;
+  loading: boolean;
+  refetch: () => Promise<void>;
 }
 
-function NoteView({ note }: NoteViewProps) {
+function NoteView({ note, loading, refetch }: NoteViewProps) {
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
   const formattedDate = DateTime.fromISO(note.createdAt.toString()).toFormat(
     "ccc dd/MM/yyyy HH:mm a",
   );
@@ -27,7 +37,16 @@ function NoteView({ note }: NoteViewProps) {
     <View className="mb-12 flex flex-col gap-2">
       <Text className="text-3xl">{note.title}</Text>
       <Text className="text-sm font-light text-gray-500">{formattedDate}</Text>
-      <ScrollView className="flex-grow">
+      <ScrollView
+        className="flex-grow"
+        overScrollMode="always"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing || loading}
+            onRefresh={onRefresh}
+          />
+        }
+      >
         <Text className="whitespace-pre text-lg">{note.content}</Text>
       </ScrollView>
     </View>
@@ -49,6 +68,7 @@ export function NotePageContent({ navigation, route }: NotePageContentProps) {
     data: note,
     error: noteError,
     isLoading: noteLoading,
+    refetch,
   } = useQuery({
     queryKey: [id],
     queryFn: async () => await getNoteById(id),
@@ -91,7 +111,9 @@ export function NotePageContent({ navigation, route }: NotePageContentProps) {
               </Text>
             </View>
           )}
-          {note != null && <NoteView note={note} />}
+          {note != null && (
+            <NoteView note={note} loading={noteLoading} refetch={refetch} />
+          )}
         </View>
       </View>
     </SafeAreaView>

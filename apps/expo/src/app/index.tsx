@@ -1,8 +1,12 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import type { Recording } from "expo-av/build/Audio";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
-import { Swipeable, TouchableOpacity } from "react-native-gesture-handler";
+import {
+  RefreshControl,
+  Swipeable,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -31,6 +35,7 @@ export function HomePageContent({ navigation }: ContentPageProps) {
     data: notes,
     error: notesError,
     isLoading: notesLoading,
+    refetch: refetchNotes,
   } = useQuery({
     queryKey: ["notes"],
     queryFn: getNotes,
@@ -62,6 +67,12 @@ export function HomePageContent({ navigation }: ContentPageProps) {
   });
 
   const [recording, setRecording] = useState<Recording | null>();
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetchNotes();
+    setRefreshing(false);
+  }, [refetchNotes]);
 
   return (
     <SafeAreaView className="bg-white">
@@ -116,6 +127,12 @@ export function HomePageContent({ navigation }: ContentPageProps) {
             ItemSeparatorComponent={() => (
               <View className="h-[1px] bg-gray-400" />
             )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing || notesLoading}
+                onRefresh={onRefresh}
+              />
+            }
           />
         </View>
         {/* FAB */}
