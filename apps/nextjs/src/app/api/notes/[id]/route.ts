@@ -27,6 +27,9 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ): Promise<Response> {
   const { id } = getNoteSchema.parse(params);
-  const note = await prisma.note.delete({ where: { id } });
+  const note = await prisma.note.update({
+    where: { id },
+    data: { active: false },
+  });
   return Response.json(note);
 }

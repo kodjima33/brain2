@@ -9,6 +9,9 @@ interface NoteListItemProps {
   note: Note;
 }
 
+/**
+ * A subpanel unveiled when swiping a note list item to the left
+ */
 export function NoteListItemRightSwipeActions() {
   return (
     <View className="flex w-full flex-grow flex-col items-end justify-center gap-2 bg-red-500 px-4 py-2 shadow-sm">
