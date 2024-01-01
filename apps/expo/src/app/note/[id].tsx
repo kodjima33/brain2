@@ -24,7 +24,7 @@ function NoteView({ note }: NoteViewProps) {
   );
 
   return (
-    <View className="mb-5 flex flex-col gap-2">
+    <View className="mb-12 flex flex-col gap-2">
       <Text className="text-3xl">{note.title}</Text>
       <Text className="text-sm font-light text-gray-500">{formattedDate}</Text>
       <ScrollView className="flex-grow">
