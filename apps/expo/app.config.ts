@@ -18,11 +18,11 @@ const defineConfig = (): ExpoConfig => ({
   },
   assetBundlePatterns: ["**/*"],
   ios: {
-    bundleIdentifier: "your.bundle.identifier",
+    bundleIdentifier: "com.brain2.app",
     supportsTablet: true,
   },
   android: {
-    package: "your.bundle.identifier",
+    package: "com.brain2.app",
     adaptiveIcon: {
       foregroundImage: "./assets/icon.png",
       backgroundColor: "#FFFFFF",
