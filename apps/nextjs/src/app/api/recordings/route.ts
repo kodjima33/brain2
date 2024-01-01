@@ -7,6 +7,7 @@ import type { AudioBlob } from "@brain2/db";
 import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
 
 import { generateTranscriptTitle } from "~/util/generateTitle";
+import { refineTranscript } from "~/util/refineTranscript";
 
 const storageClient = new StorageClient();
 const openai = new OpenAI();
@@ -17,6 +18,24 @@ const openai = new OpenAI();
 export async function GET(_req: Request): Promise<Response> {
   const blobs = await prisma.audioBlob.findMany();
   return Response.json(blobs);
+}
+
+/**
+ * Refine the transcript for a note
+ */
+async function refineNoteTranscript(noteId: string, transcript: string) {
+  const refinedTranscript = await refineTranscript(transcript);
+
+  // Update note with refined transcript and mark as active
+  await prisma.note.update({
+    where: {
+      id: noteId,
+    },
+    data: {
+      content: refinedTranscript,
+      active: true
+    },
+  });
 }
 
 /**
@@ -31,7 +50,7 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
   const title = await generateTranscriptTitle(transcription.text);
 
   // Update audio blob with transcription
-  // Create a single note with the transcription
+  // Create a single note with the transcription, keep inactive until refinement
   await prisma.audioBlob.update({
     where: {
       id: audioBlob.id,
@@ -43,11 +62,13 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
         update: {
           title,
           content: transcription.text,
-          active: true,
         },
       },
-    },
+    }
   });
+
+  // Refine the transcript async
+  void refineNoteTranscript(audioBlob.noteId, transcription.text);
 }
 
 const base64Schema = z.object({

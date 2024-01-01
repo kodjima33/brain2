@@ -8,6 +8,9 @@ import { generateId, prisma } from "@brain2/db";
  */
 export async function GET(_req: Request): Promise<Response> {
   const notes = await prisma.note.findMany({
+    where: {
+      active: true,
+    },
     orderBy: {
       createdAt: "desc"
     }
