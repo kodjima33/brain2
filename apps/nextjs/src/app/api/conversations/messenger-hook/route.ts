@@ -27,6 +27,6 @@ export async function GET(req: NextRequest): Promise<Response> {
     });
   } else {
     // Respond with '403 Forbidden' if verify tokens do not match
-    return new Response("Unauthorized", { status: 403 });
+    return new Response("Unauthorized. Validation failed.", { status: 403 });
   }
 }
