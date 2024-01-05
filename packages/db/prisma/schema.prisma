@@ -8,7 +8,8 @@ datasource db {
 }
 
 // No model for a user since auth is handled by Clerk
-// Assume we get a unique userId for each user
+// Assume we get a unique userId for each user 
+// TODO: for messenger we neeed a mapping from users to their PSID(page scoped ID)
 
 model Preferences {
   id        String         @id @map("_id")
@@ -60,6 +61,8 @@ model Note {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  conversation Conversation?
 }
 
 // Represents the span of a note digest
@@ -84,4 +87,19 @@ model NoteDigest {
   updatedAt DateTime @updatedAt
 
   @@unique([childId, parentId])
+}
+
+model Conversation {
+  id    String @id @map("_id")
+  owner String //userId, using fb PSID for now
+
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+  isActive      Boolean  @default(true)
+
+  userMessages   String[] //Messages sent from the user to brain2
+  brain2Messages String[] //Messages sent from brain2 to the user
+
+  noteId String? @unique
+  note   Note?   @relation(fields: [noteId], references: [id])
 }
