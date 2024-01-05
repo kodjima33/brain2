@@ -6,6 +6,7 @@ export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
     DATABASE_URL: z.string().url(),
+    MESSENGER_VERIFY_TOKEN: z.string(),
   },
   client: {},
   runtimeEnv: process.env,
