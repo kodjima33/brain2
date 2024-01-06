@@ -53,10 +53,10 @@ export function HomePageContent({ navigation }: ContentPageProps) {
     console.error("[getNotes] Query error:", notesError);
   }
 
-  console.log("Received data", notes);
-
   const { mutate: deleteNote } = useMutation({
-    mutationFn: deleteNoteById,
+    mutationFn: async (noteId: string) => {
+      return deleteNoteById(noteId, (await getToken())!);
+    },
     onMutate: async (noteId) => {
       await queryClient.cancelQueries({ queryKey: ["notes"] });
 
@@ -171,7 +171,8 @@ export function HomePageContent({ navigation }: ContentPageProps) {
 
               if (uri) {
                 try {
-                  await uploadRecording(uri);
+                  const token = await getToken();
+                  await uploadRecording(uri, token!);
                   await queryClient.invalidateQueries({
                     queryKey: ["notes"],
                   });

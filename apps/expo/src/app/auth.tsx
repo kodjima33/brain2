@@ -1,9 +1,3 @@
-import { useCallback } from "react";
-import { Image, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Constants from "expo-constants";
-import { Link, router, useNavigation } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import {
   SignedIn,
   SignedOut,
@@ -11,7 +5,13 @@ import {
   useOAuth,
   useUser,
 } from "@clerk/clerk-expo";
+import Constants from "expo-constants";
+import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { Loader2Icon } from "lucide-react-native";
+import { useCallback } from "react";
+import { Image, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "~/components/button";
 import { useWarmupBrowser } from "~/utils/useWarmupBrowser";

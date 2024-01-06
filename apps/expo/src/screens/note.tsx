@@ -1,4 +1,8 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
+import { useCallback, useState } from "react";
+import { SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
+import { RefreshControl, TouchableOpacity } from "react-native-gesture-handler";
+import { useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
 import {
   CircleUserRoundIcon,
@@ -6,9 +10,6 @@ import {
   MenuIcon,
 } from "lucide-react-native";
 import { DateTime } from "luxon";
-import { useCallback, useState } from "react";
-import { SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
-import { RefreshControl, TouchableOpacity } from "react-native-gesture-handler";
 
 import type { Note } from "@brain2/db/client";
 
@@ -52,7 +53,6 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
   );
 }
 
-
 interface NotePageContentProps {
   navigation: DrawerNavigationHelpers;
   route?: {
@@ -64,6 +64,8 @@ export function NotePageContent({ navigation, route }: NotePageContentProps) {
   const id = route?.params?.id;
   if (!id || typeof id !== "string") throw new Error("unreachable");
 
+  const { isLoaded: isUserLoaded, getToken } = useAuth();
+
   const {
     data: note,
     error: noteError,
@@ -71,7 +73,11 @@ export function NotePageContent({ navigation, route }: NotePageContentProps) {
     refetch,
   } = useQuery({
     queryKey: [id],
-    queryFn: async () => await getNoteById(id),
+    queryFn: async () => {
+      const token = await getToken();
+      return getNoteById(id, token!);
+    },
+    enabled: isUserLoaded,
   });
 
   if (noteError) {
