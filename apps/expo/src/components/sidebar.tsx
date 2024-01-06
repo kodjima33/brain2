@@ -3,9 +3,8 @@ import React from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createDrawerNavigator, DrawerItem } from "@react-navigation/drawer";
-
-import { HomePageContent } from "~/app";
-import { NotePageContent } from "~/app/note/[id]";
+import { HomePageContent } from "~/screens/home";
+import { NotePageContent } from "~/screens/note";
 
 const screens = ["Recent", "Notes", "Digests"];
 
