@@ -1,31 +1,53 @@
-import React from "react";
-import { Stack } from "expo-router";
+import { ClerkProvider } from "@clerk/clerk-expo";
+import Constants from "expo-constants";
+import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import React from "react";
 
 import "../styles.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as SecureStore from "expo-secure-store";
+
+const tokenCache = {
+  async getToken(key: string) {
+    try {
+      return SecureStore.getItemAsync(key);
+    } catch (err) {
+      return null;
+    }
+  },
+  async saveToken(key: string, value: string) {
+    try {
+      return SecureStore.setItemAsync(key, value);
+    } catch (err) {
+      return;
+    }
+  },
+};
 
 const queryClient = new QueryClient();
 
+function AuthenticatedLayout() {
+  return <Slot initialRouteName="auth" />;
+}
+
 // This is the main layout of the app
 // It wraps your pages with the providers they need
-const RootLayout = () => {
+function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      {/*
-        The Stack component displays the current page.
-        It also allows you to configure your screens 
-      */}
-      <Stack
-        initialRouteName="index"
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
-      <StatusBar />
-    </QueryClientProvider>
+    <ClerkProvider
+      tokenCache={tokenCache}
+      publishableKey={
+        Constants.expoConfig?.extra?.clerkPublishableKey as string
+      }
+    >
+      <QueryClientProvider client={queryClient}>
+        <AuthenticatedLayout />
+        <StatusBar />
+      </QueryClientProvider>
+    </ClerkProvider>
   );
-};
+}
 
 export default RootLayout;
