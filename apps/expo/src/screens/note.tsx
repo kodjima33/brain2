@@ -1,10 +1,57 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import { useQuery } from "@tanstack/react-query";
-import { SafeAreaView, Text, TextInput, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  CircleUserRoundIcon,
+  Loader2Icon,
+  MenuIcon,
+} from "lucide-react-native";
+import { DateTime } from "luxon";
+import { useCallback, useState } from "react";
+import { SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
+import { RefreshControl, TouchableOpacity } from "react-native-gesture-handler";
 
+import type { Note } from "@brain2/db/client";
 
 import { getNoteById } from "~/utils/api";
+
+interface NoteViewProps {
+  note: Note;
+  loading: boolean;
+  refetch: () => Promise<unknown>;
+}
+
+function NoteView({ note, loading, refetch }: NoteViewProps) {
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  const formattedDate = DateTime.fromISO(note.createdAt.toString()).toFormat(
+    "ccc dd/MM/yyyy HH:mm a",
+  );
+
+  return (
+    <View className="mb-12 flex flex-col gap-2">
+      <Text className="text-3xl">{note.title}</Text>
+      <Text className="text-sm font-light text-gray-500">{formattedDate}</Text>
+      <ScrollView
+        className="flex-grow"
+        overScrollMode="always"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing || loading}
+            onRefresh={onRefresh}
+          />
+        }
+      >
+        <Text className="whitespace-pre text-lg">{note.content}</Text>
+      </ScrollView>
+    </View>
+  );
+}
+
 
 interface NotePageContentProps {
   navigation: DrawerNavigationHelpers;

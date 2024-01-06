@@ -28,7 +28,7 @@ importers:
     dependencies:
       '@clerk/clerk-expo':
         specifier: ^0.19.27
-        version: 0.19.27(@types/react@18.2.45)(expo-auth-session@5.2.0)(expo-web-browser@12.5.0)(react-dom@18.2.0)(react-native@0.72.6)(react@18.2.0)
+        version: 0.19.27(@types/react@18.2.45)(expo-auth-session@5.0.2)(expo-web-browser@12.3.2)(react-dom@18.2.0)(react-native@0.72.6)(react@18.2.0)
       '@expo/metro-config':
         specifier: ^0.10.7
         version: 0.10.7
@@ -53,6 +53,9 @@ importers:
       expo:
         specifier: ^49.0.21
         version: 49.0.21(@babel/core@7.23.2)
+      expo-auth-session:
+        specifier: ~5.0.2
+        version: 5.0.2(expo@49.0.21)
       expo-av:
         specifier: ~13.4.1
         version: 13.4.1(expo@49.0.21)
@@ -71,6 +74,9 @@ importers:
       expo-status-bar:
         specifier: ~1.6.0
         version: 1.6.0
+      expo-web-browser:
+        specifier: ~12.3.2
+        version: 12.3.2(expo@49.0.21)
       lucide-react-native:
         specifier: ^0.300.0
         version: 0.300.0(prop-types@15.8.1)(react-native-svg@13.9.0)(react-native@0.72.6)(react@18.2.0)
@@ -2454,7 +2460,7 @@ packages:
       - react
     dev: false
 
-  /@clerk/clerk-expo@0.19.27(@types/react@18.2.45)(expo-auth-session@5.2.0)(expo-web-browser@12.5.0)(react-dom@18.2.0)(react-native@0.72.6)(react@18.2.0):
+  /@clerk/clerk-expo@0.19.27(@types/react@18.2.45)(expo-auth-session@5.0.2)(expo-web-browser@12.3.2)(react-dom@18.2.0)(react-native@0.72.6)(react@18.2.0):
     resolution: {integrity: sha512-Fm3gyjHywY4VXJCayW5lfik/JOQnk+SObaGkN/JAtNYFTaue4QQ+gHXkms2fCpTDoSXseDxLbgrfvoGhMIfOPg==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -2466,8 +2472,8 @@ packages:
       '@clerk/clerk-react': 4.30.2(react@18.2.0)
       '@clerk/shared': 1.3.0(react@18.2.0)
       base-64: 1.0.0
-      expo-auth-session: 5.2.0(expo@49.0.21)
-      expo-web-browser: 12.5.0(expo@49.0.21)
+      expo-auth-session: 5.0.2(expo@49.0.21)
+      expo-web-browser: 12.3.2(expo@49.0.21)
       react: 18.2.0
       react-native-url-polyfill: 2.0.0(react-native@0.72.6)
     transitivePeerDependencies:
@@ -2856,57 +2862,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@expo/config-plugins@7.3.1:
-    resolution: {integrity: sha512-TkDtAP3P/rrjhr7GBQtyYH/l1SQUGAO/gByBCwHjfRa4RIPFs+iiq7hocytAl+oSmVsB28ipZCC3O1IPg1OZ7g==}
-    dependencies:
-      '@expo/config-types': 49.0.0
-      '@expo/json-file': 8.2.37
-      '@expo/plist': 0.0.20
-      '@expo/sdk-runtime-versions': 1.0.0
-      '@react-native/normalize-color': 2.1.0
-      chalk: 4.1.2
-      debug: 4.3.4
-      find-up: 5.0.0
-      getenv: 1.0.0
-      glob: 7.1.6
-      resolve-from: 5.0.0
-      semver: 7.5.4
-      slash: 3.0.0
-      xcode: 3.0.1
-      xml2js: 0.6.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@expo/config-plugins@7.5.0:
-    resolution: {integrity: sha512-qOKjmgbddLh1vj9ytUT6AduhEans2cHgS42nopVgh5Wz8X+QUvPcCr1Yc8MvLM3OlbswBMCJceeosZa463i0uA==}
-    dependencies:
-      '@expo/config-types': 50.0.0
-      '@expo/fingerprint': 0.2.0
-      '@expo/json-file': 8.2.37
-      '@expo/plist': 0.0.20
-      '@expo/sdk-runtime-versions': 1.0.0
-      '@react-native/normalize-color': 2.1.0
-      chalk: 4.1.2
-      debug: 4.3.4
-      find-up: 5.0.0
-      getenv: 1.0.0
-      glob: 7.1.6
-      resolve-from: 5.0.0
-      semver: 7.5.4
-      slash: 3.0.0
-      xcode: 3.0.1
-      xml2js: 0.6.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /@expo/config-types@49.0.0:
     resolution: {integrity: sha512-8eyREVi+K2acnMBe/rTIu1dOfyR2+AMnTLHlut+YpMV9OZPdeKV0Bs9BxAewGqBA2slslbQ9N39IS2CuTKpXkA==}
-
-  /@expo/config-types@50.0.0:
-    resolution: {integrity: sha512-0kkhIwXRT6EdFDwn+zTg9R2MZIAEYGn1MVkyRohAd+C9cXOb5RA8WLQi7vuxKF9m1SMtNAUrf0pO+ENK0+/KSw==}
-    dev: false
 
   /@expo/config@8.1.2:
     resolution: {integrity: sha512-4e7hzPj50mQIlsrzOH6XZ36O094mPfPTIDIH4yv49bWNMc7GFLTofB/lcT+QyxiLaJuC0Wlk9yOLB8DIqmtwug==}
@@ -2914,42 +2871,6 @@ packages:
       '@babel/code-frame': 7.10.4
       '@expo/config-plugins': 7.2.5
       '@expo/config-types': 49.0.0
-      '@expo/json-file': 8.2.37
-      getenv: 1.0.0
-      glob: 7.1.6
-      require-from-string: 2.0.2
-      resolve-from: 5.0.0
-      semver: 7.5.3
-      slugify: 1.6.6
-      sucrase: 3.32.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@expo/config@8.2.1:
-    resolution: {integrity: sha512-15XjV0WrSb5hChRM5pAEK5uyh55njfgFOEZpov3YKYBeMd9D6QT/azWWqnaFuuCWKzgzyxD9HaYgGo5VbnOU1g==}
-    dependencies:
-      '@babel/code-frame': 7.10.4
-      '@expo/config-plugins': 7.3.1
-      '@expo/config-types': 49.0.0
-      '@expo/json-file': 8.2.37
-      getenv: 1.0.0
-      glob: 7.1.6
-      require-from-string: 2.0.2
-      resolve-from: 5.0.0
-      semver: 7.5.3
-      slugify: 1.6.6
-      sucrase: 3.32.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@expo/config@8.3.1:
-    resolution: {integrity: sha512-5fNGAw5h/MDOc8Ulv9nonafPtOT042B7dF6vrVxSP3CY5qiVu0tCsmbL412wEcrAZ8MY7UMv9e6IzpGTgleYgg==}
-    dependencies:
-      '@babel/code-frame': 7.10.4
-      '@expo/config-plugins': 7.5.0
-      '@expo/config-types': 50.0.0
       '@expo/json-file': 8.2.37
       getenv: 1.0.0
       glob: 7.1.6
@@ -3013,21 +2934,6 @@ packages:
       dotenv: 16.0.3
       dotenv-expand: 10.0.0
       getenv: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@expo/fingerprint@0.2.0:
-    resolution: {integrity: sha512-k6MhJTrX4CYEwsyGemiLT8rnBwjRBYe0eKYAM3kqw0WbSHzkOJm739sgdswGLmA53iiX6FbB1TsiLnqt+h2U2w==}
-    hasBin: true
-    dependencies:
-      '@expo/spawn-async': 1.5.0
-      chalk: 4.1.2
-      debug: 4.3.4
-      find-up: 5.0.0
-      minimatch: 3.1.2
-      p-limit: 3.1.0
-      resolve-from: 5.0.0
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -7426,13 +7332,13 @@ packages:
       - supports-color
     dev: false
 
-  /expo-auth-session@5.2.0(expo@49.0.21):
-    resolution: {integrity: sha512-IihmXSBbytPUgUvq7Gj+v4Q8wcQNsAQ8Tbp5OklNLfO/6OZRDkGp/mM+aI0+tlmDrZabZ2cTLDVMBqi30b5eKg==}
+  /expo-auth-session@5.0.2(expo@49.0.21):
+    resolution: {integrity: sha512-hzuIGATiyZ4ICuzSnCTTQLUA74eHGd1aaPydsSAQEAkMnNT2bMoIYLq1rp971xF+eqWz0lzMVboRYTnxuvEKJg==}
     dependencies:
-      expo-constants: 15.0.0(expo@49.0.21)
-      expo-crypto: 12.6.0(expo@49.0.21)
-      expo-linking: 6.0.0(expo@49.0.21)
-      expo-web-browser: 12.5.0(expo@49.0.21)
+      expo-constants: 14.4.2(expo@49.0.21)
+      expo-crypto: 12.4.1(expo@49.0.21)
+      expo-linking: 5.0.2(expo@49.0.21)
+      expo-web-browser: 12.3.2(expo@49.0.21)
       invariant: 2.2.4
       qs: 6.11.1
     transitivePeerDependencies:
@@ -7460,32 +7366,8 @@ packages:
       - supports-color
     dev: false
 
-  /expo-constants@14.5.1(expo@49.0.21):
-    resolution: {integrity: sha512-06OKXQmKI0vuje++6lm7w1kO3rKsZAHio/4d9hwQuVAtExJ6RM92BnpzkDAV16ZheVN/FHKzNyY1BYLqXfujMw==}
-    peerDependencies:
-      expo: '*'
-    dependencies:
-      '@expo/config': 8.2.1
-      expo: 49.0.21(@babel/core@7.23.2)
-      uuid: 3.4.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /expo-constants@15.0.0(expo@49.0.21):
-    resolution: {integrity: sha512-HDg5irjqv3GWDmVtaVV+tjhEKgYuiN8V2tb6l1R22SfVvka3rb1qMA+/mqO5unaBOVaWZ3kRCrA5qn9buUoeJw==}
-    peerDependencies:
-      expo: '*'
-    dependencies:
-      '@expo/config': 8.3.1
-      expo: 49.0.21(@babel/core@7.23.2)
-      uuid: 3.4.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /expo-crypto@12.6.0(expo@49.0.21):
-    resolution: {integrity: sha512-wSq64eIJxk4lQBidtcW9wNF5AgO/UvV8W8mDhb7bo6P3xH41yvu/P4FcxevQY1taGA8VHD+fO+xQDrhPiHzFqQ==}
+  /expo-crypto@12.4.1(expo@49.0.21):
+    resolution: {integrity: sha512-/en03oPNAX6gP0bKpwA1EyLBnGG9uv0+Q7uvGYyOXaQQEvj31a+8cEvNPkv75x6GuK1hcaBfO25RtX9AGOMwVA==}
     peerDependencies:
       expo: '*'
     dependencies:
@@ -7539,19 +7421,6 @@ packages:
     dependencies:
       '@types/qs': 6.9.7
       expo-constants: 14.4.2(expo@49.0.21)
-      invariant: 2.2.4
-      qs: 6.11.1
-      url-parse: 1.5.10
-    transitivePeerDependencies:
-      - expo
-      - supports-color
-    dev: false
-
-  /expo-linking@6.0.0(expo@49.0.21):
-    resolution: {integrity: sha512-BVj+9yfMfQg1r23uQOES3Y47XdigKV0Qg0jJ5zP+3SO/mZ98s3r5wASOGLhujvO9/SqOh/BdotcTsO9sasxCag==}
-    dependencies:
-      '@types/qs': 6.9.7
-      expo-constants: 14.5.1(expo@49.0.21)
       invariant: 2.2.4
       qs: 6.11.1
       url-parse: 1.5.10
@@ -7650,8 +7519,8 @@ packages:
     resolution: {integrity: sha512-e//Oi2WPdomMlMDD3skE4+1ZarKCJ/suvcB4Jo/nO427niKug5oppcPNYO+csR6y3ZglGuypS+3pp/hJ+Xp6fQ==}
     dev: false
 
-  /expo-web-browser@12.5.0(expo@49.0.21):
-    resolution: {integrity: sha512-3uDzP19DqcEicLOB4ZH6pGWzxlCQ8mLHSmWMmfXEBhZjooUkHUrysbzkNvQQa24ijy3uoUybX4jW0xPss594kA==}
+  /expo-web-browser@12.3.2(expo@49.0.21):
+    resolution: {integrity: sha512-ohBf+vnRnGzlTleY8EQ2XQU0vRdRwqMJtKkzM9MZRPDOK5QyJYPJjpk6ixGhxdeoUG2Ogj0InvhhgX9NUn4jkg==}
     peerDependencies:
       expo: '*'
     dependencies:
@@ -11336,6 +11205,7 @@ packages:
   /querystring@0.2.0:
     resolution: {integrity: sha512-X/xY82scca2tau62i9mDyU9K+I+djTMUsvwf7xnUX5GLvVzgJybOJf4Y6o9Zx3oJK/LSXg5tTZBjwzqVPaPO2g==}
     engines: {node: '>=0.4.x'}
+    deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
     dev: false
 
   /querystringify@2.2.0:
