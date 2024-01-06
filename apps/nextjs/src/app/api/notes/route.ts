@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
@@ -7,13 +8,20 @@ import { generateId, prisma } from "@brain2/db";
  * Get all notes
  */
 export async function GET(_req: Request): Promise<Response> {
+  const { userId } = auth();
+
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const notes = await prisma.note.findMany({
     where: {
+      owner: userId,
       active: true,
     },
     orderBy: {
-      createdAt: "desc"
-    }
+      createdAt: "desc",
+    },
   });
   return Response.json(notes);
 }

@@ -44,8 +44,13 @@ async function sendRequest<T>(
 /**
  * Send a GET request
  */
-async function get<T>(path: string): Promise<T> {
-  return sendRequest(path);
+async function get<T>(
+  path: string,
+  headers?: Record<string, string>,
+): Promise<T> {
+  return sendRequest(path, {
+    headers,
+  });
 }
 
 /**
@@ -54,11 +59,13 @@ async function get<T>(path: string): Promise<T> {
 async function post<T>(
   path: string,
   body: Record<string, unknown>,
+  headers?: Record<string, string>,
 ): Promise<T> {
   return sendRequest(path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...headers,
     },
     data: JSON.stringify(body),
   });
@@ -69,14 +76,14 @@ async function post<T>(
  */
 async function del<T>(
   path: string,
-  body?: Record<string, unknown>,
+  headers?: Record<string, string>,
 ): Promise<T> {
   return sendRequest(path, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      ...headers,
     },
-    data: body != null ? JSON.stringify(body) : undefined,
   });
 }
 
@@ -102,8 +109,10 @@ export async function deleteNoteById(id: string): Promise<Note> {
   return del(`/api/notes/${id}`);
 }
 
-export async function getNotes(): Promise<Note[]> {
-  return get("/api/notes");
+export async function getNotes(authToken: string): Promise<Note[]> {
+  return get("/api/notes", {
+    Authorization: `Bearer ${authToken}`,
+  });
 }
 
 export async function createNote(content: string): Promise<void> {

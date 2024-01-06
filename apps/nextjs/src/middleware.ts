@@ -7,13 +7,12 @@ export default authMiddleware({
   // eslint-disable-next-line no-useless-escape
   ignoredRoutes: [
     "/((?!api|trpc))(_next.*|.+.[w]+$)",
-    "/api/notes",
     "/api/recordings",
     "/api/notes/(.+)"
   ],
 });
 
 export const config = {
-  // matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/'],
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/'],
   // ignoredRoutes: ['/((?!.+\\.[\\w]+$|_next).*)', '/'],
 };

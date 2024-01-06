@@ -9,17 +9,21 @@ import {
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import clsx from "clsx";
 import {
   CircleUserRoundIcon,
   Loader2Icon,
   MenuIcon,
   MicIcon,
+  RefreshCwIcon,
   SquareIcon,
 } from "lucide-react-native";
 
 import type { Note } from "@brain2/db/client";
 
+import Button from "~/components/button";
 import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
@@ -30,6 +34,7 @@ interface ContentPageProps {
 
 export function HomePageContent({ navigation }: ContentPageProps) {
   const queryClient = useQueryClient();
+  const { isLoaded: isUserLoaded, getToken } = useAuth();
 
   const {
     data: notes,
@@ -38,12 +43,17 @@ export function HomePageContent({ navigation }: ContentPageProps) {
     refetch: refetchNotes,
   } = useQuery({
     queryKey: ["notes"],
-    queryFn: getNotes,
+    queryFn: async () => {
+      return getNotes((await getToken())!);
+    },
+    enabled: isUserLoaded,
   });
 
   if (notesError) {
     console.error("[getNotes] Query error:", notesError);
   }
+
+  console.log("Received data", notes);
 
   const { mutate: deleteNote } = useMutation({
     mutationFn: deleteNoteById,
@@ -107,10 +117,21 @@ export function HomePageContent({ navigation }: ContentPageProps) {
             </View>
           )}
           {!notesLoading && notes?.length === 0 && (
-            <View className="flex h-[50vh] w-full items-center justify-center">
+            <View className="flex h-[50vh] w-full items-center justify-center gap-5">
               <Text className="text-xl font-semibold text-gray-500">
                 Nothing here yet!
               </Text>
+              <Button
+                icon={
+                  refreshing ? (
+                    <Loader2Icon className="animate-spin text-gray-500" />
+                  ) : (
+                    <RefreshCwIcon className="text-gray-500" />
+                  )
+                }
+                onPress={onRefresh}
+                enabled={!refreshing}
+              />
             </View>
           )}
           <FlatList
