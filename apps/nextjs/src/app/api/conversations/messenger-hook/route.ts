@@ -56,8 +56,16 @@ const messageRequestSchema = z.object({
 export async function POST(req: Request): Promise<Response> {
   const json = (await req.json()) as unknown;
 
-  const message = messageRequestSchema.parse(json);
+  try {
+    const message = messageRequestSchema.parse(json);
 
-  console.log(message.entry[0]?.messaging);
-  return Response.json("success");
+    console.log(message.entry[0]?.messaging);
+    return Response.json("success");
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return Response.json("Webhook not supported", { status: 400 });
+    } else {
+      return Response.json("Internal Server Error", { status: 500 });
+    }
+  }
 }
