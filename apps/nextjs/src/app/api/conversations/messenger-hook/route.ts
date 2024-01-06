@@ -36,7 +36,6 @@ export async function GET(req: NextRequest): Promise<Response> {
 const messageRequestSchema = z.object({
   entry: z.array(
     z.object({
-      id: z.string(),
       time: z.number(),
       messaging: z.array(
         z.object({
@@ -57,9 +56,16 @@ export async function POST(req: Request): Promise<Response> {
   const json = (await req.json()) as unknown;
 
   try {
-    const message = messageRequestSchema.parse(json);
+    const parsedRequest = messageRequestSchema.parse(json).entry[0];
 
-    console.log(message.entry[0]?.messaging);
+    const time = parsedRequest?.time;
+    const message = parsedRequest?.messaging[0];
+
+    const senderPSID = message?.sender.id;
+    const messageText = message?.message.text;
+
+    console.log(time, senderPSID, messageText);
+
     return Response.json("success");
   } catch (error) {
     if (error instanceof z.ZodError) {
