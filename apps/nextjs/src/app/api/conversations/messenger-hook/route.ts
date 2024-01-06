@@ -51,6 +51,10 @@ const messageRequestSchema = z.object({
   ),
 });
 
+async function isExistingConversation(senderPSID: string): Promise<boolean> {
+  return senderPSID == "";
+}
+
 // Webhook invoked when a message is received on messenger, i.e. conversational capture is invoked
 export async function POST(req: Request): Promise<Response> {
   const json = (await req.json()) as unknown;

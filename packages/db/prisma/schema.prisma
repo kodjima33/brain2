@@ -90,8 +90,8 @@ model NoteDigest {
 }
 
 model Conversation {
-  id    String @id @map("_id")
-  owner String //userId, using fb PSID for now
+  id        String @id @map("_id")
+  ownerPSID String //Using FB's PSID here for now. TODO: does this need to change after auth is complete?
 
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @updatedAt
