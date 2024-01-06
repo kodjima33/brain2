@@ -4,7 +4,7 @@ import clsx from "clsx";
 interface Props {
   icon?: JSX.Element;
   text: string;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 /**

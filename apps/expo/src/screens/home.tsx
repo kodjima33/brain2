@@ -1,13 +1,5 @@
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
-import {
-  CircleUserRoundIcon,
-  Loader2Icon,
-  MenuIcon,
-  MicIcon,
-  SquareIcon,
-} from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import {
@@ -16,6 +8,15 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  CircleUserRoundIcon,
+  Loader2Icon,
+  MenuIcon,
+  MicIcon,
+  SquareIcon,
+} from "lucide-react-native";
 
 import type { Note } from "@brain2/db/client";
 
@@ -92,7 +93,7 @@ export function HomePageContent({ navigation }: ContentPageProps) {
           />
           <Pressable
             onPress={() => {
-              navigation.getParent()?.navigate("auth");
+              router.push("/auth");
             }}
           >
             <CircleUserRoundIcon className="basis-1/12 text-black" />
