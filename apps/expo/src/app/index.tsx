@@ -91,7 +91,13 @@ export function HomePageContent({ navigation }: ContentPageProps) {
             className="h-10 basis-8/12 rounded-full border border-black px-4 py-2"
             placeholder="Search..."
           />
-          <CircleUserRoundIcon className="basis-1/12 text-black" />
+          <Pressable
+            onPress={() => {
+              navigation.getParent()?.navigate("auth");
+            }}
+          >
+            <CircleUserRoundIcon className="basis-1/12 text-black" />
+          </Pressable>
         </View>
         {/* Content */}
         <View className="flex max-h-[80vh] flex-grow flex-col items-start justify-start gap-2">

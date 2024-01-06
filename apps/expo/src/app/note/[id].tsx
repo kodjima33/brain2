@@ -15,7 +15,7 @@ import type { Note } from "@brain2/db/client";
 import Sidebar from "~/components/sidebar";
 import { getNoteById } from "~/utils/api";
 
-interface NoteViewProps {
+export interface NoteViewProps {
   note: Note;
   loading: boolean;
   refetch: () => Promise<void>;
