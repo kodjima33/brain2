@@ -1,25 +1,35 @@
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
+import { router } from "expo-router";
+import {
+  Loader2Icon,
+  MenuIcon,
+  MicIcon,
+  RefreshCwIcon,
+  SquareIcon,
+  UserIcon
+} from "lucide-react-native";
 import React, { useCallback, useState } from "react";
-import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import {
   RefreshControl,
   Swipeable,
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  CircleUserRoundIcon,
-  Loader2Icon,
-  MenuIcon,
-  MicIcon,
-  SquareIcon,
-} from "lucide-react-native";
 
 import type { Note } from "@brain2/db/client";
 
+import Button from "~/components/button";
 import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
@@ -30,6 +40,8 @@ interface ContentPageProps {
 
 export function HomePageContent({ navigation }: ContentPageProps) {
   const queryClient = useQueryClient();
+  const { isLoaded: isUserLoaded, getToken } = useAuth();
+  const { user } = useUser();
 
   const {
     data: notes,
@@ -38,7 +50,10 @@ export function HomePageContent({ navigation }: ContentPageProps) {
     refetch: refetchNotes,
   } = useQuery({
     queryKey: ["notes"],
-    queryFn: getNotes,
+    queryFn: async () => {
+      return getNotes((await getToken())!);
+    },
+    enabled: isUserLoaded,
   });
 
   if (notesError) {
@@ -46,7 +61,9 @@ export function HomePageContent({ navigation }: ContentPageProps) {
   }
 
   const { mutate: deleteNote } = useMutation({
-    mutationFn: deleteNoteById,
+    mutationFn: async (noteId: string) => {
+      return deleteNoteById(noteId, (await getToken())!);
+    },
     onMutate: async (noteId) => {
       await queryClient.cancelQueries({ queryKey: ["notes"] });
 
@@ -96,7 +113,17 @@ export function HomePageContent({ navigation }: ContentPageProps) {
               router.push("/auth");
             }}
           >
-            <CircleUserRoundIcon className="basis-1/12 text-black" />
+            {user?.imageUrl ? (
+              <Image
+                source={{
+                  uri: user.imageUrl,
+                }}
+                alt="Profile"
+                className="h-10 w-10 rounded-full border border-gray-300"
+              />
+            ) : (
+              <UserIcon className="basis-1/12 text-black" />
+            )}
           </Pressable>
         </View>
         {/* Content */}
@@ -107,10 +134,21 @@ export function HomePageContent({ navigation }: ContentPageProps) {
             </View>
           )}
           {!notesLoading && notes?.length === 0 && (
-            <View className="flex h-[50vh] w-full items-center justify-center">
+            <View className="flex h-[50vh] w-full items-center justify-center gap-5">
               <Text className="text-xl font-semibold text-gray-500">
                 Nothing here yet!
               </Text>
+              <Button
+                icon={
+                  refreshing ? (
+                    <Loader2Icon className="animate-spin text-gray-500" />
+                  ) : (
+                    <RefreshCwIcon className="text-gray-500" />
+                  )
+                }
+                onPress={onRefresh}
+                enabled={!refreshing}
+              />
             </View>
           )}
           <FlatList
@@ -150,7 +188,8 @@ export function HomePageContent({ navigation }: ContentPageProps) {
 
               if (uri) {
                 try {
-                  await uploadRecording(uri);
+                  const token = await getToken();
+                  await uploadRecording(uri, token!);
                   await queryClient.invalidateQueries({
                     queryKey: ["notes"],
                   });

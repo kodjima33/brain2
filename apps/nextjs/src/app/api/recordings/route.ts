@@ -8,6 +8,7 @@ import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
 
 import { generateTranscriptTitle } from "~/util/generateTitle";
 import { refineTranscript } from "~/util/refineTranscript";
+import { auth } from "@clerk/nextjs";
 
 const storageClient = new StorageClient();
 const openai = new OpenAI();
@@ -105,6 +106,12 @@ async function getAudioBuffer(req: Request): Promise<Buffer> {
  * Create an audio recording
  */
 export async function POST(req: Request): Promise<Response> {
+  const { userId } = auth();
+
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const audioBuffer = await getAudioBuffer(req);
 
   const id = generateId("audioBlob");
@@ -117,13 +124,13 @@ export async function POST(req: Request): Promise<Response> {
       data: {
         id,
         title,
-        owner: "",
+        owner: userId,
         note: {
           create: {
             id: generateId("note"),
             title,
             content: "",
-            owner: "",
+            owner: userId,
             digestSpan: "SINGLE",
             active: false,
           },
