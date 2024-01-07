@@ -1,13 +1,13 @@
-import React from "react";
-import Constants from "expo-constants";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { ClerkProvider } from "@clerk/clerk-expo";
+import Constants from "expo-constants";
+import { Slot } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React from "react";
 
 import "../styles.css";
 
-import * as SecureStore from "expo-secure-store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as SecureStore from "expo-secure-store";
 
 const tokenCache = {
   async getToken(key: string) {
@@ -39,11 +39,7 @@ function RootLayout() {
       }
     >
       <QueryClientProvider client={queryClient}>
-        <Stack
-          screenOptions={{
-            headerShadowVisible: false,
-          }}
-        />
+        <Slot />
         <StatusBar />
       </QueryClientProvider>
     </ClerkProvider>

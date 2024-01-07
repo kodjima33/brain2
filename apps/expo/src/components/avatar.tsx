@@ -1,5 +1,5 @@
-import { Image, Pressable } from "react-native";
-import { router } from "expo-router";
+import { Image, View } from "react-native";
+import { Link } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 import { UserIcon } from "lucide-react-native";
 
@@ -10,22 +10,20 @@ export default function Avatar() {
   const { user } = useUser();
 
   return (
-    <Pressable
-      onPress={() => {
-        router.push("/settings");
-      }}
-    >
-      {user?.imageUrl ? (
-        <Image
-          source={{
-            uri: user.imageUrl,
-          }}
-          alt="Profile"
-          className="h-10 w-10 rounded-full border border-gray-300"
-        />
-      ) : (
-        <UserIcon className="h-10 w-10 text-black" />
-      )}
-    </Pressable>
+    <Link href="/settings">
+      <View className="rounded-full border border-gray-300">
+        {user?.imageUrl ? (
+          <Image
+            source={{
+              uri: user.imageUrl,
+            }}
+            alt="Profile"
+            className="h-10 w-10 rounded-full"
+          />
+        ) : (
+          <UserIcon className="h-10 w-10 text-black" />
+        )}
+      </View>
+    </Link>
   );
 }

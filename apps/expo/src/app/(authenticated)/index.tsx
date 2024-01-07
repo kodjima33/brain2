@@ -1,13 +1,13 @@
 import type { Recording } from "expo-av/build/Audio";
 import React, { useCallback, useState } from "react";
-import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import { FlatList, Text, TextInput, View } from "react-native";
 import {
   RefreshControl,
   Swipeable,
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, Stack } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -26,7 +26,7 @@ import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
 
 /**
- * Home page
+ * Home page for authenticated users
  */
 export default function HomePage() {
   const queryClient = useQueryClient();
@@ -80,11 +80,6 @@ export default function HomePage() {
     setRefreshing(false);
   }, [refetchNotes]);
 
-  if (isUserLoaded && !isSignedIn) {
-    router.push("/auth");
-    return null;
-  }
-
   return (
     <SafeAreaView className="bg-white pt-10">
       <Stack.Screen
@@ -95,7 +90,7 @@ export default function HomePage() {
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
         {/* Header */}
-        <View className="flex w-full flex-row items-center justify-stretch gap-4 px-4">
+        <View className="flex w-full flex-row items-center justify-between gap-4 px-4">
           <TextInput
             className="h-10 flex-grow rounded-full border border-black px-4 py-2"
             placeholder="Search..."
@@ -131,18 +126,14 @@ export default function HomePage() {
             data={notes}
             keyExtractor={(note) => note.id}
             renderItem={({ item: note }) => (
-              <Pressable
-                onPress={() => {
-                  router.push(`/note/${note.id}`);
-                }}
-              >
+              <Link href={`/note/${note.id}`}>
                 <Swipeable
                   renderRightActions={NoteListItemRightSwipeActions}
                   onSwipeableOpen={() => deleteNote(note.id)}
                 >
                   <NoteListItem note={note} />
                 </Swipeable>
-              </Pressable>
+              </Link>
             )}
             ItemSeparatorComponent={() => (
               <View className="h-[1px] bg-gray-400" />

@@ -37,7 +37,6 @@ export default function SettingsPage() {
 
   if (user == null) {
     // This should never happen
-    router.push("/auth");
     return null;
   }
 

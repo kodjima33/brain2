@@ -1,11 +1,11 @@
+import { SignedIn, useOAuth, useUser } from "@clerk/clerk-expo";
+import Constants from "expo-constants";
+import { Redirect, Stack } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { Loader2Icon } from "lucide-react-native";
 import { useCallback } from "react";
 import { Image, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Constants from "expo-constants";
-import { router, Stack } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
-import { useOAuth, useUser } from "@clerk/clerk-expo";
-import { Loader2Icon } from "lucide-react-native";
 
 import Button from "~/components/button";
 import { useWarmupBrowser } from "~/utils/useWarmupBrowser";
@@ -52,16 +52,13 @@ function SignInButton() {
  * Sign in page shown when the user is not signed in.
  */
 export default function AuthPage() {
-  const { isLoaded, user } = useUser();
-
-  if (isLoaded && user != null) {
-    router.push("/");
-
-    return null;
-  }
+  const { isLoaded } = useUser();
 
   return (
     <SafeAreaView className="bg-white">
+      <SignedIn>
+        <Redirect href="/" />
+      </SignedIn>
       <Stack.Screen
         options={{
           headerShown: false,
@@ -69,7 +66,7 @@ export default function AuthPage() {
       />
       <View className="flex h-full w-full flex-col items-center justify-center gap-8">
         <Image source={Brain2Icon} className="mb-5 h-24 w-24" />
-        <View className="flex flex-col gap-2 items-center">
+        <View className="flex flex-col items-center gap-2">
           <Text className="text-3xl font-semibold">Meet Your</Text>
           <Text className="text-3xl font-semibold">Brain&sup2;</Text>
         </View>
