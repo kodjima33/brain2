@@ -1,7 +1,12 @@
 import type { NextRequest } from "next/server";
+import { DateTime } from "luxon";
 import { z } from "zod";
 
+import { Conversation, generateId, prisma } from "@brain2/db";
+
 import { env } from "~/env";
+
+const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
 
 const validationRequestSchema = z.object({
   mode: z.string(),
@@ -51,8 +56,43 @@ const messageRequestSchema = z.object({
   ),
 });
 
-async function isExistingConversation(senderPSID: string): Promise<boolean> {
-  return senderPSID == "";
+async function createNewConversation(
+  ownerPSID: string,
+  time: Date,
+): Promise<Conversation> {
+  const conversation = await prisma.conversation.create({
+    data: {
+      id: generateId("conversation"),
+      ownerPSID,
+      createdAt: time,
+      lastUpdatedAt: time,
+    },
+  });
+
+  return conversation;
+}
+
+//
+async function getConversation(
+  senderPSID: string,
+  time: Date,
+): Promise<Conversation> {
+  // Look for conversations from this user that are active
+  let conversation = await prisma.conversation.findFirst({
+    where: { ownerPSID: senderPSID, isActive: true },
+  });
+
+  if (!conversation) {
+    // Create conversation if it doesn't exist
+    conversation = await createNewConversation(senderPSID, time);
+  }
+
+  // Check whether conversation is stale - longer than MAX_CONVERSATION_DURATION since last message
+  if (
+    time.getTime() - conversation.lastUpdatedAt.getTime() >
+    MAX_CONVERSATION_DURATION
+  ) {
+  }
 }
 
 // Webhook invoked when a message is received on messenger, i.e. conversational capture is invoked

@@ -97,8 +97,8 @@ model Conversation {
   lastUpdatedAt DateTime @updatedAt
   isActive      Boolean  @default(true)
 
-  userMessages   String[] //Messages sent from the user to brain2
-  brain2Messages String[] //Messages sent from brain2 to the user
+  userMessages   String[] @default([]) //Messages sent from the user to brain2
+  brain2Messages String[] @default([]) //Messages sent from brain2 to the user 
 
   noteId String? @unique
   note   Note?   @relation(fields: [noteId], references: [id])
