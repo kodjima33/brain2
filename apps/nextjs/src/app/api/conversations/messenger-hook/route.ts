@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
-import { DateTime } from "luxon";
 import { z } from "zod";
 
-import { Conversation, generateId, prisma } from "@brain2/db";
+import type { Conversation } from "@brain2/db";
+import { generateId, prisma } from "@brain2/db";
 
 import { env } from "~/env";
 
@@ -72,8 +72,8 @@ async function createNewConversation(
   return conversation;
 }
 
-//
-async function getConversation(
+// Gets current conversation for given user. Creates a new one if necessary.
+async function getCurrentConversation(
   senderPSID: string,
   time: Date,
 ): Promise<Conversation> {
@@ -122,7 +122,16 @@ export async function POST(req: Request): Promise<Response> {
     const senderPSID = message?.sender.id;
     const messageText = message?.message.text;
 
-    console.log(time, senderPSID, messageText);
+    if (!(time && message && senderPSID && messageText)) {
+      throw z.ZodError;
+    }
+
+    const currentConversation = await getCurrentConversation(
+      senderPSID,
+      new Date(time),
+    );
+
+    console.log(time, senderPSID, messageText, currentConversation);
 
     return Response.json("success");
   } catch (error) {
