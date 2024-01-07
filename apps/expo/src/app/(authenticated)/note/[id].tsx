@@ -44,7 +44,7 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
           />
         }
       >
-        <Text className="whitespace-pre text-lg">{note.content}</Text>
+        <Text className="text-lg">{note.content}</Text>
       </ScrollView>
     </View>
   );

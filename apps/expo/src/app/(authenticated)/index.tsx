@@ -1,21 +1,21 @@
-import type { Recording } from "expo-av/build/Audio";
-import React, { useCallback, useState } from "react";
-import { FlatList, Text, TextInput, View } from "react-native";
-import {
-  RefreshControl,
-  Swipeable,
-  TouchableOpacity,
-} from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, Stack } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Recording } from "expo-av/build/Audio";
+import { Stack, router } from "expo-router";
 import {
   Loader2Icon,
   MicIcon,
   RefreshCwIcon,
   SquareIcon,
 } from "lucide-react-native";
+import React, { useCallback, useState } from "react";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import {
+  RefreshControl,
+  Swipeable,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { Note } from "@brain2/db/client";
 
@@ -126,14 +126,15 @@ export default function HomePage() {
             data={notes}
             keyExtractor={(note) => note.id}
             renderItem={({ item: note }) => (
-              <Link href={`/note/${note.id}`}>
+              // Using Pressable because for some reason, Link screws up the cell layout
+              <Pressable onPress={() => router.push(`/note/${note.id}`)}>
                 <Swipeable
                   renderRightActions={NoteListItemRightSwipeActions}
                   onSwipeableOpen={() => deleteNote(note.id)}
                 >
                   <NoteListItem note={note} />
                 </Swipeable>
-              </Link>
+              </Pressable>
             )}
             ItemSeparatorComponent={() => (
               <View className="h-[1px] bg-gray-400" />
