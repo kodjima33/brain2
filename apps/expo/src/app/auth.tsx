@@ -1,12 +1,6 @@
-import {
-  SignedIn,
-  SignedOut,
-  useAuth,
-  useOAuth,
-  useUser,
-} from "@clerk/clerk-expo";
+import { SignedIn, useOAuth, useUser } from "@clerk/clerk-expo";
 import Constants from "expo-constants";
-import { router } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Loader2Icon } from "lucide-react-native";
 import { useCallback } from "react";
@@ -54,57 +48,34 @@ function SignInButton() {
   );
 }
 
-function SignOutButton() {
-  const { signOut } = useAuth();
-
-  const onPress = useCallback(async () => {
-    await signOut();
-  }, [signOut]);
-
-  return <Button text="Sign out" onPress={onPress} />;
-}
-
 /**
- * Page for handling sign in and sign up
+ * Sign in page shown when the user is not signed in.
  */
 export default function AuthPage() {
-  const { isLoaded, user } = useUser();
-
-  const message = user?.firstName
-    ? `Welcome, ${user.firstName}!`
-    : "Welcome back!";
+  const { isLoaded } = useUser();
 
   return (
-    <SafeAreaView>
-      <View className="flex h-full w-full flex-col items-center justify-center gap-4">
-        <View className="flex flex-row items-center gap-2">
-          <Image source={Brain2Icon} className="h-8 w-8" />
-          <Text className="text-3xl">Brain&sup2;</Text>
+    <SafeAreaView className="bg-white">
+      <SignedIn>
+        <Redirect href="/" />
+      </SignedIn>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      <View className="flex h-full w-full flex-col items-center justify-center gap-8">
+        <Image source={Brain2Icon} className="mb-5 h-24 w-24" />
+        <View className="flex flex-col items-center gap-2">
+          <Text className="text-3xl font-semibold">Meet Your</Text>
+          <Text className="text-3xl font-semibold">Brain&sup2;</Text>
         </View>
         {!isLoaded ? (
           <View className="flex w-full items-center justify-center">
             <Loader2Icon size={48} className="animate-spin text-gray-400" />
           </View>
         ) : (
-          <>
-            <SignedIn>
-              <View className="flex flex-col items-center gap-8">
-                <Text className="text-2xl">{message}</Text>
-                <View className="flex flex-col items-center gap-2">
-                  <Button
-                    text="Home"
-                    onPress={() => {
-                      router.push("/");
-                    }}
-                  />
-                  <SignOutButton />
-                </View>
-              </View>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-          </>
+          <SignInButton />
         )}
       </View>
     </SafeAreaView>

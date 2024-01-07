@@ -1,18 +1,15 @@
-import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import { useCallback, useState } from "react";
-import { SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
-import { RefreshControl, TouchableOpacity } from "react-native-gesture-handler";
+import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { RefreshControl } from "react-native-gesture-handler";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
-import {
-  CircleUserRoundIcon,
-  Loader2Icon,
-  MenuIcon,
-} from "lucide-react-native";
+import { Loader2Icon } from "lucide-react-native";
 import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
+import Avatar from "~/components/avatar";
 import { getNoteById } from "~/utils/api";
 
 interface NoteViewProps {
@@ -47,23 +44,14 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
           />
         }
       >
-        <Text className="whitespace-pre text-lg">{note.content}</Text>
+        <Text className="text-lg">{note.content}</Text>
       </ScrollView>
     </View>
   );
 }
 
-interface NotePageContentProps {
-  navigation: DrawerNavigationHelpers;
-  route?: {
-    params: Record<string, string>;
-  };
-}
-
-export function NotePageContent({ navigation, route }: NotePageContentProps) {
-  const id = route?.params?.id;
-  if (!id || typeof id !== "string") throw new Error("unreachable");
-
+export default function NotePage() {
+  const { id } = useLocalSearchParams();
   const { isLoaded: isUserLoaded, getToken } = useAuth();
 
   const {
@@ -75,7 +63,7 @@ export function NotePageContent({ navigation, route }: NotePageContentProps) {
     queryKey: [id],
     queryFn: async () => {
       const token = await getToken();
-      return getNoteById(id, token!);
+      return getNoteById(id as string, token!);
     },
     enabled: isUserLoaded,
   });
@@ -86,23 +74,14 @@ export function NotePageContent({ navigation, route }: NotePageContentProps) {
 
   return (
     <SafeAreaView className="bg-white">
+      <Stack.Screen
+        options={{
+          headerTitle: "Note",
+          headerRight: Avatar,
+        }}
+      />
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
-        {/* Header */}
-        <View className="flex w-full flex-row items-center justify-between px-4">
-          <TouchableOpacity
-            onPress={() => {
-              navigation.openDrawer();
-            }}
-          >
-            <MenuIcon className="basis-1/12 text-black" />
-          </TouchableOpacity>
-          <TextInput
-            className="h-10 basis-8/12 rounded-full border border-black px-4 py-2"
-            placeholder="Search..."
-          />
-          <CircleUserRoundIcon className="basis-1/12 text-black" />
-        </View>
         {/* Content */}
         <View className="flex flex-grow flex-col items-start justify-start gap-2 p-4">
           {noteLoading && (

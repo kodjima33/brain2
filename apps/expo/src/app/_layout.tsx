@@ -28,10 +28,6 @@ const tokenCache = {
 
 const queryClient = new QueryClient();
 
-function AuthenticatedLayout() {
-  return <Slot initialRouteName="auth" />;
-}
-
 // This is the main layout of the app
 // It wraps your pages with the providers they need
 function RootLayout() {
@@ -43,7 +39,7 @@ function RootLayout() {
       }
     >
       <QueryClientProvider client={queryClient}>
-        <AuthenticatedLayout />
+        <Slot />
         <StatusBar />
       </QueryClientProvider>
     </ClerkProvider>

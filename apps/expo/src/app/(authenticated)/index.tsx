@@ -1,25 +1,15 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
+import { useAuth } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
-import { router } from "expo-router";
+import { Stack, router } from "expo-router";
 import {
   Loader2Icon,
-  MenuIcon,
   MicIcon,
   RefreshCwIcon,
   SquareIcon,
-  UserIcon
 } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import {
   RefreshControl,
   Swipeable,
@@ -29,19 +19,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { Note } from "@brain2/db/client";
 
+import Avatar from "~/components/avatar";
 import Button from "~/components/button";
 import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
 
-interface ContentPageProps {
-  navigation: DrawerNavigationHelpers;
-}
-
-export function HomePageContent({ navigation }: ContentPageProps) {
+/**
+ * Home page for authenticated users
+ */
+export default function HomePage() {
   const queryClient = useQueryClient();
-  const { isLoaded: isUserLoaded, getToken } = useAuth();
-  const { user } = useUser();
+  const { isLoaded: isUserLoaded, isSignedIn, getToken } = useAuth();
 
   const {
     data: notes,
@@ -53,7 +42,7 @@ export function HomePageContent({ navigation }: ContentPageProps) {
     queryFn: async () => {
       return getNotes((await getToken())!);
     },
-    enabled: isUserLoaded,
+    enabled: isUserLoaded && isSignedIn,
   });
 
   if (notesError) {
@@ -92,39 +81,21 @@ export function HomePageContent({ navigation }: ContentPageProps) {
   }, [refetchNotes]);
 
   return (
-    <SafeAreaView className="bg-white">
+    <SafeAreaView className="bg-white pt-10">
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
         {/* Header */}
-        <View className="flex w-full flex-row items-center justify-between px-4">
-          <TouchableOpacity
-            onPress={() => {
-              navigation.openDrawer();
-            }}
-          >
-            <MenuIcon className="basis-1/12 text-black" />
-          </TouchableOpacity>
+        <View className="flex w-full flex-row items-center justify-between gap-4 px-4">
           <TextInput
-            className="h-10 basis-8/12 rounded-full border border-black px-4 py-2"
+            className="h-10 flex-grow rounded-full border border-black px-4 py-2"
             placeholder="Search..."
           />
-          <Pressable
-            onPress={() => {
-              router.push("/auth");
-            }}
-          >
-            {user?.imageUrl ? (
-              <Image
-                source={{
-                  uri: user.imageUrl,
-                }}
-                alt="Profile"
-                className="h-10 w-10 rounded-full border border-gray-300"
-              />
-            ) : (
-              <UserIcon className="basis-1/12 text-black" />
-            )}
-          </Pressable>
+          <Avatar />
         </View>
         {/* Content */}
         <View className="flex max-h-[80vh] flex-grow flex-col items-start justify-start gap-2">
@@ -155,11 +126,8 @@ export function HomePageContent({ navigation }: ContentPageProps) {
             data={notes}
             keyExtractor={(note) => note.id}
             renderItem={({ item: note }) => (
-              <Pressable
-                onPress={() => {
-                  navigation.navigate("NotePage", { id: note.id });
-                }}
-              >
+              // Using Pressable because for some reason, Link screws up the cell layout
+              <Pressable onPress={() => router.push(`/note/${note.id}`)}>
                 <Swipeable
                   renderRightActions={NoteListItemRightSwipeActions}
                   onSwipeableOpen={() => deleteNote(note.id)}
