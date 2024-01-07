@@ -1,25 +1,31 @@
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
+import { router } from "expo-router";
+import {
+  Loader2Icon,
+  MenuIcon,
+  MicIcon,
+  RefreshCwIcon,
+  SquareIcon,
+  UserIcon
+} from "lucide-react-native";
 import React, { useCallback, useState } from "react";
-import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import {
   RefreshControl,
   Swipeable,
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import clsx from "clsx";
-import {
-  CircleUserRoundIcon,
-  Loader2Icon,
-  MenuIcon,
-  MicIcon,
-  RefreshCwIcon,
-  SquareIcon,
-} from "lucide-react-native";
 
 import type { Note } from "@brain2/db/client";
 
@@ -35,6 +41,7 @@ interface ContentPageProps {
 export function HomePageContent({ navigation }: ContentPageProps) {
   const queryClient = useQueryClient();
   const { isLoaded: isUserLoaded, getToken } = useAuth();
+  const { user } = useUser();
 
   const {
     data: notes,
@@ -106,7 +113,17 @@ export function HomePageContent({ navigation }: ContentPageProps) {
               router.push("/auth");
             }}
           >
-            <CircleUserRoundIcon className="basis-1/12 text-black" />
+            {user?.imageUrl ? (
+              <Image
+                source={{
+                  uri: user.imageUrl,
+                }}
+                alt="Profile"
+                className="h-10 w-10 rounded-full border border-gray-300"
+              />
+            ) : (
+              <UserIcon className="basis-1/12 text-black" />
+            )}
           </Pressable>
         </View>
         {/* Content */}
