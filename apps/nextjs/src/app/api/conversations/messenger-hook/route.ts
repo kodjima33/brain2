@@ -87,12 +87,26 @@ async function getConversation(
     conversation = await createNewConversation(senderPSID, time);
   }
 
-  // Check whether conversation is stale - longer than MAX_CONVERSATION_DURATION since last message
+  // Check whether conversation is stale and create new one if so - longer than MAX_CONVERSATION_DURATION since last message
   if (
     time.getTime() - conversation.lastUpdatedAt.getTime() >
     MAX_CONVERSATION_DURATION
   ) {
+    // Make existing conversation inactive and create a new one
+    // TODO: asynchronously make a note from the conversation that just ended
+    await prisma.conversation.update({
+      where: {
+        id: conversation.id,
+      },
+      data: {
+        isActive: false,
+      },
+    });
+
+    conversation = await createNewConversation(senderPSID, time);
   }
+
+  return conversation;
 }
 
 // Webhook invoked when a message is received on messenger, i.e. conversational capture is invoked
