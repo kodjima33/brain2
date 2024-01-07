@@ -1,32 +1,25 @@
 import type { Recording } from "expo-av/build/Audio";
 import React, { useCallback, useState } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import {
   RefreshControl,
   Swipeable,
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { router, Stack } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Loader2Icon,
   MicIcon,
   RefreshCwIcon,
   SquareIcon,
-  UserIcon,
 } from "lucide-react-native";
 
 import type { Note } from "@brain2/db/client";
 
+import Avatar from "~/components/avatar";
 import Button from "~/components/button";
 import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
@@ -37,8 +30,7 @@ import { startRecording, stopRecording } from "~/utils/audio";
  */
 export default function HomePage() {
   const queryClient = useQueryClient();
-  const { isLoaded: isUserLoaded, getToken } = useAuth();
-  const { user } = useUser();
+  const { isLoaded: isUserLoaded, isSignedIn, getToken } = useAuth();
 
   const {
     data: notes,
@@ -50,7 +42,7 @@ export default function HomePage() {
     queryFn: async () => {
       return getNotes((await getToken())!);
     },
-    enabled: isUserLoaded,
+    enabled: isUserLoaded && isSignedIn,
   });
 
   if (notesError) {
@@ -88,33 +80,27 @@ export default function HomePage() {
     setRefreshing(false);
   }, [refetchNotes]);
 
+  if (isUserLoaded && !isSignedIn) {
+    router.push("/auth");
+    return null;
+  }
+
   return (
     <SafeAreaView className="bg-white pt-10">
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
         {/* Header */}
-        <View className="flex w-full flex-row items-center justify-stretch px-4 gap-4">
+        <View className="flex w-full flex-row items-center justify-stretch gap-4 px-4">
           <TextInput
             className="h-10 flex-grow rounded-full border border-black px-4 py-2"
             placeholder="Search..."
           />
-          <Pressable
-            onPress={() => {
-              router.push("/auth");
-            }}
-          >
-            {user?.imageUrl ? (
-              <Image
-                source={{
-                  uri: user.imageUrl,
-                }}
-                alt="Profile"
-                className="h-10 w-10 rounded-full border border-gray-300"
-              />
-            ) : (
-              <UserIcon className="h-10 w-10 text-black" />
-            )}
-          </Pressable>
+          <Avatar />
         </View>
         {/* Content */}
         <View className="flex max-h-[80vh] flex-grow flex-col items-start justify-start gap-2">

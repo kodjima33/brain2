@@ -1,13 +1,13 @@
-import { ClerkProvider } from "@clerk/clerk-expo";
-import Constants from "expo-constants";
-import { Slot } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React from "react";
+import Constants from "expo-constants";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { ClerkProvider } from "@clerk/clerk-expo";
 
 import "../styles.css";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const tokenCache = {
   async getToken(key: string) {
@@ -28,10 +28,6 @@ const tokenCache = {
 
 const queryClient = new QueryClient();
 
-function AuthenticatedLayout() {
-  return <Slot initialRouteName="auth" />;
-}
-
 // This is the main layout of the app
 // It wraps your pages with the providers they need
 function RootLayout() {
@@ -43,7 +39,11 @@ function RootLayout() {
       }
     >
       <QueryClientProvider client={queryClient}>
-        <AuthenticatedLayout />
+        <Stack
+          screenOptions={{
+            headerShadowVisible: false,
+          }}
+        />
         <StatusBar />
       </QueryClientProvider>
     </ClerkProvider>

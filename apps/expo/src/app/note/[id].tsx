@@ -1,16 +1,15 @@
-import { useAuth } from "@clerk/clerk-expo";
-import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
-import {
-  Loader2Icon
-} from "lucide-react-native";
-import { DateTime } from "luxon";
 import { useCallback, useState } from "react";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
+import { Stack, useLocalSearchParams } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react-native";
+import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
+import Avatar from "~/components/avatar";
 import { getNoteById } from "~/utils/api";
 
 interface NoteViewProps {
@@ -74,7 +73,13 @@ export default function NotePage() {
   }
 
   return (
-    <SafeAreaView className="bg-white pt-10">
+    <SafeAreaView className="bg-white">
+      <Stack.Screen
+        options={{
+          headerTitle: "Note",
+          headerRight: Avatar,
+        }}
+      />
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
         {/* Content */}

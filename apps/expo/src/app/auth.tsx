@@ -1,17 +1,11 @@
-import {
-  SignedIn,
-  SignedOut,
-  useAuth,
-  useOAuth,
-  useUser,
-} from "@clerk/clerk-expo";
-import Constants from "expo-constants";
-import { router } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
-import { Loader2Icon } from "lucide-react-native";
 import { useCallback } from "react";
 import { Image, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Constants from "expo-constants";
+import { router, Stack } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useOAuth, useUser } from "@clerk/clerk-expo";
+import { Loader2Icon } from "lucide-react-native";
 
 import Button from "~/components/button";
 import { useWarmupBrowser } from "~/utils/useWarmupBrowser";
@@ -54,57 +48,37 @@ function SignInButton() {
   );
 }
 
-function SignOutButton() {
-  const { signOut } = useAuth();
-
-  const onPress = useCallback(async () => {
-    await signOut();
-  }, [signOut]);
-
-  return <Button text="Sign out" onPress={onPress} />;
-}
-
 /**
- * Page for handling sign in and sign up
+ * Sign in page shown when the user is not signed in.
  */
 export default function AuthPage() {
   const { isLoaded, user } = useUser();
 
-  const message = user?.firstName
-    ? `Welcome, ${user.firstName}!`
-    : "Welcome back!";
+  if (isLoaded && user != null) {
+    router.push("/");
+
+    return null;
+  }
 
   return (
-    <SafeAreaView>
-      <View className="flex h-full w-full flex-col items-center justify-center gap-4">
-        <View className="flex flex-row items-center gap-2">
-          <Image source={Brain2Icon} className="h-8 w-8" />
-          <Text className="text-3xl">Brain&sup2;</Text>
+    <SafeAreaView className="bg-white">
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      <View className="flex h-full w-full flex-col items-center justify-center gap-8">
+        <Image source={Brain2Icon} className="mb-5 h-24 w-24" />
+        <View className="flex flex-col gap-2 items-center">
+          <Text className="text-3xl font-semibold">Meet Your</Text>
+          <Text className="text-3xl font-semibold">Brain&sup2;</Text>
         </View>
         {!isLoaded ? (
           <View className="flex w-full items-center justify-center">
             <Loader2Icon size={48} className="animate-spin text-gray-400" />
           </View>
         ) : (
-          <>
-            <SignedIn>
-              <View className="flex flex-col items-center gap-8">
-                <Text className="text-2xl">{message}</Text>
-                <View className="flex flex-col items-center gap-2">
-                  <Button
-                    text="Home"
-                    onPress={() => {
-                      router.push("/");
-                    }}
-                  />
-                  <SignOutButton />
-                </View>
-              </View>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-          </>
+          <SignInButton />
         )}
       </View>
     </SafeAreaView>
