@@ -1,8 +1,10 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 import { HumanMessage, SystemMessage } from "langchain/schema";
+import { z } from "zod";
+import zodToJsonSchema from "zod-to-json-schema";
 
-import { NoteDigestSpan } from "@brain2/db";
+import type { NoteDigestSpan } from "@brain2/db";
 
 const chatModel = new ChatOpenAI({
   modelName: "gpt-3.5-turbo",
@@ -22,13 +24,13 @@ const digestPromptTemplate = new SystemMessagePromptTemplate({
   }),
 });
 
-function cleanTitle(title: string): string {
-  const text = title.trim();
-  if (text.startsWith('"') && text.endsWith('"')) {
-    return text.slice(1, -1);
-  }
-  return text;
-}
+const titleParamSchema = z.object({ title: z.string() });
+
+const titleFnSchema = {
+  name: "save_title",
+  description: "Save the title of the text",
+  parameters: zodToJsonSchema(titleParamSchema),
+};
 
 /**
  * Create a title for a transcript
@@ -36,12 +38,19 @@ function cleanTitle(title: string): string {
 export async function generateTranscriptTitle(
   transcription: string,
 ): Promise<string> {
-  const response = await chatModel.call([
-    new SystemMessage(transcriptPrompt),
-    new HumanMessage(transcription),
-  ]);
+  const response = await chatModel.call(
+    [new SystemMessage(transcriptPrompt), new HumanMessage(transcription)],
+    {
+      functions: [titleFnSchema],
+      function_call: {
+        name: titleFnSchema.name,
+      },
+    },
+  );
 
-  return cleanTitle(response.content.toString());
+  const args = response.additional_kwargs.function_call?.arguments;
+  const { title } = titleParamSchema.parse(JSON.parse(args!));
+  return title;
 }
 
 /**
@@ -51,10 +60,20 @@ export async function generateDigestTitle(
   digest: string,
   span: NoteDigestSpan,
 ): Promise<string> {
-  const response = await chatModel.call([
-    ...(await digestPromptTemplate.formatMessages({ span })),
-    new HumanMessage(digest),
-  ]);
+  const response = await chatModel.call(
+    [
+      ...(await digestPromptTemplate.formatMessages({ span })),
+      new HumanMessage(digest),
+    ],
+    {
+      functions: [titleFnSchema],
+      function_call: {
+        name: titleFnSchema.name,
+      },
+    },
+  );
 
-  return cleanTitle(response.content.toString());
+  const args = response.additional_kwargs.function_call?.arguments;
+  const { title } = titleParamSchema.parse(JSON.parse(args!));
+  return title;
 }

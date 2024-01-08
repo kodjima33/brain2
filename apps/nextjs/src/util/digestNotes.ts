@@ -1,8 +1,5 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import {
-  PromptTemplate,
-  SystemMessagePromptTemplate
-} from "langchain/prompts";
+import { PromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 import { HumanMessage } from "langchain/schema";
 import { DateTime } from "luxon";
 
@@ -55,9 +52,6 @@ export async function digestNotes(
   const response = await chatModel.call([
     ...(await promptTemplate.formatMessages({ span })),
     ...noteMessages,
-    new HumanMessage(
-      `Give me the summary of notes over the past ${span.toLowerCase()}`,
-    ),
   ]);
 
   return response.content.toString();
