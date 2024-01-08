@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
+import Markdown from "react-native-markdown-display";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
@@ -44,7 +45,7 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
           />
         }
       >
-        <Text className="text-lg">{note.content}</Text>
+        <Markdown>{note.content}</Markdown>
       </ScrollView>
     </View>
   );
