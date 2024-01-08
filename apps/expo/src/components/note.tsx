@@ -3,7 +3,9 @@ import { Text, View } from "react-native";
 import { TrashIcon } from "lucide-react-native";
 import { DateTime } from "luxon";
 
-import type { Note } from "@brain2/db/client";
+import type { Note, NoteDigestSpan } from "@brain2/db/client";
+
+import Badge from "./badge";
 
 interface NoteListItemProps {
   note: Note;
@@ -20,18 +22,42 @@ export function NoteListItemRightSwipeActions() {
   );
 }
 
+export function getDateStringFromSpan(date: DateTime, span: NoteDigestSpan) {
+  if (span === "SINGLE") {
+    return date.toFormat("ccc dd/MM/yyyy HH:mm:ss");
+  } else if (span === "DAY") {
+    return date.toFormat("ccc dd/MM/yyyy");
+  } else if (span === "WEEK") {
+    const endDate = date.plus({ days: 6 });
+    return `${date.toFormat("ccc dd/MM/yyyy")} - ${endDate.toFormat(
+      "ccc dd/MM/yyyy",
+    )}`;
+  }
+}
+
+export const NOTE_BADGE_COLORS = {
+  SINGLE: "bg-gray-200",
+  DAY: "bg-yellow-100",
+  WEEK: "bg-cyan-100",
+};
+
 /**
  * A list item representing a note
  */
 export function NoteListItem({ note }: NoteListItemProps) {
-  const formattedDate = DateTime.fromISO(note.createdAt.toString()).toFormat(
-    "ccc dd/MM/yyyy HH:mm:ss",
-  );
+  const date = DateTime.fromISO(note.createdAt.toString());
+  const dateString = getDateStringFromSpan(date, note.digestSpan);
 
   return (
     <View className="flex flex-col gap-2 bg-white px-4 py-2">
       <Text className="text-2xl font-semibold">{note.title}</Text>
-      <Text className="text-md font-light text-gray-700">{formattedDate}</Text>
+      <Text className="text-md font-light text-gray-700">{dateString}</Text>
+      {note.digestSpan !== "SINGLE" ? (
+        <Badge
+          text={note.digestSpan}
+          className={NOTE_BADGE_COLORS[note.digestSpan]}
+        />
+      ) : null}
     </View>
   );
 }

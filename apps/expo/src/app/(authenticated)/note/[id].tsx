@@ -12,6 +12,8 @@ import type { Note } from "@brain2/db/client";
 
 import Avatar from "~/components/avatar";
 import { getNoteById } from "~/utils/api";
+import { NOTE_BADGE_COLORS, getDateStringFromSpan } from "~/components/note";
+import Badge from "~/components/badge";
 
 interface NoteViewProps {
   note: Note;
@@ -27,14 +29,19 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
     setRefreshing(false);
   }, [refetch]);
 
-  const formattedDate = DateTime.fromISO(note.createdAt.toString()).toFormat(
-    "ccc dd/MM/yyyy HH:mm a",
-  );
+  const date = DateTime.fromISO(note.createdAt.toString());
+  const dateString = getDateStringFromSpan(date, note.digestSpan);
 
   return (
     <View className="mb-12 flex flex-col gap-2">
       <Text className="text-3xl">{note.title}</Text>
-      <Text className="text-sm font-light text-gray-500">{formattedDate}</Text>
+      <Text className="text-sm font-light text-gray-500">{dateString}</Text>
+      {note.digestSpan !== "SINGLE" ? (
+        <Badge
+          text={note.digestSpan}
+          className={NOTE_BADGE_COLORS[note.digestSpan]}
+        />
+      ) : null}
       <ScrollView
         className="flex-grow"
         overScrollMode="always"

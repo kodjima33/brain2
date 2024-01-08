@@ -24,6 +24,7 @@ import Button from "~/components/button";
 import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
+import Badge from "~/components/badge";
 
 /**
  * Home page for authenticated users
@@ -97,8 +98,13 @@ export default function HomePage() {
           />
           <Avatar />
         </View>
+        {/* Badges */}
+        <View className="w-full flex flex-row items-center justify-start gap-2 p-4">
+          <Badge text="Notes" />
+          <Badge text="Digests" />
+        </View>
         {/* Content */}
-        <View className="flex max-h-[80vh] flex-grow flex-col items-start justify-start gap-2">
+        <View className="flex max-h-[70vh] flex-grow flex-col items-start justify-start gap-2">
           {notesLoading && (
             <View className="flex h-[50vh] w-full items-center justify-center">
               <Loader2Icon size={48} className="animate-spin text-gray-400" />
