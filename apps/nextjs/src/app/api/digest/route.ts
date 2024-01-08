@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { auth } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
@@ -13,12 +14,11 @@ const digestNoteSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // const { userId } = auth();
+  const { userId } = auth();
 
-  // if (!userId) {
-  //   return new Response("Unauthorized", { status: 401 });
-  // }
-  const userId = "user_2aZHxsvG2PlS9GnVFkmf3guMIan";
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
   const { span, startDate: startDateRaw } = digestNoteSchema.parse(
     await req.json(),
