@@ -12,8 +12,15 @@ interface MessengerRecipient {
   id: string;
 }
 
+interface MessengerQuickReplies {
+  content_type: string;
+  title: string;
+  payload: number;
+}
+
 interface MessengerMsg {
   text: string;
+  quick_replies: MessengerQuickReplies[];
 }
 
 interface MessengerRequest {
@@ -23,6 +30,14 @@ interface MessengerRequest {
 }
 
 const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
+const DEFAULT_MESSENGER_QUICK_REPLIES: MessengerQuickReplies[] = [
+  { title: "end note", payload: 0, content_type: "text" },
+  {
+    title: "ask something else",
+    payload: 1,
+    content_type: "text",
+  },
+];
 
 const validationRequestSchema = z.object({
   mode: z.string(),
@@ -125,11 +140,12 @@ async function getCurrentConversation(
   return conversation;
 }
 
+// Send a message by calling the messenger API.
 async function sendMessage(senderPSID: string, message: string): Promise<void> {
   const request: MessengerRequest = {
     recipient: { id: senderPSID },
     messaging_type: "RESPONSE",
-    message: { text: message },
+    message: { text: message, quick_replies: DEFAULT_MESSENGER_QUICK_REPLIES },
   };
 
   await axios.post(env.MESSENGER_API_URL, request, {
@@ -156,6 +172,8 @@ export async function POST(req: Request): Promise<Response> {
     if (!(time && message && senderPSID && messageText)) {
       throw z.ZodError;
     }
+
+    console.log(messageText, message);
 
     const currentConversation = await getCurrentConversation(
       senderPSID,
@@ -186,6 +204,7 @@ export async function POST(req: Request): Promise<Response> {
     if (error instanceof z.ZodError) {
       return Response.json("Webhook not supported", { status: 400 });
     } else {
+      console.log(error);
       return Response.json("Internal Server Error", { status: 500 });
     }
   }
