@@ -30,8 +30,10 @@ interface MessengerRequest {
 }
 
 const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
+const END_CONVO_MESSAGE = "end note";
+
 const DEFAULT_MESSENGER_QUICK_REPLIES: MessengerQuickReplies[] = [
-  { title: "end note", payload: 0, content_type: "text" },
+  { title: END_CONVO_MESSAGE, payload: 0, content_type: "text" },
   {
     title: "ask something else",
     payload: 1,
@@ -163,6 +165,41 @@ async function sendMessage(
   });
 }
 
+async function handleConvResponse(
+  time: number,
+  senderPSID: string,
+  messageText: string,
+): Promise<void> {
+  const currentConversation = await getCurrentConversation(
+    senderPSID,
+    new Date(time),
+  );
+
+  // TODO: check if end of convo. If yes, generate summary and create note.
+
+  const isConvEnd = messageText == END_CONVO_MESSAGE;
+
+  const brain2Response = await generateConvResponse(
+    currentConversation,
+    messageText,
+    isConvEnd,
+  );
+
+  await sendMessage(senderPSID, brain2Response, true);
+
+  await prisma.conversation.update({
+    where: {
+      id: currentConversation.id,
+    },
+    data: {
+      userMessages: [...currentConversation.userMessages, messageText],
+      brain2Messages: [...currentConversation.brain2Messages, brain2Response],
+      lastUpdatedAt: new Date(),
+      isActive: !isConvEnd,
+    },
+  });
+}
+
 // Webhook invoked when a message is received on messenger, i.e. conversational capture is invoked
 export async function POST(req: Request): Promise<Response> {
   const json = (await req.json()) as unknown;
@@ -182,30 +219,8 @@ export async function POST(req: Request): Promise<Response> {
 
     console.log(messageText, message);
 
-    const currentConversation = await getCurrentConversation(
-      senderPSID,
-      new Date(time),
-    );
+    void handleConvResponse(time, senderPSID, messageText);
 
-    // TODO: check if end of convo. If yes, generate summary and create note.
-
-    const brain2Response = await generateConvResponse(
-      currentConversation,
-      messageText,
-    );
-
-    await sendMessage(senderPSID, brain2Response, true);
-
-    await prisma.conversation.update({
-      where: {
-        id: currentConversation.id,
-      },
-      data: {
-        userMessages: [...currentConversation.userMessages, messageText],
-        brain2Messages: [...currentConversation.brain2Messages, brain2Response],
-        lastUpdatedAt: new Date(),
-      },
-    });
     return Response.json("success");
   } catch (error) {
     if (error instanceof z.ZodError) {
