@@ -1,10 +1,12 @@
 import type { NextRequest } from "next/server";
+import { DateTime } from "luxon";
 import { z } from "zod";
 
 import type { Conversation } from "@brain2/db";
 import { generateId, prisma } from "@brain2/db";
 
 import { env } from "~/env";
+import { generateConvResponse } from "~/util/generateConvResponse";
 
 const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
 
@@ -139,6 +141,24 @@ export async function POST(req: Request): Promise<Response> {
       senderPSID,
       new Date(time),
     );
+
+    // TODO: check if end of convo. If yes, generate summary and create note.
+
+    const brain2Response = await generateConvResponse(
+      currentConversation,
+      messageText,
+    );
+
+    await prisma.conversation.update({
+      where: {
+        id: currentConversation.id,
+      },
+      data: {
+        userMessages: [...currentConversation.userMessages, messageText],
+        brain2Messages: [...currentConversation.brain2Messages, brain2Response],
+        lastUpdatedAt: new Date(),
+      },
+    });
 
     console.log(time, senderPSID, messageText, currentConversation);
 

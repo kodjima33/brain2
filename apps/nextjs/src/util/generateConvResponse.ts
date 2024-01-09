@@ -14,6 +14,7 @@ const prompt =
 // Generate a response to non "end note" messages
 export async function generateConvResponse(
   conversation: Conversation,
+  lastMessage: string,
 ): Promise<string> {
   const messages = [new SystemMessage(prompt)];
 
@@ -21,6 +22,8 @@ export async function generateConvResponse(
     messages.push(new HumanMessage(userMessage));
     messages.push(new AIMessage(conversation.brain2Messages[i] ?? ""));
   });
+
+  messages.push(new HumanMessage(lastMessage));
 
   const response = await chatModel.call(messages);
 
