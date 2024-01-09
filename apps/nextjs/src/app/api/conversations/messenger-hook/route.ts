@@ -175,7 +175,7 @@ async function handleConvResponse(
     new Date(time),
   );
 
-  // TODO: check if end of convo. If yes, generate summary and create note.
+  // TODO: create note if isConvEnd is true
 
   const isConvEnd = messageText == END_CONVO_MESSAGE;
 
