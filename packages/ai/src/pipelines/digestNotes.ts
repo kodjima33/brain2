@@ -49,7 +49,7 @@ export async function digestNotes(
 ): Promise<string> {
   const noteMessages = notes.map(noteToMessage);
   // TODO: insert span somewhere
-  const response = await chatModel.call([
+  const response = await chatModel.invoke([
     ...(await promptTemplate.formatMessages({ span })),
     ...noteMessages,
   ]);

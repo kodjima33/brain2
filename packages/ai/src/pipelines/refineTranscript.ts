@@ -16,7 +16,7 @@ it's easier to read.`
 export async function refineTranscript(
   text: string,
 ): Promise<string> {
-  const response = await chatModel.call([
+  const response = await chatModel.invoke([
     new SystemMessage(prompt),
     new HumanMessage(text),
   ]);

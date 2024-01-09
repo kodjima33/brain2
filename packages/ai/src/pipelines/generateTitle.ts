@@ -38,7 +38,7 @@ const titleFnSchema = {
 export async function generateTranscriptTitle(
   transcription: string,
 ): Promise<string> {
-  const response = await chatModel.call(
+  const response = await chatModel.invoke(
     [new SystemMessage(transcriptPrompt), new HumanMessage(transcription)],
     {
       functions: [titleFnSchema],
@@ -60,7 +60,7 @@ export async function generateDigestTitle(
   digest: string,
   span: NoteDigestSpan,
 ): Promise<string> {
-  const response = await chatModel.call(
+  const response = await chatModel.invoke(
     [
       ...(await digestPromptTemplate.formatMessages({ span })),
       new HumanMessage(digest),
