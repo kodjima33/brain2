@@ -1,32 +1,26 @@
-import { generateId, prisma } from "@brain2/db";
+import { auth, currentUser, SignedIn } from "@clerk/nextjs";
 
-import CreateNoteButton from "~/components/create-note-button";
-
-async function createNote() {
-  "use server";
-
-  await prisma.note.create({
-    data: {
-      id: generateId("note"),
-      owner: "",
-      content: "Hello world!",
-      digestSpan: "SINGLE",
-      title: "Dummy note",
-    },
-  });
-}
+import ClipboardButton from "~/components/clipboard-button";
 
 export default async function HomePage() {
-  const notes = await prisma.note.findMany();
+  const { getToken } = auth();
+  const token = await getToken({
+    template: "dev_long_lived",
+  });
+  const user = await currentUser();
 
   return (
-    <main className="flex h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container mt-12 flex flex-col items-center justify-center gap-4 py-8">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-pink-400">T3</span> Turbo
-        </h1>
-        <p>There are {notes.length} notes</p>
-        <CreateNoteButton createFunction={createNote} />
+    <main className="flex h-screen flex-col items-center text-black">
+      <div className="container mt-36 flex flex-col items-center justify-center gap-4 py-8">
+        <SignedIn>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-[5rem]">
+            Welcome, {user?.firstName} {user?.lastName}
+          </h1>
+          <div className="mt-10 flex flex-row items-center justify-center gap-5">
+            <span className="text-lg">Click to copy your Clerk JWT:</span>
+            <ClipboardButton text={token!} />
+          </div>
+        </SignedIn>
       </div>
     </main>
   );
