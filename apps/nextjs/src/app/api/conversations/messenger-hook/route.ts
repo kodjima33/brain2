@@ -141,11 +141,18 @@ async function getCurrentConversation(
 }
 
 // Send a message by calling the messenger API.
-async function sendMessage(senderPSID: string, message: string): Promise<void> {
+async function sendMessage(
+  senderPSID: string,
+  message: string,
+  includeQuickReplies: boolean,
+): Promise<void> {
   const request: MessengerRequest = {
     recipient: { id: senderPSID },
     messaging_type: "RESPONSE",
-    message: { text: message, quick_replies: DEFAULT_MESSENGER_QUICK_REPLIES },
+    message: {
+      text: message,
+      quick_replies: includeQuickReplies ? DEFAULT_MESSENGER_QUICK_REPLIES : [],
+    },
   };
 
   await axios.post(env.MESSENGER_API_URL, request, {
@@ -187,7 +194,7 @@ export async function POST(req: Request): Promise<Response> {
       messageText,
     );
 
-    await sendMessage(senderPSID, brain2Response);
+    await sendMessage(senderPSID, brain2Response, true);
 
     await prisma.conversation.update({
       where: {
