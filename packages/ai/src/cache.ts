@@ -5,7 +5,7 @@ import {
 } from "@gomomento/sdk";
 import { MomentoCache } from "@langchain/community/caches/momento";
 
-import { env } from "@brain2/ai";
+import { env } from "./env";
 
 /**
  * LLM caching client with Momento

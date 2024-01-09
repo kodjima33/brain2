@@ -60,6 +60,10 @@ export async function generateDigestTitle(
   digest: string,
   span: NoteDigestSpan,
 ): Promise<string> {
+  const chatModel = await createChatModel({
+    modelName: "gpt-3.5-turbo",
+    temperature: 0.1,
+  });
   const response = await chatModel.invoke(
     [
       ...(await digestPromptTemplate.formatMessages({ span })),
