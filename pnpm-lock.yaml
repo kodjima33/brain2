@@ -174,12 +174,15 @@ importers:
       '@tanstack/react-query-next-experimental':
         specifier: 5.8.7
         version: 5.8.7(@tanstack/react-query@5.8.7)(next@14.0.4)(react-dom@18.2.0)(react@18.2.0)
+      axios:
+        specifier: ^1.6.3
+        version: 1.6.3
       cors:
         specifier: ^2.8.5
         version: 2.8.5
       langchain:
         specifier: ^0.0.212
-        version: 0.0.212
+        version: 0.0.212(axios@1.6.3)
       luxon:
         specifier: ^3.4.4
         version: 3.4.4
@@ -8644,7 +8647,7 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langchain@0.0.212:
+  /langchain@0.0.212(axios@1.6.3):
     resolution: {integrity: sha512-zPcnAX3t1RuyWkbEkyqlIdR29j51Eylz7rcDcqET1baquR/r9xuk7P/HAJ6TFowiXDUg10d5YBD6VBvjwF/WDA==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -8807,6 +8810,7 @@ packages:
       '@langchain/community': 0.0.11
       '@langchain/core': 0.1.4
       '@langchain/openai': 0.0.8
+      axios: 1.6.3
       binary-extensions: 2.2.0
       expr-eval: 2.0.2
       js-tiktoken: 1.0.8
