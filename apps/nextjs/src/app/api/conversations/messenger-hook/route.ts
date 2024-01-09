@@ -109,6 +109,15 @@ async function getCurrentConversation(
   return conversation;
 }
 
+async function sendMessage(
+  senderPSID: string,
+  message: string,
+  quickReplies: string[],
+): Promise<void> {
+  console.log(senderPSID, message, quickReplies);
+  return;
+}
+
 // Webhook invoked when a message is received on messenger, i.e. conversational capture is invoked
 export async function POST(req: Request): Promise<Response> {
   const json = (await req.json()) as unknown;
