@@ -14,6 +14,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@brain2/ai": "workspace:*",
     "@brain2/db": "workspace:*",
     "@brain2/lib": "workspace:*",
     "@clerk/nextjs": "^4.28.1",
