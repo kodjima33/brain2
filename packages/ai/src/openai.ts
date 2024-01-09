@@ -1,5 +1,5 @@
 import type { Callbacks } from "langchain/callbacks";
-import { ChatOpenAI } from "langchain/chat_models/openai";
+import { ChatOpenAI } from "@langchain/openai";
 import { getCache } from "./cache";
 
 export interface CreateChatModelParams {

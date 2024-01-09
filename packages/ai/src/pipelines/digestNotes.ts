@@ -1,5 +1,5 @@
-import { PromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
-import { HumanMessage } from "langchain/schema";
+import { PromptTemplate, SystemMessagePromptTemplate } from "@langchain/core/prompts";
+import { HumanMessage } from "@langchain/core/messages";
 import { DateTime } from "luxon";
 
 import type { Note, NoteDigestSpan } from "@brain2/db";

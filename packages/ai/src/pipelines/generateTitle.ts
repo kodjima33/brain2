@@ -1,5 +1,5 @@
-import { PromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
-import { HumanMessage, SystemMessage } from "langchain/schema";
+import { PromptTemplate, SystemMessagePromptTemplate } from "@langchain/core/prompts";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 

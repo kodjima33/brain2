@@ -3,7 +3,7 @@ import {
   Configurations,
   CredentialProvider,
 } from "@gomomento/sdk";
-import { MomentoCache } from "langchain/cache/momento";
+import { MomentoCache } from "@langchain/community/caches/momento";
 
 import { env } from "@brain2/ai";
 

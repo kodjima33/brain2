@@ -1,4 +1,4 @@
-import { HumanMessage, SystemMessage } from "langchain/schema";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 import { createChatModel } from "../openai";
 
