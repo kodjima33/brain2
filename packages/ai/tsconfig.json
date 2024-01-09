@@ -1,0 +1,11 @@
+{
+  "extends": "@brain2/tsconfig/base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "paths": {
+      "@brain2/ai/*": ["../../packages/ai/src/*"],
+    }
+  },
+  "include": ["*.ts", "src"],
+  "exclude": ["node_modules"]
+}

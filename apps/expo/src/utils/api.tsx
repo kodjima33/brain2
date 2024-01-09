@@ -44,8 +44,12 @@ async function sendRequest<T>(
 /**
  * Send a GET request
  */
-async function get<T>(path: string): Promise<T> {
-  return sendRequest(path);
+async function get<T>(path: string, authToken: string): Promise<T> {
+  return sendRequest(path, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
 }
 
 /**
@@ -54,11 +58,13 @@ async function get<T>(path: string): Promise<T> {
 async function post<T>(
   path: string,
   body: Record<string, unknown>,
+  authToken: string,
 ): Promise<T> {
   return sendRequest(path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
     },
     data: JSON.stringify(body),
   });
@@ -67,16 +73,13 @@ async function post<T>(
 /**
  * Send a json-encoded DELETE request
  */
-async function del<T>(
-  path: string,
-  body?: Record<string, unknown>,
-): Promise<T> {
+async function del<T>(path: string, authToken: string): Promise<T> {
   return sendRequest(path, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
     },
-    data: body != null ? JSON.stringify(body) : undefined,
   });
 }
 
@@ -84,35 +87,52 @@ async function del<T>(
  * Send a form-encoded POST request
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function postForm<T>(path: string, formData: FormData): Promise<T> {
+async function postForm<T>(
+  path: string,
+  formData: FormData,
+  authToken: string,
+): Promise<T> {
   return sendRequest(path, {
     method: "POST",
     data: formData,
     headers: {
       "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${authToken}`,
     },
   });
 }
 
-export async function getNoteById(id: string): Promise<Note> {
-  return get(`/api/notes/${id}`);
+export async function getNoteById(
+  id: string,
+  authToken: string,
+): Promise<Note> {
+  return get(`/api/notes/${id}`, authToken);
 }
 
-export async function deleteNoteById(id: string): Promise<Note> {
-  return del(`/api/notes/${id}`);
+export async function deleteNoteById(
+  id: string,
+  authToken: string,
+): Promise<Note> {
+  return del(`/api/notes/${id}`, authToken);
 }
 
-export async function getNotes(): Promise<Note[]> {
-  return get("/api/notes");
+export async function getNotes(authToken: string): Promise<Note[]> {
+  return get("/api/notes", authToken);
 }
 
-export async function createNote(content: string): Promise<void> {
-  return post("/api/notes", { content });
+export async function createNote(
+  content: string,
+  authToken: string,
+): Promise<void> {
+  return post("/api/notes", { content }, authToken);
 }
 
-export async function uploadRecording(audioUrl: string): Promise<void> {
+export async function uploadRecording(
+  audioUrl: string,
+  authToken: string,
+): Promise<void> {
   const content = await fetch(audioUrl);
   const audioBuffer = Buffer.from(await content.arrayBuffer());
   const b64 = audioBuffer.toString("base64");
-  return post("/api/recordings", { audio: b64 });
+  return post("/api/recordings", { audio: b64 }, authToken);
 }

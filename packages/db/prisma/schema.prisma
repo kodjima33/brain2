@@ -55,38 +55,26 @@ model Note {
   digestSpan NoteDigestSpan
   recording  AudioBlob?
 
-  children NoteDigest[] @relation("childNote")
-  parents  NoteDigest[] @relation("parentNote")
-
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  children Note[] @relation("noteDigest", fields: [childrenIds], references: [id])
+  parents  Note[] @relation("noteDigest", fields: [parentIds], references: [id])
 
   conversation Conversation?
+  
+  childrenIds String[]
+  parentIds   String[]
+
+  digestStartDate DateTime @default(now())
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 // Represents the span of a note digest
 // e.g. if a note represents a digest over an entire day's notes
 enum NoteDigestSpan {
   SINGLE
-  DAILY
-  WEEKLY
-}
-
-// Join collection for Note many-to-many self-relation
-model NoteDigest {
-  id String @id @map("_id")
-
-  childId String
-  child   Note   @relation("childNote", fields: [childId], references: [id])
-
-  parentId String
-  parent   Note   @relation("parentNote", fields: [parentId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([childId, parentId])
+  DAY
+  WEEK
 }
 
 model Conversation {

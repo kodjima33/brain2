@@ -1,5 +1,13 @@
-import type { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
+import { useAuth } from "@clerk/clerk-expo";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
+import { Stack, router } from "expo-router";
+import {
+  Loader2Icon,
+  MicIcon,
+  RefreshCwIcon,
+  SquareIcon,
+} from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import {
@@ -8,28 +16,22 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  CircleUserRoundIcon,
-  Loader2Icon,
-  MenuIcon,
-  MicIcon,
-  SquareIcon,
-} from "lucide-react-native";
 
-import { Note } from "@brain2/db/client";
+import type { Note } from "@brain2/db/client";
 
+import Avatar from "~/components/avatar";
+import Button from "~/components/button";
 import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
-import Sidebar from "~/components/sidebar";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
+import Badge from "~/components/badge";
 
-interface ContentPageProps {
-  navigation: DrawerNavigationHelpers;
-}
-
-export function HomePageContent({ navigation }: ContentPageProps) {
+/**
+ * Home page for authenticated users
+ */
+export default function HomePage() {
   const queryClient = useQueryClient();
+  const { isLoaded: isUserLoaded, isSignedIn, getToken } = useAuth();
 
   const {
     data: notes,
@@ -38,7 +40,10 @@ export function HomePageContent({ navigation }: ContentPageProps) {
     refetch: refetchNotes,
   } = useQuery({
     queryKey: ["notes"],
-    queryFn: getNotes,
+    queryFn: async () => {
+      return getNotes((await getToken())!);
+    },
+    enabled: isUserLoaded && isSignedIn,
   });
 
   if (notesError) {
@@ -46,7 +51,9 @@ export function HomePageContent({ navigation }: ContentPageProps) {
   }
 
   const { mutate: deleteNote } = useMutation({
-    mutationFn: deleteNoteById,
+    mutationFn: async (noteId: string) => {
+      return deleteNoteById(noteId, (await getToken())!);
+    },
     onMutate: async (noteId) => {
       await queryClient.cancelQueries({ queryKey: ["notes"] });
 
@@ -75,47 +82,58 @@ export function HomePageContent({ navigation }: ContentPageProps) {
   }, [refetchNotes]);
 
   return (
-    <SafeAreaView className="bg-white">
+    <SafeAreaView className="bg-white pt-10">
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
         {/* Header */}
-        <View className="flex w-full flex-row items-center justify-between px-4">
-          <TouchableOpacity
-            onPress={() => {
-              navigation.openDrawer();
-            }}
-          >
-            <MenuIcon className="basis-1/12 text-black" />
-          </TouchableOpacity>
+        <View className="flex w-full flex-row items-center justify-between gap-4 px-4">
           <TextInput
-            className="h-10 basis-8/12 rounded-full border border-black px-4 py-2"
+            className="h-10 flex-grow rounded-full border border-black px-4 py-2"
             placeholder="Search..."
           />
-          <CircleUserRoundIcon className="basis-1/12 text-black" />
+          <Avatar />
+        </View>
+        {/* Badges */}
+        <View className="w-full flex flex-row items-center justify-start gap-2 p-4">
+          <Badge text="Notes" />
+          <Badge text="Digests" />
         </View>
         {/* Content */}
-        <View className="flex max-h-[80vh] flex-grow flex-col items-start justify-start gap-2">
+        <View className="flex max-h-[70vh] flex-grow flex-col items-start justify-start gap-2">
           {notesLoading && (
             <View className="flex h-[50vh] w-full items-center justify-center">
               <Loader2Icon size={48} className="animate-spin text-gray-400" />
             </View>
           )}
           {!notesLoading && notes?.length === 0 && (
-            <View className="flex h-[50vh] w-full items-center justify-center">
+            <View className="flex h-[50vh] w-full items-center justify-center gap-5">
               <Text className="text-xl font-semibold text-gray-500">
                 Nothing here yet!
               </Text>
+              <Button
+                icon={
+                  refreshing ? (
+                    <Loader2Icon className="animate-spin text-gray-500" />
+                  ) : (
+                    <RefreshCwIcon className="text-gray-500" />
+                  )
+                }
+                onPress={onRefresh}
+                enabled={!refreshing}
+              />
             </View>
           )}
           <FlatList
             data={notes}
             keyExtractor={(note) => note.id}
             renderItem={({ item: note }) => (
-              <Pressable
-                onPress={() => {
-                  navigation.navigate("NotePage", { id: note.id });
-                }}
-              >
+              // Using Pressable because for some reason, Link screws up the cell layout
+              <Pressable onPress={() => router.push(`/note/${note.id}`)}>
                 <Swipeable
                   renderRightActions={NoteListItemRightSwipeActions}
                   onSwipeableOpen={() => deleteNote(note.id)}
@@ -144,7 +162,8 @@ export function HomePageContent({ navigation }: ContentPageProps) {
 
               if (uri) {
                 try {
-                  await uploadRecording(uri);
+                  const token = await getToken();
+                  await uploadRecording(uri, token!);
                   await queryClient.invalidateQueries({
                     queryKey: ["notes"],
                   });
@@ -171,11 +190,4 @@ export function HomePageContent({ navigation }: ContentPageProps) {
       </View>
     </SafeAreaView>
   );
-}
-
-/**
- * Index home page
- */
-export default function IndexPage() {
-  return <Sidebar />;
 }
