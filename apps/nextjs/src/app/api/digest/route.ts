@@ -4,9 +4,7 @@ import { DateTime } from "luxon";
 import { z } from "zod";
 
 import { generateId, NoteDigestSpan, prisma } from "@brain2/db";
-
-import { digestNotes } from "~/util/digestNotes";
-import { generateDigestTitle } from "~/util/generateTitle";
+import { digestNotes, generateDigestTitle } from "@brain2/ai";
 
 const digestNoteSchema = z.object({
   span: z.enum([NoteDigestSpan.DAY, NoteDigestSpan.WEEK]),

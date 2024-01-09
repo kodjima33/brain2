@@ -1,14 +1,12 @@
+import { auth } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 import StorageClient from "node_modules/@brain2/lib/src/storage/client";
 import { OpenAI, toFile } from "openai";
 import { z } from "zod";
 
 import type { AudioBlob } from "@brain2/db";
+import { generateTranscriptTitle, refineTranscript } from "@brain2/ai";
 import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
-
-import { generateTranscriptTitle } from "~/util/generateTitle";
-import { refineTranscript } from "~/util/refineTranscript";
-import { auth } from "@clerk/nextjs";
 
 const storageClient = new StorageClient();
 const openai = new OpenAI();
@@ -34,7 +32,7 @@ async function refineNoteTranscript(noteId: string, transcript: string) {
     },
     data: {
       content: refinedTranscript,
-      active: true
+      active: true,
     },
   });
 }
@@ -65,7 +63,7 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
           content: transcription.text,
         },
       },
-    }
+    },
   });
 
   // Refine the transcript async
