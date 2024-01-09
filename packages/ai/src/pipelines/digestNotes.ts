@@ -1,14 +1,10 @@
-import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 import { HumanMessage } from "langchain/schema";
 import { DateTime } from "luxon";
 
 import type { Note, NoteDigestSpan } from "@brain2/db";
 
-const chatModel = new ChatOpenAI({
-  modelName: "gpt-4-1106-preview",
-  temperature: 0.4,
-});
+import { createChatModel } from "../openai";
 
 const promptString = `You are a seasoned personal assistant. You will be provided with multiple transcripts and notes over the past {{span}}. \
 Come up with a comprehensive summary and synthesis of the notes.
@@ -48,7 +44,11 @@ export async function digestNotes(
   span: NoteDigestSpan,
 ): Promise<string> {
   const noteMessages = notes.map(noteToMessage);
-  // TODO: insert span somewhere
+  
+  const chatModel = await createChatModel({
+    modelName: "gpt-4-1106-preview",
+    temperature: 0.4,
+  });
   const response = await chatModel.invoke([
     ...(await promptTemplate.formatMessages({ span })),
     ...noteMessages,

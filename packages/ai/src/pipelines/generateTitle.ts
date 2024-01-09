@@ -1,4 +1,3 @@
-import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 import { HumanMessage, SystemMessage } from "langchain/schema";
 import { z } from "zod";
@@ -6,10 +5,7 @@ import zodToJsonSchema from "zod-to-json-schema";
 
 import type { NoteDigestSpan } from "@brain2/db";
 
-const chatModel = new ChatOpenAI({
-  modelName: "gpt-3.5-turbo",
-  temperature: 0.1,
-});
+import { createChatModel } from "../openai";
 
 const transcriptPrompt =
   "You will be provided with audio recording transcripts. Provide a concise 3-5 word title for the recording. Make sure to emphasize any important terms or highlights from the transcript.";
@@ -38,6 +34,10 @@ const titleFnSchema = {
 export async function generateTranscriptTitle(
   transcription: string,
 ): Promise<string> {
+  const chatModel = await createChatModel({
+    modelName: "gpt-3.5-turbo",
+    temperature: 0.1,
+  });
   const response = await chatModel.invoke(
     [new SystemMessage(transcriptPrompt), new HumanMessage(transcription)],
     {

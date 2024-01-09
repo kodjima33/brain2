@@ -29,9 +29,10 @@
   "prettier": "@brain2/prettier-config",
   "dependencies": {
     "@brain2/db": "workspace:*",
-    "openai": "^4.24.2",
-    "langchain": "^0.1.1",
+    "@gomomento/sdk": "^1.56.0",
     "@t3-oss/env-core": "^0.7.1",
+    "langchain": "^0.1.1",
+    "openai": "^4.24.2",
     "zod": "^3.22.4",
     "zod-to-json-schema": "^3.22.3"
   }
