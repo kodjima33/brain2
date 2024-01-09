@@ -28,6 +28,7 @@
   },
   "prettier": "@brain2/prettier-config",
   "dependencies": {
+    "@brain2/db": "workspace:*",
     "openai": "^4.24.2",
     "langchain": "^0.1.1",
     "@t3-oss/env-core": "^0.7.1",
