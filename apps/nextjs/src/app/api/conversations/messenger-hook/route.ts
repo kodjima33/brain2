@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { DateTime } from "luxon";
+import axios from "axios";
 import { z } from "zod";
 
 import type { Conversation } from "@brain2/db";
@@ -7,6 +7,20 @@ import { generateId, prisma } from "@brain2/db";
 
 import { env } from "~/env";
 import { generateConvResponse } from "~/util/generateConvResponse";
+
+interface MessengerRecipient {
+  id: string;
+}
+
+interface MessengerMsg {
+  text: string;
+}
+
+interface MessengerRequest {
+  recipient: MessengerRecipient;
+  messaging_type: string;
+  message: MessengerMsg;
+}
 
 const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
 
@@ -111,13 +125,19 @@ async function getCurrentConversation(
   return conversation;
 }
 
-async function sendMessage(
-  senderPSID: string,
-  message: string,
-  quickReplies: string[],
-): Promise<void> {
-  console.log(senderPSID, message, quickReplies);
-  return;
+async function sendMessage(senderPSID: string, message: string): Promise<void> {
+  const request: MessengerRequest = {
+    recipient: { id: senderPSID },
+    messaging_type: "RESPONSE",
+    message: { text: message },
+  };
+
+  await axios.post(env.MESSENGER_API_URL, request, {
+    headers: {
+      Authorization: `Bearer ${env.MESSENGER_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 // Webhook invoked when a message is received on messenger, i.e. conversational capture is invoked
@@ -149,6 +169,8 @@ export async function POST(req: Request): Promise<Response> {
       messageText,
     );
 
+    await sendMessage(senderPSID, brain2Response);
+
     await prisma.conversation.update({
       where: {
         id: currentConversation.id,
@@ -159,9 +181,6 @@ export async function POST(req: Request): Promise<Response> {
         lastUpdatedAt: new Date(),
       },
     });
-
-    console.log(time, senderPSID, messageText, currentConversation);
-
     return Response.json("success");
   } catch (error) {
     if (error instanceof z.ZodError) {
