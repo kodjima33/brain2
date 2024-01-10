@@ -1,22 +1,20 @@
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { HumanMessage, SystemMessage } from "langchain/schema";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
-const chatModel = new ChatOpenAI({
-  modelName: "gpt-3.5-turbo",
-  temperature: 0.1,
-});
+import { createChatModel } from "../openai";
 
 const prompt = `You are an expert multilingual speech transcriber. You will be provided with the transcript from an voice memo recording.
 Fix any potential spelling mistakes. Where it makes sense, split the text into separate paragraphs so that \
-it's easier to read.`
+it's easier to read.`;
 
 /**
  * Refine transcript, correcting spelling mistakes and splitting paragraphs as needed
  */
-export async function refineTranscript(
-  text: string,
-): Promise<string> {
-  const response = await chatModel.call([
+export async function refineTranscript(text: string): Promise<string> {
+  const chatModel = await createChatModel({
+    modelName: "gpt-3.5-turbo",
+    temperature: 0.1,
+  });
+  const response = await chatModel.invoke([
     new SystemMessage(prompt),
     new HumanMessage(text),
   ]);

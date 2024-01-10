@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
@@ -7,13 +8,20 @@ import { generateId, prisma } from "@brain2/db";
  * Get all notes
  */
 export async function GET(_req: Request): Promise<Response> {
+  const { userId } = auth();
+
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const notes = await prisma.note.findMany({
     where: {
+      owner: userId,
       active: true,
     },
     orderBy: {
-      createdAt: "desc"
-    }
+      createdAt: "desc",
+    },
   });
   return Response.json(notes);
 }
@@ -27,6 +35,12 @@ const createNoteSchema = z.object({
  * Create a note
  */
 export async function POST(req: Request): Promise<Response> {
+  const { userId } = auth();
+
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const json = (await req.json()) as unknown;
   const { title, content } = createNoteSchema.parse(json);
   const formattedDate = DateTime.now().toFormat("dd/MM/yyyy HH:mm:ss");
@@ -37,7 +51,7 @@ export async function POST(req: Request): Promise<Response> {
       id: generateId("note"),
       title: title ?? fallbackTitle,
       content,
-      owner: "",
+      owner: userId,
       digestSpan: "SINGLE",
     },
   });

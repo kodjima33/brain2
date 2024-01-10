@@ -1,13 +1,12 @@
+import { auth } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 import StorageClient from "node_modules/@brain2/lib/src/storage/client";
 import { OpenAI, toFile } from "openai";
 import { z } from "zod";
 
 import type { AudioBlob } from "@brain2/db";
+import { generateTranscriptTitle, refineTranscript } from "@brain2/ai";
 import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
-
-import { generateTranscriptTitle } from "~/util/generateTitle";
-import { refineTranscript } from "~/util/refineTranscript";
 
 const storageClient = new StorageClient();
 const openai = new OpenAI();
@@ -33,7 +32,7 @@ async function refineNoteTranscript(noteId: string, transcript: string) {
     },
     data: {
       content: refinedTranscript,
-      active: true
+      active: true,
     },
   });
 }
@@ -64,7 +63,7 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
           content: transcription.text,
         },
       },
-    }
+    },
   });
 
   // Refine the transcript async
@@ -105,6 +104,12 @@ async function getAudioBuffer(req: Request): Promise<Buffer> {
  * Create an audio recording
  */
 export async function POST(req: Request): Promise<Response> {
+  const { userId } = auth();
+
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const audioBuffer = await getAudioBuffer(req);
 
   const id = generateId("audioBlob");
@@ -117,13 +122,13 @@ export async function POST(req: Request): Promise<Response> {
       data: {
         id,
         title,
-        owner: "",
+        owner: userId,
         note: {
           create: {
             id: generateId("note"),
             title,
             content: "",
-            owner: "",
+            owner: userId,
             digestSpan: "SINGLE",
             active: false,
           },

@@ -18,11 +18,11 @@ const defineConfig = (): ExpoConfig => ({
   },
   assetBundlePatterns: ["**/*"],
   ios: {
-    bundleIdentifier: "your.bundle.identifier",
+    bundleIdentifier: "com.brain2.app",
     supportsTablet: true,
   },
   android: {
-    package: "your.bundle.identifier",
+    package: "com.brain2.app",
     adaptiveIcon: {
       foregroundImage: "./assets/icon.png",
       backgroundColor: "#FFFFFF",
@@ -32,6 +32,8 @@ const defineConfig = (): ExpoConfig => ({
     eas: {
       projectId: "3e56e40b-a851-4928-a2ff-ef3cc74a8263",
     },
+    // Publishable key, this is not sensitive
+    clerkPublishableKey: "pk_test_ZXhwZXJ0LWVsay01Ny5jbGVyay5hY2NvdW50cy5kZXYk",
   },
   experiments: {
     tsconfigPaths: true,
