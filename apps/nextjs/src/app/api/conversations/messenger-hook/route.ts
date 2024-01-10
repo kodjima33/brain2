@@ -219,7 +219,7 @@ export async function POST(req: Request): Promise<Response> {
 
     console.log(messageText, message);
 
-    void handleConvResponse(time, senderPSID, messageText);
+    await handleConvResponse(time, senderPSID, messageText);
 
     return Response.json("success");
   } catch (error) {
