@@ -59,7 +59,7 @@ model Note {
   parents  Note[] @relation("noteDigest", fields: [parentIds], references: [id])
 
   conversation Conversation?
-  
+
   childrenIds String[]
   parentIds   String[]
 
@@ -81,9 +81,9 @@ model Conversation {
   id        String @id @map("_id")
   ownerPSID String //Using FB's PSID here for now. TODO: does this need to change after auth is complete?
 
-  createdAt     DateTime @default(now())
-  lastUpdatedAt DateTime @updatedAt
-  isActive      Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
 
   userMessages   String[] @default([]) //Messages sent from the user to brain2
   brain2Messages String[] @default([]) //Messages sent from brain2 to the user 

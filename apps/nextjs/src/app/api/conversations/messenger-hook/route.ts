@@ -98,7 +98,7 @@ async function createNewConversation(
       id: generateId("conversation"),
       ownerPSID,
       createdAt: time,
-      lastUpdatedAt: time,
+      updatedAt: time,
     },
   });
 
@@ -122,7 +122,7 @@ async function getCurrentConversation(
 
   // Check whether conversation is stale and create new one if so - longer than MAX_CONVERSATION_DURATION since last message
   if (
-    time.getTime() - conversation.lastUpdatedAt.getTime() >
+    time.getTime() - conversation.updatedAt.getTime() >
     MAX_CONVERSATION_DURATION
   ) {
     // Make existing conversation inactive and create a new one
@@ -194,7 +194,7 @@ async function handleConvResponse(
     data: {
       userMessages: [...currentConversation.userMessages, messageText],
       brain2Messages: [...currentConversation.brain2Messages, brain2Response],
-      lastUpdatedAt: new Date(),
+      updatedAt: new Date(),
       isActive: !isConvEnd,
     },
   });
