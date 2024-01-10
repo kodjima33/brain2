@@ -77,6 +77,16 @@ enum NoteDigestSpan {
   WEEK
 }
 
+enum MessageAuthor {
+  USER
+  BRAIN2
+}
+
+type ChatMessage {
+  author MessageAuthor
+  text   String
+}
+
 model ChatConversation {
   id        String @id @map("_id")
   ownerPSID String //Using FB's PSID here for now. TODO: does this need to change after auth is complete?
@@ -85,8 +95,7 @@ model ChatConversation {
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
 
-  userMessages   String[] @default([]) //Messages sent from the user to brain2
-  brain2Messages String[] @default([]) //Messages sent from brain2 to the user 
+  messages ChatMessage[]
 
   noteId String? @unique
   note   Note?   @relation(fields: [noteId], references: [id])

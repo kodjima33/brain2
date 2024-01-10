@@ -2,6 +2,7 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { AIMessage, HumanMessage, SystemMessage } from "langchain/schema";
 
 import type { ChatConversation } from "@brain2/db";
+import { MessageAuthor } from "@brain2/db";
 
 const chatModel = new ChatOpenAI({
   modelName: "gpt-4-1106-preview",
@@ -21,9 +22,16 @@ export async function generateConvResponse(
 ): Promise<string> {
   const messages = [new SystemMessage(isConvEnd ? summaryGenPrompt : prompt)];
 
-  conversation.userMessages.forEach((userMessage, i) => {
-    messages.push(new HumanMessage(userMessage));
-    messages.push(new AIMessage(conversation.brain2Messages[i] ?? ""));
+  conversation.messages.forEach((message, _) => {
+    switch (message.author) {
+      case MessageAuthor.USER: {
+        messages.push(new HumanMessage(message.text));
+        break;
+      }
+      case MessageAuthor.BRAIN2: {
+        messages.push(new AIMessage(message.text));
+      }
+    }
   });
 
   messages.push(new HumanMessage(lastMessage));

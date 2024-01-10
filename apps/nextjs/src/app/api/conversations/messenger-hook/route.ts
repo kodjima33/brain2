@@ -3,7 +3,7 @@ import axios from "axios";
 import { z } from "zod";
 
 import type { ChatConversation } from "@brain2/db";
-import { generateId, prisma } from "@brain2/db";
+import { generateId, MessageAuthor, prisma } from "@brain2/db";
 
 import { env } from "~/env";
 import { generateConvResponse } from "~/util/generateConvResponse";
@@ -192,8 +192,11 @@ async function handleConvResponse(
       id: currentConversation.id,
     },
     data: {
-      userMessages: [...currentConversation.userMessages, messageText],
-      brain2Messages: [...currentConversation.brain2Messages, brain2Response],
+      messages: [
+        ...currentConversation.messages,
+        { author: MessageAuthor.USER, text: messageText },
+        { author: MessageAuthor.BRAIN2, text: brain2Response },
+      ],
       updatedAt: new Date(),
       isActive: !isConvEnd,
     },
