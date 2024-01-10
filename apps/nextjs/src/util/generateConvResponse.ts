@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { AIMessage, HumanMessage, SystemMessage } from "langchain/schema";
 
-import type { Conversation } from "@brain2/db";
+import type { ChatConversation } from "@brain2/db";
 
 const chatModel = new ChatOpenAI({
   modelName: "gpt-4-1106-preview",
@@ -15,7 +15,7 @@ const summaryGenPrompt =
   "You are a conversational note taking assistant called brain². You just had a conversation with a user about an interesting idea they encountered. Generate a comprehensive summary and synthesis of the notes. Think step-by-step to highlight and emphasize the most important points upfront before going into the details.";
 // Generate a response to conversational captures.
 export async function generateConvResponse(
-  conversation: Conversation,
+  conversation: ChatConversation,
   lastMessage: string,
   isConvEnd: boolean, // is this message an "end note" message - then generate summary instead of continuing the conversation.
 ): Promise<string> {

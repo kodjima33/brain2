@@ -58,7 +58,7 @@ model Note {
   children Note[] @relation("noteDigest", fields: [childrenIds], references: [id])
   parents  Note[] @relation("noteDigest", fields: [parentIds], references: [id])
 
-  conversation Conversation?
+  conversation ChatConversation?
 
   childrenIds String[]
   parentIds   String[]
@@ -77,7 +77,7 @@ enum NoteDigestSpan {
   WEEK
 }
 
-model Conversation {
+model ChatConversation {
   id        String @id @map("_id")
   ownerPSID String //Using FB's PSID here for now. TODO: does this need to change after auth is complete?
 

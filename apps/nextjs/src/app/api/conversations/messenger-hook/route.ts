@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import axios from "axios";
 import { z } from "zod";
 
-import type { Conversation } from "@brain2/db";
+import type { ChatConversation } from "@brain2/db";
 import { generateId, prisma } from "@brain2/db";
 
 import { env } from "~/env";
@@ -92,10 +92,10 @@ const messageRequestSchema = z.object({
 async function createNewConversation(
   ownerPSID: string,
   time: Date,
-): Promise<Conversation> {
-  const conversation = await prisma.conversation.create({
+): Promise<ChatConversation> {
+  const conversation = await prisma.chatConversation.create({
     data: {
-      id: generateId("conversation"),
+      id: generateId("chatConversation"),
       ownerPSID,
       createdAt: time,
       updatedAt: time,
@@ -109,9 +109,9 @@ async function createNewConversation(
 async function getCurrentConversation(
   senderPSID: string,
   time: Date,
-): Promise<Conversation> {
+): Promise<ChatConversation> {
   // Look for conversations from this user that are active
-  let conversation = await prisma.conversation.findFirst({
+  let conversation = await prisma.chatConversation.findFirst({
     where: { ownerPSID: senderPSID, isActive: true },
   });
 
@@ -127,7 +127,7 @@ async function getCurrentConversation(
   ) {
     // Make existing conversation inactive and create a new one
     // TODO: asynchronously make a note from the conversation that just ended
-    await prisma.conversation.update({
+    await prisma.chatConversation.update({
       where: {
         id: conversation.id,
       },
@@ -187,7 +187,7 @@ async function handleConvResponse(
 
   await sendMessage(senderPSID, brain2Response, true);
 
-  await prisma.conversation.update({
+  await prisma.chatConversation.update({
     where: {
       id: currentConversation.id,
     },
