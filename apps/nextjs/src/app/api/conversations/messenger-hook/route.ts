@@ -3,10 +3,10 @@ import axios from "axios";
 import { z } from "zod";
 
 import type { ChatConversation } from "@brain2/db";
+import { generateConvResponse } from "@brain2/ai";
 import { generateId, MessageAuthor, prisma } from "@brain2/db";
 
 import { env } from "~/env";
-import { generateConvResponse } from "~/util/generateConvResponse";
 
 interface MessengerRecipient {
   id: string;

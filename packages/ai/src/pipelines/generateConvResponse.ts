@@ -1,10 +1,15 @@
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { AIMessage, HumanMessage, SystemMessage } from "langchain/schema";
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
 
 import type { ChatConversation } from "@brain2/db";
 import { MessageAuthor } from "@brain2/db";
 
-const chatModel = new ChatOpenAI({
+import { createChatModel } from "../openai";
+
+const chatModel = await createChatModel({
   modelName: "gpt-4-1106-preview",
   temperature: 0.5,
 });
