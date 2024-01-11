@@ -1,3 +1,3 @@
 export * from "./client";
-export * from "./functions";
+export * as functions from "./functions";
 

@@ -15,7 +15,7 @@ export const schema = z.object({
 /**
  * Refine a raw recording note transcript, improving formatting and grammar
  */
-export const functionHandler = inngestClient.createFunction(
+export const handler = inngestClient.createFunction(
   { id: "refine-note-transcript" },
   { event: eventName },
   async ({ event }) => {
