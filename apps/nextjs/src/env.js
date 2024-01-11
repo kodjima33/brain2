@@ -23,6 +23,9 @@ export const env = createEnv({
     AWS_S3_ACCESS_KEY: z.string(),
     AWS_S3_SECRET_ACCESS_KEY: z.string(),
     OPENAI_API_KEY: z.string(),
+    MESSENGER_VERIFY_TOKEN: z.string(),
+    MESSENGER_ACCESS_TOKEN: z.string(),
+    MESSENGER_API_URL: z.string(),
   },
   /**
    * Specify your client-side environment variables schema here.
@@ -42,6 +45,9 @@ export const env = createEnv({
     AWS_S3_ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY,
     AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    MESSENGER_VERIFY_TOKEN: process.env.MESSENGER_VERIFY_TOKEN,
+    MESSENGER_ACCESS_TOKEN: process.env.MESSENGER_ACCESS_TOKEN,
+    MESSENGER_API_URL: process.env.MESSENGER_API_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   skipValidation:

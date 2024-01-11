@@ -8,7 +8,8 @@ datasource db {
 }
 
 // No model for a user since auth is handled by Clerk
-// Assume we get a unique userId for each user
+// Assume we get a unique userId for each user 
+// TODO: for messenger we neeed a mapping from users to their PSID(page scoped ID)
 
 model Preferences {
   id        String         @id @map("_id")
@@ -57,6 +58,8 @@ model Note {
   children Note[] @relation("noteDigest", fields: [childrenIds], references: [id])
   parents  Note[] @relation("noteDigest", fields: [parentIds], references: [id])
 
+  conversation ChatConversation?
+
   childrenIds String[]
   parentIds   String[]
 
@@ -72,4 +75,28 @@ enum NoteDigestSpan {
   SINGLE
   DAY
   WEEK
+}
+
+enum MessageAuthor {
+  USER
+  BRAIN2
+}
+
+type ChatMessage {
+  author MessageAuthor
+  text   String
+}
+
+model ChatConversation {
+  id        String @id @map("_id")
+  ownerPSID String //Using FB's PSID here for now. TODO: does this need to change after auth is complete?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
+
+  messages ChatMessage[]
+
+  noteId String? @unique
+  note   Note?   @relation(fields: [noteId], references: [id])
 }
