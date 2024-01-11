@@ -387,6 +387,12 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.481.0
         version: 3.481.0
+      '@brain2/ai':
+        specifier: workspace:*
+        version: link:../ai
+      '@brain2/db':
+        specifier: workspace:*
+        version: link:../db
       '@t3-oss/env-core':
         specifier: ^0.7.1
         version: 0.7.1(typescript@5.3.3)(zod@3.22.4)
