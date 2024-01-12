@@ -19,7 +19,7 @@ type QueueEventArgs<E extends QueueEvent> = E extends "recording.created"
  */
 export const inngestClient = new Inngest({
   id: "Brain2",
-  eventKey: env.INGGEST_EVENT_KEY,
+  eventKey: env.INNGEST_EVENT_KEY,
 });
 
 /**
