@@ -26,6 +26,8 @@ export const env = createEnv({
     MESSENGER_VERIFY_TOKEN: z.string(),
     MESSENGER_ACCESS_TOKEN: z.string(),
     MESSENGER_API_URL: z.string(),
+    INNGEST_EVENT_KEY: z.string(),
+    INNGEST_SIGNING_KEY: z.string(),
   },
   /**
    * Specify your client-side environment variables schema here.
@@ -48,6 +50,8 @@ export const env = createEnv({
     MESSENGER_VERIFY_TOKEN: process.env.MESSENGER_VERIFY_TOKEN,
     MESSENGER_ACCESS_TOKEN: process.env.MESSENGER_ACCESS_TOKEN,
     MESSENGER_API_URL: process.env.MESSENGER_API_URL,
+    INNGEST_EVENT_KEY: process.env.INNGEST_EVENT_KEY,
+    INNGEST_SIGNING_KEY: process.env.INNGEST_SIGNING_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   skipValidation:
