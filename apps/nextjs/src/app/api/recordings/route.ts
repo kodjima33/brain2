@@ -4,10 +4,10 @@ import StorageClient from "node_modules/@brain2/lib/src/storage/client";
 import { OpenAI, toFile } from "openai";
 import { z } from "zod";
 
-import type { AudioBlob } from "@brain2/db";
 import { generateTranscriptTitle } from "@brain2/ai";
+import type { AudioBlob } from "@brain2/db";
 import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
-import { inngestClient, triggerEvent } from "@brain2/lib";
+import { triggerEvent } from "@brain2/lib";
 
 const storageClient = new StorageClient();
 const openai = new OpenAI();
