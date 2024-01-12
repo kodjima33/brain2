@@ -5,7 +5,7 @@ import "./src/env.js";
 const config = {
   reactStrictMode: true,
   /** Enables hot reloading for local packages without a build step */
-  transpilePackages: ["@brain2/db", "@brain2/ai"],
+  transpilePackages: ["@brain2/ai", "@brain2/db", "@brain2/lib"],
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
