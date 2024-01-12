@@ -4,7 +4,7 @@ import { refineTranscript } from "@brain2/ai";
 import { prisma } from "@brain2/db";
 
 import type { QueueEvent } from "..";
-import { inngestClient } from "..";
+import { inngestClient } from "../client";
 
 const eventName: QueueEvent = "recording.created";
 
