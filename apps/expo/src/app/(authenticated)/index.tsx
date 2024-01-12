@@ -16,6 +16,7 @@ import {
   RefreshCwIcon,
   SquareIcon,
 } from "lucide-react-native";
+import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
@@ -25,7 +26,6 @@ import Button from "~/components/button";
 import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
-import { DateTime } from "luxon";
 
 /**
  * Home page for authenticated users
@@ -45,7 +45,6 @@ export default function HomePage() {
       return getNotes((await getToken())!);
     },
     enabled: isUserLoaded && isSignedIn,
-    staleTime: 60 * 1000, // Refetch every minute
   });
 
   if (notesError) {
@@ -69,22 +68,22 @@ export default function HomePage() {
         digestSpan: "SINGLE",
         childrenIds: [],
         parentIds: [],
-        active: true,
+        active: false,
         digestStartDate: date,
         createdAt: date,
         updatedAt: date,
       };
 
-      const concatenated = [dummyNote, ...staleNotes];
-      console.log(concatenated.map((note) => note.title));
-      console.log(concatenated.map((note) => note.createdAt));
-      queryClient.setQueryData(["notes"], concatenated);
-
+      queryClient.setQueryData(["notes"], [dummyNote, ...staleNotes]);
       return { staleNotes };
     },
     onError: (err, _noteId, context) => {
       console.error(err);
       queryClient.setQueryData(["notes"], context?.staleNotes);
+    },
+    onSuccess: async () => {
+      // Refetch data
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
   });
 
@@ -170,17 +169,24 @@ export default function HomePage() {
           <FlatList
             data={notes}
             keyExtractor={(note) => note.id}
-            renderItem={({ item: note }) => (
-              // Using Pressable because for some reason, Link screws up the cell layout
-              <Pressable onPress={() => router.push(`/note/${note.id}`)}>
-                <Swipeable
-                  renderRightActions={NoteListItemRightSwipeActions}
-                  onSwipeableOpen={() => deleteNote(note.id)}
-                >
-                  <NoteListItem note={note} />
-                </Swipeable>
-              </Pressable>
-            )}
+            renderItem={({ item: note }) => {
+              if (note.active) {
+                // Using Pressable because for some reason, Link screws up the cell layout
+                return (
+                  <Pressable onPress={() => router.push(`/note/${note.id}`)}>
+                    <Swipeable
+                      renderRightActions={NoteListItemRightSwipeActions}
+                      onSwipeableOpen={() => deleteNote(note.id)}
+                    >
+                      <NoteListItem note={note} />
+                    </Swipeable>
+                  </Pressable>
+                );
+              } else {
+                // Disable interaction if note is not active (placeholder from optimistic updates)
+                return <NoteListItem note={note} />;
+              }
+            }}
             ItemSeparatorComponent={() => (
               <View className="h-[1px] bg-gray-400" />
             )}
