@@ -115,7 +115,7 @@ export async function POST(req: Request): Promise<Response> {
             content: "",
             owner: userId,
             digestSpan: "SINGLE",
-            active: false,
+            active: true,
           },
         },
       },

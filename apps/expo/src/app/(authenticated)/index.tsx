@@ -1,13 +1,4 @@
-import { useAuth } from "@clerk/clerk-expo";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
-import { Stack, router } from "expo-router";
-import {
-  Loader2Icon,
-  MicIcon,
-  RefreshCwIcon,
-  SquareIcon,
-} from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import {
@@ -16,22 +7,32 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router, Stack } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Loader2Icon,
+  MicIcon,
+  RefreshCwIcon,
+  SquareIcon,
+} from "lucide-react-native";
 
 import type { Note } from "@brain2/db/client";
 
 import Avatar from "~/components/avatar";
+import Badge from "~/components/badge";
 import Button from "~/components/button";
 import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
-import Badge from "~/components/badge";
+import { DateTime } from "luxon";
 
 /**
  * Home page for authenticated users
  */
 export default function HomePage() {
   const queryClient = useQueryClient();
-  const { isLoaded: isUserLoaded, isSignedIn, getToken } = useAuth();
+  const { isLoaded: isUserLoaded, isSignedIn, getToken, userId } = useAuth();
 
   const {
     data: notes,
@@ -44,11 +45,48 @@ export default function HomePage() {
       return getNotes((await getToken())!);
     },
     enabled: isUserLoaded && isSignedIn,
+    staleTime: 60 * 1000, // Refetch every minute
   });
 
   if (notesError) {
     console.error("[getNotes] Query error:", notesError);
   }
+
+  const { mutate: uploadRecordingMutation } = useMutation({
+    mutationFn: async (audioUrl: string) => {
+      return uploadRecording(audioUrl, (await getToken())!);
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["notes"] });
+
+      const date = DateTime.now().toJSDate();
+      const staleNotes: Note[] = queryClient.getQueryData(["notes"])!;
+      const dummyNote: Note = {
+        id: "note_optimistic_placeholder",
+        owner: userId!,
+        title: "New Recording (Processing...)",
+        content: "New Recording (Processing...)",
+        digestSpan: "SINGLE",
+        childrenIds: [],
+        parentIds: [],
+        active: true,
+        digestStartDate: date,
+        createdAt: date,
+        updatedAt: date,
+      };
+
+      const concatenated = [dummyNote, ...staleNotes];
+      console.log(concatenated.map((note) => note.title));
+      console.log(concatenated.map((note) => note.createdAt));
+      queryClient.setQueryData(["notes"], concatenated);
+
+      return { staleNotes };
+    },
+    onError: (err, _noteId, context) => {
+      console.error(err);
+      queryClient.setQueryData(["notes"], context?.staleNotes);
+    },
+  });
 
   const { mutate: deleteNote } = useMutation({
     mutationFn: async (noteId: string) => {
@@ -65,7 +103,8 @@ export default function HomePage() {
 
       return { staleNotes };
     },
-    onError: (_err, _noteId, context) => {
+    onError: (err, _noteId, context) => {
+      console.error(err);
       queryClient.setQueryData(["notes"], context?.staleNotes);
     },
     onSettled: async () => {
@@ -99,7 +138,7 @@ export default function HomePage() {
           <Avatar />
         </View>
         {/* Badges */}
-        <View className="w-full flex flex-row items-center justify-start gap-2 p-4">
+        <View className="flex w-full flex-row items-center justify-start gap-2 p-4">
           <Badge text="Notes" />
           <Badge text="Digests" />
         </View>
@@ -161,15 +200,7 @@ export default function HomePage() {
               setRecording(null);
 
               if (uri) {
-                try {
-                  const token = await getToken();
-                  await uploadRecording(uri, token!);
-                  await queryClient.invalidateQueries({
-                    queryKey: ["notes"],
-                  });
-                } catch (err) {
-                  console.error("Failed to send request", err);
-                }
+                uploadRecordingMutation(uri);
               }
             } else {
               const newRecording = await startRecording();

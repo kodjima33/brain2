@@ -45,7 +45,10 @@ export const NOTE_BADGE_COLORS = {
  * A list item representing a note
  */
 export function NoteListItem({ note }: NoteListItemProps) {
-  const date = DateTime.fromISO(note.createdAt.toString());
+  // Prisma-returned JS date doesn't have toISOString() method
+  const dateStringRaw =
+    note.createdAt.toISOString?.() ?? note.createdAt.toString();
+  const date = DateTime.fromISO(dateStringRaw);
   const dateString = getDateStringFromSpan(date, note.digestSpan);
 
   return (
