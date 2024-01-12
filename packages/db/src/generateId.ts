@@ -14,7 +14,7 @@ const prefixes: Record<PrismaModelName, string> = {
   preferences: "pref",
   audioBlob: "ablb",
   note: "note",
-  noteDigest: "nd",
+  chatConversation: "conv",
 };
 
 /**
