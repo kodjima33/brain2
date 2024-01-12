@@ -13,17 +13,19 @@
     "db:push": "pnpm -F db push",
     "db:studio": "pnpm -F db studio",
     "dev": "turbo dev --parallel",
+    "dev:next": "turbo dev --filter nextjs",
+    "dev:inngest": "inngest-cli dev --no-discovery -u http://localhost:3000/api/inngest",
     "format": "turbo format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
     "format:fix": "turbo format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
     "lint": "turbo lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:fix": "turbo lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
-    "typecheck": "turbo typecheck",
-    "dev:next": "pnpm dlx turbo dev --filter nextjs"
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "@brain2/prettier-config": "workspace:^0.1.0",
     "@turbo/gen": "^1.11.2",
+    "inngest-cli": "^0.23.1",
     "prettier": "^3.1.1",
     "turbo": "^1.11.2",
     "typescript": "^5.3.3"
