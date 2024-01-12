@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       content,
       digestSpan: span,
       digestStartDate: startDate.toISO()!,
-      children: {
+      parents: {
         connect: notes.map((note) => ({ id: note.id })),
       },
     },
