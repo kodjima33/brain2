@@ -29,6 +29,13 @@ interface MessengerRequest {
   message: MessengerMsg;
 }
 
+type MessengerSenderAction = "mark_seen" | "typing_on";
+
+interface MessengerSenderActionReq {
+  recipient: MessengerRecipient;
+  sender_action: MessengerSenderAction;
+}
+
 const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
 const END_CONVO_MESSAGE = "end note";
 
@@ -165,11 +172,34 @@ async function sendMessage(
   });
 }
 
+// Mark a message as seen or turn the typing animation on
+async function sendMessengerAction(
+  senderPSID: string,
+  action: MessengerSenderAction,
+): Promise<void> {
+  const request: MessengerSenderActionReq = {
+    recipient: { id: senderPSID },
+    sender_action: action,
+  };
+
+  await axios.post(env.MESSENGER_API_URL, request, {
+    headers: {
+      Authorization: `Bearer ${env.MESSENGER_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 async function handleConvResponse(
   time: number,
   senderPSID: string,
   messageText: string,
 ): Promise<void> {
+  // Mark message as seen and turn on the typing animation
+  await sendMessengerAction(senderPSID, "mark_seen");
+  // Automatically turned off after 20 seconds, or when the bot sends a message, so not worrying about turning it off
+  await sendMessengerAction(senderPSID, "typing_on");
+
   const currentConversation = await getCurrentConversation(
     senderPSID,
     new Date(time),
