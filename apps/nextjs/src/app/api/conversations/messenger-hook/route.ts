@@ -232,6 +232,14 @@ async function handleConvResponse(
     },
   });
 }
+// TODO: Messenger Auth with clerk
+// Upon receiving a message, check if PSID has been seen before, i.e. associated with an existing clerk user's metadata
+// If not, send a login button message with callback URL set to next frontend auth page
+// frontend auth page saves account linking token and redirect url to local storage, and asks clerk to auth the user (redirect to same auth frontend upon successful auth)
+// option 1 - send userID as auth token, and save PSID when messaging_account_linking webhook is invoked by messenger
+// option 2 - ignore the webhook. Before redirecting back to messenger's success URL, use the account linking token with the PSID retrieval endpoint to get the PSID and save with clerk user metadata.
+
+// Note: account linking token expires in 5 mins, so should check that stuff in local storage is <5 mins old
 
 // Webhook invoked when a message is received on messenger, i.e. conversational capture is invoked
 export async function POST(req: Request): Promise<Response> {
