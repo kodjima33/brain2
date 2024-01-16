@@ -100,3 +100,10 @@ model ChatConversation {
   noteId String? @unique
   note   Note?   @relation(fields: [noteId], references: [id])
 }
+
+// Mapping of clerk userIDs to messenger's page scoped IDs (PSID)
+model MessengerUser {
+  id            String @id @map("_id")
+  clerkUserID   String @unique
+  messengerPSID String @unique
+}
