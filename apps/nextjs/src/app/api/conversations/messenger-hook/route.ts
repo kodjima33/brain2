@@ -258,7 +258,15 @@ export async function POST(req: Request): Promise<Response> {
       throw z.ZodError;
     }
 
-    console.log(messageText, message);
+    console.log(messageText, message, senderPSID);
+
+    const messengerUser = await prisma.messengerUser.findUnique({
+      where: { messengerPSID: senderPSID },
+    });
+
+    if (!messengerUser) {
+      // Messenger login flow
+    }
 
     await handleConvResponse(time, senderPSID, messageText);
 
