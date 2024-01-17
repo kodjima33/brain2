@@ -11,6 +11,8 @@ import type { QuickReplies } from "~/util/messenger/types/quickReplies";
 import type { SenderAction } from "~/util/messenger/types/senderAction";
 import type { SenderActionRequest } from "~/util/messenger/types/senderActionRequest";
 import { env } from "~/env";
+import { messageRequestSchema } from "~/util/messenger/requests/messageRequestSchema";
+import { validationRequestSchema } from "~/util/messenger/requests/validationRequestSchema";
 
 const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
 const END_CONVO_MESSAGE = "end note";
@@ -23,12 +25,6 @@ const DEFAULT_MESSENGER_QUICK_REPLIES: QuickReplies[] = [
     content_type: "text",
   },
 ];
-
-const validationRequestSchema = z.object({
-  mode: z.string(),
-  verify_token: z.string(),
-  challenge: z.string(),
-});
 
 // Webhook to validate Messenger's verification requests as per https://developers.facebook.com/docs/messenger-platform/webhooks#verification-requests
 export async function GET(req: NextRequest): Promise<Response> {
@@ -51,26 +47,6 @@ export async function GET(req: NextRequest): Promise<Response> {
     return new Response("Unauthorized. Validation failed.", { status: 403 });
   }
 }
-
-// Defined based on docs here - https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages#message-with-fallback-attachment
-// Not entirely sure what all the fields are - just using the message text, time and senderID for now.
-const messageRequestSchema = z.object({
-  entry: z.array(
-    z.object({
-      time: z.number(),
-      messaging: z.array(
-        z.object({
-          sender: z.object({
-            id: z.string(),
-          }),
-          message: z.object({
-            text: z.string(),
-          }),
-        }),
-      ),
-    }),
-  ),
-});
 
 async function createNewConversation(
   ownerPSID: string,
