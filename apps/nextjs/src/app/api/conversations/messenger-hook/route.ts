@@ -6,40 +6,16 @@ import type { ChatConversation } from "@brain2/db";
 import { generateConvResponse } from "@brain2/ai";
 import { generateId, MessageAuthor, prisma } from "@brain2/db";
 
+import type { HookRequest } from "~/util/messenger/types/hookRequest";
+import type { QuickReplies } from "~/util/messenger/types/quickReplies";
+import type { SenderAction } from "~/util/messenger/types/senderAction";
+import type { SenderActionRequest } from "~/util/messenger/types/senderActionRequest";
 import { env } from "~/env";
-
-interface MessengerRecipient {
-  id: string;
-}
-
-interface MessengerQuickReplies {
-  content_type: string;
-  title: string;
-  payload: number;
-}
-
-interface MessengerMsg {
-  text: string;
-  quick_replies: MessengerQuickReplies[];
-}
-
-interface MessengerRequest {
-  recipient: MessengerRecipient;
-  messaging_type: string;
-  message: MessengerMsg;
-}
-
-type MessengerSenderAction = "mark_seen" | "typing_on";
-
-interface MessengerSenderActionReq {
-  recipient: MessengerRecipient;
-  sender_action: MessengerSenderAction;
-}
 
 const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
 const END_CONVO_MESSAGE = "end note";
 
-const DEFAULT_MESSENGER_QUICK_REPLIES: MessengerQuickReplies[] = [
+const DEFAULT_MESSENGER_QUICK_REPLIES: QuickReplies[] = [
   { title: END_CONVO_MESSAGE, payload: 0, content_type: "text" },
   {
     title: "ask something else",
@@ -155,7 +131,7 @@ async function sendMessage(
   message: string,
   includeQuickReplies: boolean,
 ): Promise<void> {
-  const request: MessengerRequest = {
+  const request: HookRequest = {
     recipient: { id: senderPSID },
     messaging_type: "RESPONSE",
     message: {
@@ -175,9 +151,9 @@ async function sendMessage(
 // Mark a message as seen or turn the typing animation on
 async function sendMessengerAction(
   senderPSID: string,
-  action: MessengerSenderAction,
+  action: SenderAction,
 ): Promise<void> {
-  const request: MessengerSenderActionReq = {
+  const request: SenderActionRequest = {
     recipient: { id: senderPSID },
     sender_action: action,
   };
