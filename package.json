@@ -7,7 +7,9 @@
   "packageManager": "pnpm@8.12.1",
   "scripts": {
     "build": "turbo build",
-    "build:eas": "cd apps/expo && pnpm with-env eas build -p android --profile preview",
+    "build:eas:preview": "cd apps/expo && pnpm with-env eas build -p android --profile preview",
+    "build:eas:production": "cd apps/expo && pnpm with-env eas build -p android --profile production",
+    "submit:eas": "cd apps/expo && pnpm with-env eas submit -p android",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo clean",
     "db:push": "pnpm -F db push",
