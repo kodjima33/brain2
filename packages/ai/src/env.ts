@@ -1,6 +1,10 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
+
+
+
+
 export const env = createEnv({
   clientPrefix: "PUBLIC_",
   server: {
@@ -13,6 +17,9 @@ export const env = createEnv({
     // Momento LLM response caching
     MOMENTO_API_KEY: z.string(),
     MOMENTO_CACHE_NAME: z.string(),
+    MESSENGER_VERIFY_TOKEN: z.string(),
+    MESSENGER_ACCESS_TOKEN: z.string(),
+    MESSENGER_API_URL: z.string(),
   },
   client: {},
   runtimeEnv: process.env,

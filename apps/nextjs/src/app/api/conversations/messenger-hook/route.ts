@@ -7,8 +7,6 @@ import { generateConvResponse } from "@brain2/ai";
 import { generateId, MessageAuthor, prisma } from "@brain2/db";
 
 import type { HookRequest } from "~/util/messenger/types/hookRequest";
-import type { SenderAction } from "~/util/messenger/types/senderAction";
-import type { SenderActionRequest } from "~/util/messenger/types/senderActionRequest";
 import { env } from "~/env";
 import {
   DEFAULT_MESSENGER_QUICK_REPLIES,
@@ -17,6 +15,7 @@ import {
 } from "~/util/messenger/constants";
 import { messageRequestSchema } from "~/util/messenger/requests/messageRequestSchema";
 import { validationRequestSchema } from "~/util/messenger/requests/validationRequestSchema";
+import { sendMessengerAction } from "~/util/messenger/sendMessengerAction";
 
 // Webhook to validate Messenger's verification requests as per https://developers.facebook.com/docs/messenger-platform/webhooks#verification-requests
 export async function GET(req: NextRequest): Promise<Response> {
@@ -106,24 +105,6 @@ async function sendMessage(
       text: message,
       quick_replies: includeQuickReplies ? DEFAULT_MESSENGER_QUICK_REPLIES : [],
     },
-  };
-
-  await axios.post(env.MESSENGER_API_URL, request, {
-    headers: {
-      Authorization: `Bearer ${env.MESSENGER_ACCESS_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-// Mark a message as seen or turn the typing animation on
-async function sendMessengerAction(
-  senderPSID: string,
-  action: SenderAction,
-): Promise<void> {
-  const request: SenderActionRequest = {
-    recipient: { id: senderPSID },
-    sender_action: action,
   };
 
   await axios.post(env.MESSENGER_API_URL, request, {
