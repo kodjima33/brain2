@@ -12,11 +12,11 @@ export async function initiateLogin(senderPSID: string): Promise<void> {
         type: "template",
         payload: {
           template_type: "button",
-          text: "Try the log in button!",
+          text: "Before we get started, we need you to login so we can keep track of your conversations, and notes :)",
           buttons: [
             {
               type: "account_link",
-              url: "https://www.example.com/authorize",
+              url: `${env.VERCEL_URL}/messenger-auth`,
             },
           ],
         },
