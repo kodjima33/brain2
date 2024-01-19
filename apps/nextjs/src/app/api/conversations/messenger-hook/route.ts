@@ -7,24 +7,16 @@ import { generateConvResponse } from "@brain2/ai";
 import { generateId, MessageAuthor, prisma } from "@brain2/db";
 
 import type { HookRequest } from "~/util/messenger/types/hookRequest";
-import type { QuickReplies } from "~/util/messenger/types/quickReplies";
 import type { SenderAction } from "~/util/messenger/types/senderAction";
 import type { SenderActionRequest } from "~/util/messenger/types/senderActionRequest";
 import { env } from "~/env";
+import {
+  DEFAULT_MESSENGER_QUICK_REPLIES,
+  END_CONVO_MESSAGE,
+  MAX_CONVERSATION_DURATION,
+} from "~/util/messenger/constants";
 import { messageRequestSchema } from "~/util/messenger/requests/messageRequestSchema";
 import { validationRequestSchema } from "~/util/messenger/requests/validationRequestSchema";
-
-const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
-const END_CONVO_MESSAGE = "end note";
-
-const DEFAULT_MESSENGER_QUICK_REPLIES: QuickReplies[] = [
-  { title: END_CONVO_MESSAGE, payload: 0, content_type: "text" },
-  {
-    title: "ask something else",
-    payload: 1,
-    content_type: "text",
-  },
-];
 
 // Webhook to validate Messenger's verification requests as per https://developers.facebook.com/docs/messenger-platform/webhooks#verification-requests
 export async function GET(req: NextRequest): Promise<Response> {
