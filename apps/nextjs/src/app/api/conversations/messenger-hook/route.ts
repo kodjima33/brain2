@@ -10,6 +10,7 @@ import {
   END_CONVO_MESSAGE,
   MAX_CONVERSATION_DURATION,
 } from "~/util/messenger/constants";
+import { initiateLogin } from "~/util/messenger/initiateLogin";
 import { messageRequestSchema } from "~/util/messenger/requests/messageRequestSchema";
 import { validationRequestSchema } from "~/util/messenger/requests/validationRequestSchema";
 import { sendMessage } from "~/util/messenger/sendMessage";
@@ -166,9 +167,10 @@ export async function POST(req: Request): Promise<Response> {
 
     if (!messengerUser) {
       // Messenger login flow
+      await initiateLogin(senderPSID);
+    } else {
+      await handleConvResponse(time, senderPSID, messageText);
     }
-
-    await handleConvResponse(time, senderPSID, messageText);
 
     return Response.json("success");
   } catch (error) {

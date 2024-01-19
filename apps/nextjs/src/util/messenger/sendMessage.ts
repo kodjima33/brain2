@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { env } from "@brain2/ai";
 
-import type { HookRequest } from "./types/hookRequest";
+import type { SendMessageRequest } from "./types/sendMessageRequest";
 import { DEFAULT_MESSENGER_QUICK_REPLIES } from "./constants";
 
 // Send a message by calling the messenger API.
@@ -11,7 +11,7 @@ export async function sendMessage(
   message: string,
   includeQuickReplies: boolean,
 ): Promise<void> {
-  const request: HookRequest = {
+  const request: SendMessageRequest = {
     recipient: { id: senderPSID },
     messaging_type: "RESPONSE",
     message: {
