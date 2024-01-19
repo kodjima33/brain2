@@ -1,20 +1,18 @@
 import type { NextRequest } from "next/server";
-import axios from "axios";
 import { z } from "zod";
 
 import type { ChatConversation } from "@brain2/db";
 import { generateConvResponse } from "@brain2/ai";
 import { generateId, MessageAuthor, prisma } from "@brain2/db";
 
-import type { HookRequest } from "~/util/messenger/types/hookRequest";
 import { env } from "~/env";
 import {
-  DEFAULT_MESSENGER_QUICK_REPLIES,
   END_CONVO_MESSAGE,
   MAX_CONVERSATION_DURATION,
 } from "~/util/messenger/constants";
 import { messageRequestSchema } from "~/util/messenger/requests/messageRequestSchema";
 import { validationRequestSchema } from "~/util/messenger/requests/validationRequestSchema";
+import { sendMessage } from "~/util/messenger/sendMessage";
 import { sendMessengerAction } from "~/util/messenger/sendMessengerAction";
 
 // Webhook to validate Messenger's verification requests as per https://developers.facebook.com/docs/messenger-platform/webhooks#verification-requests
@@ -90,29 +88,6 @@ async function getCurrentConversation(
   }
 
   return conversation;
-}
-
-// Send a message by calling the messenger API.
-async function sendMessage(
-  senderPSID: string,
-  message: string,
-  includeQuickReplies: boolean,
-): Promise<void> {
-  const request: HookRequest = {
-    recipient: { id: senderPSID },
-    messaging_type: "RESPONSE",
-    message: {
-      text: message,
-      quick_replies: includeQuickReplies ? DEFAULT_MESSENGER_QUICK_REPLIES : [],
-    },
-  };
-
-  await axios.post(env.MESSENGER_API_URL, request, {
-    headers: {
-      Authorization: `Bearer ${env.MESSENGER_ACCESS_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-  });
 }
 
 async function handleConvResponse(
