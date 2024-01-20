@@ -20,8 +20,12 @@ export async function POST(req: Request): Promise<Response> {
     const json = (await req.json()) as unknown;
     const { messengerPSID } = messengerAuthSchema.parse(json);
 
-    const messengerUser = await prisma.messengerUser.create({
-      data: {
+    const messengerUser = await prisma.messengerUser.upsert({
+      where: { clerkUserID: user.id },
+      update: {
+        messengerPSID: messengerPSID,
+      },
+      create: {
         id: generateId("messengerUser"),
         messengerPSID: messengerPSID,
         clerkUserID: user.id,
