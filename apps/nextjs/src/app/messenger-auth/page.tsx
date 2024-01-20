@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
@@ -36,17 +36,13 @@ export default function MessengerAuth() {
 
     setAuthComplete(true);
   }
-
-  useEffect(() => {
-    if (isSignedIn) {
-      void linkMessengerAccount();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignedIn]);
+  if (isSignedIn) {
+    void linkMessengerAccount();
+  }
   return (
     <main className="flex h-screen flex-col items-center text-black">
       <div className="container mt-36 flex flex-col items-center justify-center gap-4 py-8">
-        <h3 className="text-3xl font-bold tracking-tight sm:text-[5rem]">
+        <h3 className="font-bold tracking-tight sm:text-[5rem]">
           {authComplete
             ? "Your messenger account has been successfully linked! You're ready to start chatting with Brain² on Messenger :)"
             : "Loading..."}

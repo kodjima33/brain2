@@ -16,7 +16,9 @@ export async function sendMessage(
     messaging_type: "RESPONSE",
     message: {
       text: message,
-      quick_replies: includeQuickReplies ? DEFAULT_MESSENGER_QUICK_REPLIES : [],
+      ...(includeQuickReplies
+        ? { quick_replies: DEFAULT_MESSENGER_QUICK_REPLIES }
+        : {}),
     },
   };
 
