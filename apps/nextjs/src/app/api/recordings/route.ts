@@ -7,7 +7,7 @@ import { z } from "zod";
 import type { AudioBlob } from "@brain2/db";
 import { generateTranscriptTitle } from "@brain2/ai";
 import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
-import { sendEvent } from "@brain2/lib";
+import { inngestBaseClient, inngestEdgeClient, sendEvent } from "@brain2/lib";
 
 const storageClient = new StorageClient();
 const openai = new OpenAI();
@@ -50,7 +50,7 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
   });
 
   // Refine the transcript async
-  await sendEvent({
+  await inngestEdgeClient.send({
     name: "recording.created",
     data: {
       noteId: audioBlob.noteId,

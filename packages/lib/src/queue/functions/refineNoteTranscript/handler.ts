@@ -1,13 +1,13 @@
 import { refineTranscript } from "@brain2/ai";
 import { prisma } from "@brain2/db";
 
-import { inngestClient } from "../../client";
-import { eventName, argSchema } from "./schema";
+import { inngestEdgeClient } from "../../client";
+import { argSchema, eventName } from "./schema";
 
 /**
  * Refine a raw recording note transcript, improving formatting and grammar
  */
-export const handler = inngestClient.createFunction(
+export const handler = inngestEdgeClient.createFunction(
   { id: "refine-note-transcript" },
   { event: eventName },
   async ({ event }) => {
