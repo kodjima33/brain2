@@ -15,8 +15,10 @@ export async function initiateLogin(senderPSID: string): Promise<void> {
           text: "Before we get started, we need you to login so we can keep track of your conversations, and notes :)",
           buttons: [
             {
-              type: "account_link",
-              url: `${env.VERCEL_URL}/messenger-auth`,
+              type: "web_url",
+              url: `${env.VERCEL_URL}/messenger-auth?senderPSID=${senderPSID}`,
+              title: "Log In",
+              webview_height_ratio: "full",
             },
           ],
         },
