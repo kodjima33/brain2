@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 import { z } from "zod";
 
 import { generateId, prisma } from "@brain2/db";
@@ -10,9 +10,9 @@ const messengerAuthSchema = z.object({
 });
 
 export async function POST(req: Request): Promise<Response> {
-  const { userId } = auth();
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -23,13 +23,13 @@ export async function POST(req: Request): Promise<Response> {
     data: {
       id: generateId("messengerUser"),
       messengerPSID: messengerPSID,
-      clerkUserID: userId,
+      clerkUserID: user.id,
     },
   });
 
   await sendMessage(
     messengerPSID,
-    `Thanks for logging in. We can now get started with building your Brain²! What do you want to talk about?`,
+    `Thanks for logging in ${user.firstName}. We can now get started with building your Brain²! What do you want to talk about?`,
     false,
   );
 
