@@ -5,8 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 
-import { env } from "~/env";
-
 interface LinkRequest {
   messengerPSID: string;
 }
@@ -29,16 +27,12 @@ export default function MessengerAuth() {
 
     const request: LinkRequest = { messengerPSID: messengerPSID };
 
-    await axios.post(
-      `${env.VERCEL_URL}/api/conversations/messenger-auth`,
-      request,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+    await axios.post("/api/conversations/messenger-auth", request, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-    );
+    });
 
     setAuthComplete(true);
   }
