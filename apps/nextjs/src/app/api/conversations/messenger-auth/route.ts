@@ -20,6 +20,11 @@ export async function POST(req: Request): Promise<Response> {
     const json = (await req.json()) as unknown;
     const { messengerPSID } = messengerAuthSchema.parse(json);
 
+    const accountAlreadyLinked =
+      (await prisma.messengerUser.findFirst({
+        where: { clerkUserID: user.id },
+      })) != null;
+
     const messengerUser = await prisma.messengerUser.upsert({
       where: { clerkUserID: user.id },
       update: {
@@ -32,11 +37,13 @@ export async function POST(req: Request): Promise<Response> {
       },
     });
 
-    await sendMessage(
-      messengerPSID,
-      `Thanks for logging in ${user.firstName}. We can now get started with building your Brain²! What do you want to talk about?`,
-      false,
-    );
+    if (!accountAlreadyLinked) {
+      await sendMessage(
+        messengerPSID,
+        `Thanks for logging in ${user.firstName}. We can now get started with building your Brain²! What do you want to talk about?`,
+        false,
+      );
+    }
 
     return Response.json(messengerUser);
   } catch (error) {
