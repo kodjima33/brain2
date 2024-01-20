@@ -1,9 +1,9 @@
 import { serve } from "inngest/next";
 
-import { functions, inngestClient } from "@brain2/lib";
+import { functions, inngestClient } from "@brain2/lib/queue";
 
 export const { GET, POST, PUT } = serve({
   client: inngestClient,
-  functions: [functions.refineNoteTranscript.handler],
-  streaming: "allow"
+  functions: [functions.handlers.refineNoteTranscriptHandler],
+  streaming: "allow",
 });

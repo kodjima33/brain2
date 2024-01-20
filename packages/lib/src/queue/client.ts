@@ -1,18 +1,7 @@
-import type { z } from "zod";
-import { Inngest } from "inngest";
+import { EventSchemas, Inngest } from "inngest";
 
-import type { refineNoteTranscript } from "./functions";
 import { env } from "..";
-
-/**
- * Event types
- * Augment this type with new events as needed
- */
-export type QueueEvent = "recording.created";
-
-type QueueEventArgs<E extends QueueEvent> = E extends "recording.created"
-  ? z.infer<typeof refineNoteTranscript.schema>
-  : never;
+import { refineNoteTranscriptSchema } from "./functions/schemas";
 
 /**
  * Inngest client for task queue management
@@ -20,17 +9,14 @@ type QueueEventArgs<E extends QueueEvent> = E extends "recording.created"
 export const inngestClient = new Inngest({
   id: "Brain2",
   eventKey: env.INNGEST_EVENT_KEY,
+  schemas: new EventSchemas().fromZod([refineNoteTranscriptSchema]),
 });
 
+type InngestSendArgs = Parameters<(typeof inngestClient)["send"]>[0];
+
 /**
- * Trigger an event for asynchronous processing
+ * Send an event to the task queue
  */
-export async function triggerEvent<E extends QueueEvent>(
-  event: E,
-  data: QueueEventArgs<E>,
-) {
-  return inngestClient.send({
-    name: event,
-    data,
-  });
+export async function sendEvent(args: InngestSendArgs) {
+  await inngestClient.send(args);
 }
