@@ -1,5 +1,5 @@
 import { refineTranscript } from "@brain2/ai";
-import { prisma } from "@brain2/db";
+import { prisma } from "@brain2/db/edge";
 
 import { inngestEdgeClient } from "../../client";
 import { argSchema, eventName } from "./schema";
