@@ -5,8 +5,6 @@ import {
   inngestEdgeClient
 } from "@brain2/lib/queue";
 
-export const runtime = "edge";
-
 export const { GET, POST, PUT } = serve({
   client: inngestEdgeClient,
   functions: [functions.handlers.refineNoteTranscriptHandler],
