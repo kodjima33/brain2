@@ -1,5 +1,4 @@
 import type { NextRequest } from "next/server";
-import axios from "axios";
 import { z } from "zod";
 
 import type { ChatConversation } from "@brain2/db";
@@ -7,52 +6,15 @@ import { generateConvResponse } from "@brain2/ai";
 import { generateId, MessageAuthor, prisma } from "@brain2/db";
 
 import { env } from "~/env";
-
-interface MessengerRecipient {
-  id: string;
-}
-
-interface MessengerQuickReplies {
-  content_type: string;
-  title: string;
-  payload: number;
-}
-
-interface MessengerMsg {
-  text: string;
-  quick_replies: MessengerQuickReplies[];
-}
-
-interface MessengerRequest {
-  recipient: MessengerRecipient;
-  messaging_type: string;
-  message: MessengerMsg;
-}
-
-type MessengerSenderAction = "mark_seen" | "typing_on";
-
-interface MessengerSenderActionReq {
-  recipient: MessengerRecipient;
-  sender_action: MessengerSenderAction;
-}
-
-const MAX_CONVERSATION_DURATION = 24 * 60 * 60 * 1000;
-const END_CONVO_MESSAGE = "end note";
-
-const DEFAULT_MESSENGER_QUICK_REPLIES: MessengerQuickReplies[] = [
-  { title: END_CONVO_MESSAGE, payload: 0, content_type: "text" },
-  {
-    title: "ask something else",
-    payload: 1,
-    content_type: "text",
-  },
-];
-
-const validationRequestSchema = z.object({
-  mode: z.string(),
-  verify_token: z.string(),
-  challenge: z.string(),
-});
+import {
+  END_CONVO_MESSAGE,
+  MAX_CONVERSATION_DURATION,
+} from "~/util/messenger/constants";
+import { initiateLogin } from "~/util/messenger/initiateLogin";
+import { messageRequestSchema } from "~/util/messenger/requests/messageRequestSchema";
+import { validationRequestSchema } from "~/util/messenger/requests/validationRequestSchema";
+import { sendMessage } from "~/util/messenger/sendMessage";
+import { sendMessengerAction } from "~/util/messenger/sendMessengerAction";
 
 // Webhook to validate Messenger's verification requests as per https://developers.facebook.com/docs/messenger-platform/webhooks#verification-requests
 export async function GET(req: NextRequest): Promise<Response> {
@@ -75,26 +37,6 @@ export async function GET(req: NextRequest): Promise<Response> {
     return new Response("Unauthorized. Validation failed.", { status: 403 });
   }
 }
-
-// Defined based on docs here - https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages#message-with-fallback-attachment
-// Not entirely sure what all the fields are - just using the message text, time and senderID for now.
-const messageRequestSchema = z.object({
-  entry: z.array(
-    z.object({
-      time: z.number(),
-      messaging: z.array(
-        z.object({
-          sender: z.object({
-            id: z.string(),
-          }),
-          message: z.object({
-            text: z.string(),
-          }),
-        }),
-      ),
-    }),
-  ),
-});
 
 async function createNewConversation(
   ownerPSID: string,
@@ -147,47 +89,6 @@ async function getCurrentConversation(
   }
 
   return conversation;
-}
-
-// Send a message by calling the messenger API.
-async function sendMessage(
-  senderPSID: string,
-  message: string,
-  includeQuickReplies: boolean,
-): Promise<void> {
-  const request: MessengerRequest = {
-    recipient: { id: senderPSID },
-    messaging_type: "RESPONSE",
-    message: {
-      text: message,
-      quick_replies: includeQuickReplies ? DEFAULT_MESSENGER_QUICK_REPLIES : [],
-    },
-  };
-
-  await axios.post(env.MESSENGER_API_URL, request, {
-    headers: {
-      Authorization: `Bearer ${env.MESSENGER_ACCESS_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-// Mark a message as seen or turn the typing animation on
-async function sendMessengerAction(
-  senderPSID: string,
-  action: MessengerSenderAction,
-): Promise<void> {
-  const request: MessengerSenderActionReq = {
-    recipient: { id: senderPSID },
-    sender_action: action,
-  };
-
-  await axios.post(env.MESSENGER_API_URL, request, {
-    headers: {
-      Authorization: `Bearer ${env.MESSENGER_ACCESS_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-  });
 }
 
 async function handleConvResponse(
@@ -250,9 +151,18 @@ export async function POST(req: Request): Promise<Response> {
       throw z.ZodError;
     }
 
-    console.log(messageText, message);
+    console.log(messageText, message, senderPSID);
 
-    await handleConvResponse(time, senderPSID, messageText);
+    const messengerUser = await prisma.messengerUser.findUnique({
+      where: { messengerPsid: senderPSID },
+    });
+
+    if (!messengerUser) {
+      // Messenger login flow because we haven't seen this user before.
+      await initiateLogin(senderPSID);
+    } else {
+      await handleConvResponse(time, senderPSID, messageText);
+    }
 
     return Response.json("success");
   } catch (error) {
