@@ -1,8 +1,8 @@
-import { refineTranscript } from "@brain2/ai";
+import { refineTranscript } from "@brain2/ai/pipelines/refineTranscript";
 import { prisma } from "@brain2/db/edge";
 
-import { argSchema, eventName } from "./schema";
 import { inngestEdgeClient } from "../../clients";
+import { argSchema, eventName } from "./schema";
 
 /**
  * Refine a raw recording note transcript, improving formatting and grammar

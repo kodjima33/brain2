@@ -6,7 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./queue": "./src/queue/index.ts",
-    "./queue/clients": "./src/queue/clients/index.ts"
+    "./queue/clients": "./src/queue/clients/index.ts",
+    "./queue/functions": "./src/queue/functions/index.ts"
   },
   "license": "MIT",
   "scripts": {
