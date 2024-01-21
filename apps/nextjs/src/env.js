@@ -11,6 +11,7 @@ export const env = createEnv({
       .string()
       .optional()
       .transform((v) => (v ? `https://${v}` : undefined)),
+    VERCEL_PROD_URL: z.string().optional(),
     PORT: z.coerce.number().default(3000),
   },
   /**
@@ -40,7 +41,9 @@ export const env = createEnv({
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
   runtimeEnv: {
+    VERCEL_ENV: process.env.VERCEL_ENV,
     VERCEL_URL: process.env.VERCEL_URL,
+    VERCEL_PROD_URL: process.env.VERCEL_ENV === "production" ? "brain2-psi.vercel.app" : process.env.VERCEL_URL,
     PORT: process.env.PORT,
     DATABASE_URL: process.env.DATABASE_URL,
     AWS_S3_REGION: process.env.AWS_S3_REGION,
