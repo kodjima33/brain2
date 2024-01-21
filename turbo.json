@@ -5,8 +5,11 @@
     "topo": {
       "dependsOn": ["^topo"]
     },
+    "generate": {
+      "cache": false
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^generate"],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
