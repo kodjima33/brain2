@@ -1,6 +1,5 @@
 import type { Callbacks } from "langchain/callbacks";
 import { ChatOpenAI } from "@langchain/openai";
-import { getCache } from "./cache";
 
 export interface CreateChatModelParams {
   modelName: string;
@@ -18,15 +17,11 @@ export async function createChatModel({
   maxTokens,
   temperature,
   callbacks,
-  cache: shouldCache = true
 }: CreateChatModelParams) {
-  const cache = shouldCache ? await getCache() : undefined;
-
   return new ChatOpenAI({
     modelName,
     maxTokens,
     temperature,
-    cache,
-    callbacks
+    callbacks,
   });
 }

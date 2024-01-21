@@ -4,7 +4,8 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./edge": "./src/edge.ts"
   },
   "scripts": {
     "build": "prisma generate",

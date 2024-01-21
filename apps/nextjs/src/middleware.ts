@@ -5,7 +5,13 @@ import { authMiddleware } from "@clerk/nextjs";
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
 export default authMiddleware({
   // eslint-disable-next-line no-useless-escape
-  ignoredRoutes: ["/api/conversations/messenger-hook", "/api/inngest"],
+  ignoredRoutes: [
+    "/api/conversations/messenger-hook",
+    "/api/inngest",
+    "/api/inngest/base",
+    "/api/inngest/edge",
+    "/api/debug"
+  ],
 });
 
 export const config = {
