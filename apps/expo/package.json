@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "with-env": "dotenv -e ../../.env --"
+    "with-env": "dotenv -e ../../.env --",
+    "set-ip": "REACT_NATIVE_PACKAGER_HOSTNAME="
   },
   "dependencies": {
     "@clerk/clerk-expo": "^0.19.27",
