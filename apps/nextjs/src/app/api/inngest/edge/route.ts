@@ -6,7 +6,7 @@ export const runtime = "edge";
 
 export const { GET, POST, PUT } = serve({
   client: inngestEdgeClient,
-  functions: [handlers.refineNoteTranscriptHandler],
+  functions: [handlers.refineNoteTranscriptHandler, handlers.dummyHandler],
   streaming: "allow",
   servePath: "/api/inngest/edge",
 });

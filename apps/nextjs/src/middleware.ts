@@ -10,6 +10,7 @@ export default authMiddleware({
     "/api/inngest",
     "/api/inngest/base",
     "/api/inngest/edge",
+    "/api/debug"
   ],
 });
 
