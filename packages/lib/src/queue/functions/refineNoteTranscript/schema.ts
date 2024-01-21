@@ -1,4 +1,4 @@
-import { LiteralZodEventSchema } from "inngest";
+import type { LiteralZodEventSchema } from "inngest";
 import { z } from "zod";
 
 export const eventName = "recording.created";
