@@ -1,9 +1,11 @@
+import { inngestEdgeClient } from "@brain2/lib/queue/clients";
+import { handlers } from "@brain2/lib/queue/functions";
 import { serve } from "inngest/next";
 
-import { functions, inngestClient } from "@brain2/lib";
+export const runtime = "edge";
 
 export const { GET, POST, PUT } = serve({
-  client: inngestClient,
-  functions: [functions.refineNoteTranscript.handler],
-  streaming: "allow"
+  client: inngestEdgeClient,
+  functions: [handlers.refineNoteTranscriptHandler, handlers.dummyHandler],
+  streaming: "allow",
 });

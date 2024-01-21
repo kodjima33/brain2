@@ -4,7 +4,9 @@ import {
   CredentialProvider,
 } from "@gomomento/sdk";
 import { MomentoCache } from "@langchain/community/caches/momento";
+import { ChatOpenAI } from "@langchain/openai";
 
+import type { CreateChatModelParams } from "./openai";
 import { env } from "./env";
 
 /**
@@ -25,5 +27,25 @@ export async function getCache() {
   return MomentoCache.fromProps({
     client: cacheClient,
     cacheName: env.MOMENTO_CACHE_NAME,
+  });
+}
+
+/**
+ * Create a chat model
+ */
+export async function createCachedChatModel({
+  modelName,
+  maxTokens,
+  temperature,
+  callbacks,
+}: CreateChatModelParams) {
+  const cache = await getCache();
+
+  return new ChatOpenAI({
+    modelName,
+    maxTokens,
+    temperature,
+    cache,
+    callbacks,
   });
 }
