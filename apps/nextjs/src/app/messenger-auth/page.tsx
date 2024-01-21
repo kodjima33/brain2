@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
@@ -36,9 +36,12 @@ export default function MessengerAuth() {
 
     setAuthComplete(true);
   }
-  if (isSignedIn) {
-    void linkMessengerAccount();
-  }
+  useEffect(() => {
+    if (isSignedIn) {
+      void linkMessengerAccount();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <main className="flex h-screen flex-col items-center text-black">
       <div className="container mt-36 flex flex-col items-center justify-center gap-4 py-8">
