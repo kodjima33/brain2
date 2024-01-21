@@ -103,7 +103,6 @@ model ChatConversation {
 
 // Mapping of clerk userIDs to messenger's page scoped IDs (PSID)
 model MessengerUser {
-  id            String @id @map("_id")
-  clerkUserID   String @unique
-  messengerPSID String @unique
+  userId        String @id @map("_id")
+  messengerPsid String @unique
 }

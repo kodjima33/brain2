@@ -1,7 +1,7 @@
 import { currentUser } from "@clerk/nextjs";
 import { z } from "zod";
 
-import { generateId, prisma } from "@brain2/db";
+import { prisma } from "@brain2/db";
 
 import { sendMessage } from "~/util/messenger/sendMessage";
 
@@ -22,18 +22,17 @@ export async function POST(req: Request): Promise<Response> {
 
     const accountAlreadyLinked =
       (await prisma.messengerUser.findFirst({
-        where: { clerkUserID: user.id },
+        where: { userId: user.id },
       })) != null;
 
     const messengerUser = await prisma.messengerUser.upsert({
-      where: { clerkUserID: user.id },
+      where: { userId: user.id },
       update: {
-        messengerPSID: messengerPSID,
+        messengerPsid: messengerPSID,
       },
       create: {
-        id: generateId("messengerUser"),
-        messengerPSID: messengerPSID,
-        clerkUserID: user.id,
+        messengerPsid: messengerPSID,
+        userId: user.id,
       },
     });
 
