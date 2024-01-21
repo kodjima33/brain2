@@ -9,6 +9,9 @@ const messengerAuthSchema = z.object({
   messengerPSID: z.string(),
 });
 
+// This endpoint is called when a user logs in via Messenger.
+// The request contains the user's clerk JWT and their messenger PSID.
+// If the account hasn't already been linked, we do so by creating a record in MessengerUser and send the user a success message via Messenger.
 export async function POST(req: Request): Promise<Response> {
   try {
     const user = await currentUser();
