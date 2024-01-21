@@ -1,6 +1,6 @@
 import { serve } from "inngest/next";
 
-import { inngestBaseClient } from "@brain2/lib/queue";
+import { inngestBaseClient } from "@brain2/lib/queue/clients";
 
 export const runtime = "nodejs";
 

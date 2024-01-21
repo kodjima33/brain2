@@ -7,7 +7,7 @@ import { z } from "zod";
 import type { AudioBlob } from "@brain2/db";
 import { generateTranscriptTitle } from "@brain2/ai";
 import { AUDIO_FORMAT, generateId, prisma } from "@brain2/db";
-import { inngestBaseClient, inngestEdgeClient, sendEvent } from "@brain2/lib";
+import { inngestEdgeClient } from "@brain2/lib/queue/clients";
 
 const storageClient = new StorageClient();
 const openai = new OpenAI();
