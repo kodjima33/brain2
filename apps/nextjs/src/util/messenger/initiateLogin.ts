@@ -1,8 +1,7 @@
 import axios from "axios";
 
-import { env } from "@brain2/ai";
-
 import type { InitiateLoginRequest } from "./types/initiateLoginRequest";
+import { env } from "~/env";
 
 export async function initiateLogin(senderPSID: string): Promise<void> {
   const loginMsg: InitiateLoginRequest = {
