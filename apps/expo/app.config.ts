@@ -8,6 +8,11 @@ const defineConfig = (): ExpoConfig => ({
   orientation: "portrait",
   icon: "./assets/app-icon.png",
   userInterfaceStyle: "light",
+  splash: {
+    image: "./assets/splash.png",
+    resizeMode: "contain",
+    backgroundColor: "#E4DFDA",
+  },
   updates: {
     fallbackToCacheTimeout: 0,
   },
@@ -19,8 +24,8 @@ const defineConfig = (): ExpoConfig => ({
   android: {
     package: "com.brain2.app",
     adaptiveIcon: {
-      foregroundImage: "./assets/app-icon.png",
-      backgroundColor: "#FFFFFF",
+      foregroundImage: "./assets/brain2.png",
+      backgroundColor: "#E4DFDA",
     },
     intentFilters: [
       {
