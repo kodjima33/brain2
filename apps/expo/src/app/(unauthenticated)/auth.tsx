@@ -1,25 +1,25 @@
-import { SignedIn, useOAuth, useUser } from "@clerk/clerk-expo";
+import { useOAuth, useUser } from "@clerk/clerk-expo";
 import Constants from "expo-constants";
-import { Redirect, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Loader2Icon } from "lucide-react-native";
 import { useCallback } from "react";
-import { Image, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Image, SafeAreaView, Text, View } from "react-native";
 
 import Button from "~/components/button";
 import { useWarmupBrowser } from "~/utils/useWarmupBrowser";
-import GoogleIcon from "../../assets/google.png";
-import Brain2Icon from "../../assets/icon.png";
+import Brain2Icon from "../../../assets/brain2.png";
+import GoogleIcon from "../../../assets/google.png";
 
 WebBrowser.maybeCompleteAuthSession();
 
 function SignInButton() {
   useWarmupBrowser();
 
+  const baseUrl = Constants.experienceUrl.startsWith("exp") ? Constants.experienceUrl + "/--" : Constants.experienceUrl;
   const { startOAuthFlow } = useOAuth({
     strategy: "oauth_google",
-    redirectUrl: Constants.experienceUrl,
+    redirectUrl: `${baseUrl}/`,
   });
 
   const onPress = useCallback(async () => {
@@ -56,9 +56,6 @@ export default function AuthPage() {
 
   return (
     <SafeAreaView className="bg-white">
-      <SignedIn>
-        <Redirect href="/" />
-      </SignedIn>
       <Stack.Screen
         options={{
           headerShown: false,

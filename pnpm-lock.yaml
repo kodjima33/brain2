@@ -177,6 +177,9 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
+      uri-scheme:
+        specifier: ^1.2.0
+        version: 1.2.0
 
   apps/nextjs:
     dependencies:
@@ -14140,6 +14143,11 @@ packages:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
     dependencies:
       punycode: 2.3.0
+
+  /uri-scheme@1.2.0:
+    resolution: {integrity: sha512-eEwuzuoX5wkBpf0AatbKXX9kGxk0QDbLMUUWeBIC3WhCi3f/D9o3ch5+wy9SeyfnGEjBLjgYlVgYq92IoBt/YA==}
+    hasBin: true
+    dev: true
 
   /url-join@4.0.0:
     resolution: {integrity: sha512-EGXjXJZhIHiQMK2pQukuFcL303nskqIRzWvPvV5O8miOfwoUb9G+a/Cld60kUyeaybEI94wvVClT10DtfeAExA==}
