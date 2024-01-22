@@ -24,7 +24,7 @@ const defineConfig = (): ExpoConfig => ({
   android: {
     package: "com.brain2.app",
     adaptiveIcon: {
-      foregroundImage: "./assets/brain2.png",
+      foregroundImage: "./assets/adaptive-app-icon.png",
       backgroundColor: "#E4DFDA",
     },
     intentFilters: [
