@@ -1,9 +1,8 @@
 import axios from "axios";
 
-import { env } from "@brain2/ai";
-
 import type { SenderAction } from "./types/senderAction";
 import type { SenderActionRequest } from "./types/senderActionRequest";
+import { env } from "~/env";
 
 // Mark a message as seen or turn the typing animation on
 export async function sendMessengerAction(

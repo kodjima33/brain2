@@ -1,9 +1,8 @@
 import axios from "axios";
 
-import { env } from "@brain2/ai";
-
 import type { SendMessageRequest } from "./types/sendMessageRequest";
 import { DEFAULT_MESSENGER_QUICK_REPLIES } from "./constants";
+import { env } from "~/env";
 
 // Send a message by calling the messenger API.
 export async function sendMessage(
