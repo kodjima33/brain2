@@ -9,6 +9,7 @@
     "dev:android": "expo start --android",
     "dev:ios": "expo start --ios",
     "prebuild:android": "pnpm with-env expo prebuild --platform android",
+    "build:android": "cd android && ./gradlew :app:installRelease",
     "lint": "eslint .",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit",

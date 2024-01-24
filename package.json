@@ -7,6 +7,11 @@
   "packageManager": "pnpm@8.12.1",
   "scripts": {
     "build": "turbo build",
+    "prebuild:local": "cd apps/expo && pnpm with-env expo prebuild -p android",
+    "build:local": "pnpm prebuild:local && cd apps/expo/android && ./gradlew :app:assembleRelease",
+    "build:local:eas": "cd apps/expo && pnpm with-env eas build -p android --profile preview --local",
+    "install:local": "cd apps/expo && adb install *.apk",
+    "install:local:eas": "cd apps/expo && adb install android/app/build/outputs/apk/release/app-release.apk",
     "build:eas:preview": "cd apps/expo && pnpm with-env eas build -p android --profile preview",
     "build:eas:production": "cd apps/expo && pnpm with-env eas build -p android --profile production",
     "submit:eas": "cd apps/expo && pnpm with-env eas submit -p android",
