@@ -1,10 +1,10 @@
-import { useOAuth, useUser } from "@clerk/clerk-expo";
+import { useCallback } from "react";
+import { Image, SafeAreaView, Text, View } from "react-native";
 import Constants from "expo-constants";
 import { Stack } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
+import { useOAuth, useUser } from "@clerk/clerk-expo";
 import { Loader2Icon } from "lucide-react-native";
-import { useCallback } from "react";
-import { Image, SafeAreaView, Text, View } from "react-native";
 
 import Button from "~/components/button";
 import { useWarmupBrowser } from "~/utils/useWarmupBrowser";
@@ -16,22 +16,24 @@ WebBrowser.maybeCompleteAuthSession();
 function SignInButton() {
   useWarmupBrowser();
 
-  const baseUrl = Constants.experienceUrl.startsWith("exp") ? Constants.experienceUrl + "/--" : Constants.experienceUrl;
+  const baseUrl = Constants.experienceUrl ?? "com.brain2.app://";
+  const path = baseUrl.startsWith("exp") ? "/--/auth" : "/auth";
+
   const { startOAuthFlow } = useOAuth({
     strategy: "oauth_google",
-    redirectUrl: `${baseUrl}/`,
+    redirectUrl: `${baseUrl}${path}`,
   });
 
   const onPress = useCallback(async () => {
     try {
       const props = await startOAuthFlow();
-      const { createdSessionId, setActive } = props;
+      const { createdSessionId, setActive, authSessionResult } = props;
 
       if (createdSessionId) {
         // Mark session as active
         await setActive!({ session: createdSessionId });
       } else {
-        console.error("Failed to set active");
+        console.error("Failed to set active for reason", authSessionResult?.type);
         // Use signIn or signUp for next steps such as MFA
       }
     } catch (err) {

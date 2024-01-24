@@ -11,11 +11,17 @@ import * as SecureStore from "expo-secure-store";
 
 const tokenCache = {
   async getToken(key: string) {
-    try {
-      return SecureStore.getItemAsync(key);
-    } catch (err) {
-      return null;
+    const attempts = 3;
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await SecureStore.getItemAsync(key);
+      } catch (err) {
+        console.error("Failed to get token", err);
+      }
     }
+    console.log(`Failed to get token after ${attempts} attempts. Deleting token.`)
+    await SecureStore.deleteItemAsync(key);
+    return null;
   },
   async saveToken(key: string, value: string) {
     try {
