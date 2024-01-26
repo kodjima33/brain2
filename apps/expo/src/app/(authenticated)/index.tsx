@@ -23,7 +23,7 @@ import type { Note } from "@brain2/db/client";
 import Avatar from "~/components/avatar";
 import Badge from "~/components/badge";
 import Button from "~/components/button";
-import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
+import { NoteCard, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
 
@@ -178,18 +178,15 @@ export default function HomePage() {
                       renderRightActions={NoteListItemRightSwipeActions}
                       onSwipeableOpen={() => deleteNote(note.id)}
                     >
-                      <NoteListItem note={note} />
+                      <NoteCard note={note} />
                     </Swipeable>
                   </Pressable>
                 );
               } else {
                 // Disable interaction if note is not active (placeholder from optimistic updates)
-                return <NoteListItem note={note} />;
+                return <NoteCard note={note} />;
               }
             }}
-            ItemSeparatorComponent={() => (
-              <View className="h-[1px] bg-gray-400" />
-            )}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing || notesLoading}

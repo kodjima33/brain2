@@ -7,7 +7,7 @@ import type { Note, NoteDigestSpan } from "@brain2/db/client";
 
 import Badge from "./badge";
 
-interface NoteListItemProps {
+interface NoteCardProps {
   note: Note;
 }
 
@@ -16,15 +16,17 @@ interface NoteListItemProps {
  */
 export function NoteListItemRightSwipeActions() {
   return (
-    <View className="flex w-full flex-grow flex-col items-end justify-center gap-2 bg-red-500 px-4 py-2 shadow-sm">
-      <TrashIcon className="border-black-2 h-8 w-8 border text-white" />
+    <View className="flex w-full flex-grow flex-col items-end justify-center gap-2 px-4 py-2">
+      <View className="flex flex-col items-center justify-center bg-red-500 p-4 rounded-full">
+        <TrashIcon className="border-black-2 h-8 w-8 border text-white" />
+      </View>
     </View>
   );
 }
 
 export function getDateStringFromSpan(date: DateTime, span: NoteDigestSpan) {
   if (span === "SINGLE") {
-    return date.toFormat("ccc dd/MM/yyyy HH:mm:ss");
+    return date.toFormat("cccc, LLL dd");
   } else if (span === "DAY") {
     return date.toFormat("ccc dd/MM/yyyy");
   } else if (span === "WEEK") {
@@ -44,23 +46,27 @@ export const NOTE_BADGE_COLORS = {
 /**
  * A list item representing a note
  */
-export function NoteListItem({ note }: NoteListItemProps) {
+export function NoteCard({ note }: NoteCardProps) {
   // Prisma-returned JS date doesn't have toISOString() method
   const dateStringRaw =
     note.createdAt.toISOString?.() ?? note.createdAt.toString();
   const date = DateTime.fromISO(dateStringRaw);
-  const dateString = getDateStringFromSpan(date, note.digestSpan);
+  const dateString = date.toFormat("cccc, LLL dd");
+  const timeString = date.toFormat("hh:mm a");
 
   return (
-    <View className="flex flex-col gap-2 bg-white px-4 py-2">
-      <Text className="text-2xl font-semibold">{note.title}</Text>
-      <Text className="text-md font-light text-gray-700">{dateString}</Text>
-      {note.digestSpan !== "SINGLE" ? (
-        <Badge
-          text={note.digestSpan}
-          className={NOTE_BADGE_COLORS[note.digestSpan]}
-        />
-      ) : null}
+    <View className="flex flex-col gap-2 px-4 py-2">
+      <View className="flex flex-col gap-2 rounded-2xl border border-black bg-white p-4">
+        <Text className="text-2xl font-semibold">{note.title}</Text>
+        <View className="flex flex-col gap-1">
+          <Text className="text-md font-light text-gray-700">{dateString}</Text>
+          {note.digestSpan == "SINGLE" ? (
+            <Text className="text-md font-light text-gray-700">
+              {timeString}
+            </Text>
+          ) : null}
+        </View>
+      </View>
     </View>
   );
 }
