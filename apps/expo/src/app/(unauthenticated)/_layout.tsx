@@ -2,21 +2,21 @@ import { Redirect, Stack } from "expo-router";
 import { SignedIn, SignedOut } from "@clerk/clerk-expo";
 
 /**
- * Redirects to /auth if the user is not signed in.
+ * Redirects to /index if the user is signed in.
  */
 export default function AuthenticatedLayout() {
   return (
     <>
-      <SignedOut>
-        <Redirect href="/auth" />
-      </SignedOut>
       <SignedIn>
+        <Redirect href="/" />
+      </SignedIn>
+      <SignedOut>
         <Stack
           screenOptions={{
             headerShadowVisible: false,
           }}
         />
-      </SignedIn>
+      </SignedOut>
     </>
   );
 }

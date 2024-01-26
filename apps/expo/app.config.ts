@@ -6,12 +6,12 @@ const defineConfig = (): ExpoConfig => ({
   scheme: "brain2",
   version: "0.1.0",
   orientation: "portrait",
-  icon: "./assets/icon.png",
+  icon: "./assets/app-icon.png",
   userInterfaceStyle: "light",
   splash: {
-    image: "./assets/icon.png",
+    image: "./assets/splash.png",
     resizeMode: "contain",
-    backgroundColor: "#1F104A",
+    backgroundColor: "#E4DFDA",
   },
   updates: {
     fallbackToCacheTimeout: 0,
@@ -24,9 +24,23 @@ const defineConfig = (): ExpoConfig => ({
   android: {
     package: "com.brain2.app",
     adaptiveIcon: {
-      foregroundImage: "./assets/icon.png",
-      backgroundColor: "#FFFFFF",
+      foregroundImage: "./assets/adaptive-app-icon.png",
+      backgroundColor: "#E4DFDA",
     },
+    intentFilters: [
+      {
+        action: "VIEW",
+        autoVerify: true,
+        data: [
+          {
+            scheme: "https",
+            host: "brain2-psi.vercel.app",
+            pathPrefix: "/expo",
+          },
+        ],
+        category: ["BROWSABLE", "DEFAULT"],
+      },
+    ],
   },
   extra: {
     eas: {

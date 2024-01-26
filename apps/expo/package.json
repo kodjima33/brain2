@@ -8,12 +8,16 @@
     "dev": "pnpm with-env expo start -c --android",
     "dev:android": "expo start --android",
     "dev:ios": "expo start --ios",
+    "prebuild:android": "pnpm with-env expo prebuild --platform android",
+    "build:android": "cd android && ./gradlew :app:installRelease",
     "lint": "eslint .",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "with-env": "dotenv -e ../../.env --"
+    "with-env": "dotenv -e ../../.env --",
+    "set-ip": "REACT_NATIVE_PACKAGER_HOSTNAME=",
+    "open-url": "uri-scheme open --android"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^0.19.27",
@@ -66,7 +70,8 @@
     "eslint": "^8.56.0",
     "prettier": "^3.1.1",
     "tailwindcss": "3.4.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "uri-scheme": "^1.2.0"
   },
   "eslintConfig": {
     "root": true,

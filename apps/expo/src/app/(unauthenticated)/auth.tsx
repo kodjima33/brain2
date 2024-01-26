@@ -1,37 +1,39 @@
-import { SignedIn, useOAuth, useUser } from "@clerk/clerk-expo";
-import Constants from "expo-constants";
-import { Redirect, Stack } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
-import { Loader2Icon } from "lucide-react-native";
 import { useCallback } from "react";
-import { Image, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Image, SafeAreaView, Text, View } from "react-native";
+import Constants from "expo-constants";
+import { Stack } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useOAuth, useUser } from "@clerk/clerk-expo";
+import { Loader2Icon } from "lucide-react-native";
 
 import Button from "~/components/button";
 import { useWarmupBrowser } from "~/utils/useWarmupBrowser";
-import GoogleIcon from "../../assets/google.png";
-import Brain2Icon from "../../assets/icon.png";
+import Brain2Icon from "../../../assets/brain2.png";
+import GoogleIcon from "../../../assets/google.png";
 
 WebBrowser.maybeCompleteAuthSession();
 
 function SignInButton() {
   useWarmupBrowser();
 
+  const baseUrl = Constants.experienceUrl ?? "com.brain2.app://";
+  const path = baseUrl.startsWith("exp") ? "/--/auth" : "/auth";
+
   const { startOAuthFlow } = useOAuth({
     strategy: "oauth_google",
-    redirectUrl: Constants.experienceUrl,
+    redirectUrl: `${baseUrl}${path}`,
   });
 
   const onPress = useCallback(async () => {
     try {
       const props = await startOAuthFlow();
-      const { createdSessionId, setActive } = props;
+      const { createdSessionId, setActive, authSessionResult } = props;
 
       if (createdSessionId) {
         // Mark session as active
         await setActive!({ session: createdSessionId });
       } else {
-        console.error("Failed to set active");
+        console.error("Failed to set active for reason", authSessionResult?.type);
         // Use signIn or signUp for next steps such as MFA
       }
     } catch (err) {
@@ -56,9 +58,6 @@ export default function AuthPage() {
 
   return (
     <SafeAreaView className="bg-white">
-      <SignedIn>
-        <Redirect href="/" />
-      </SignedIn>
       <Stack.Screen
         options={{
           headerShown: false,
