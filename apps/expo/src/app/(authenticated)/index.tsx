@@ -1,14 +1,4 @@
-import { useAuth } from "@clerk/clerk-expo";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
-import { Stack, router } from "expo-router";
-import {
-  Loader2Icon,
-  MicIcon,
-  RefreshCwIcon,
-  SquareIcon,
-} from "lucide-react-native";
-import { DateTime } from "luxon";
 import React, { useCallback, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import {
@@ -17,6 +7,16 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router, Stack } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Loader2Icon,
+  MicIcon,
+  RefreshCwIcon,
+  SquareIcon,
+} from "lucide-react-native";
+import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
