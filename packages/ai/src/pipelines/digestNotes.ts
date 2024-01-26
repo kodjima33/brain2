@@ -37,7 +37,7 @@ function noteToMessage(note: Note): HumanMessage {
 }
 
 /**
- * Refine transcript, correcting spelling mistakes and splitting paragraphs as needed
+ * Create a digest of the provided notes
  */
 export async function digestNotes(
   notes: Note[],
