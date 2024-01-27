@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 
-import type { Note, NoteDigestSpan } from "@brain2/db";
+import type { Note, NoteDigestSpan } from "@brain2/db/edge";
 
 import { createChatModel } from "../openai";
 

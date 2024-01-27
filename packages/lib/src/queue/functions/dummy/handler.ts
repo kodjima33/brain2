@@ -2,7 +2,7 @@ import { inngestEdgeClient } from "../../clients";
 import { argSchema, eventName } from "./schema";
 
 /**
- * Refine a raw recording note transcript, improving formatting and grammar
+ * Dummy event handler
  */
 export const handler = inngestEdgeClient.createFunction(
   { id: "dummy-handler" },

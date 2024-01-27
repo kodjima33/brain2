@@ -1,6 +1,9 @@
 import type { AudioBlob } from "@prisma/client/edge";
 import { PrismaClient } from "@prisma/client/edge";
 
+export * from "@prisma/client/edge";
+export * from "./generateId";
+
 export const AUDIO_FORMAT = "m4a";
 
 export const prisma = new PrismaClient({
