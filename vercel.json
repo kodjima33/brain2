@@ -1,5 +1,11 @@
 {
   "github": {
     "silent": true
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/digest/daily",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }
