@@ -9,7 +9,7 @@ export async function POST(_req: NextRequest) {
     name: "digest.batch",
     data: {
       span: "DAY",
-      date: DateTime.now().toISODate(),
+      date: DateTime.now().minus({ days: 3 }).toISODate(),
     },
   });
 

@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
-import { digestNotesStructured } from "@brain2/ai/pipelines/digestNotesStructured";
-import { Note, generateId, prisma } from "@brain2/db/edge";
+import { digestNotesStructured } from "@brain2/ai";
+import { generateId, Note, prisma } from "@brain2/db";
 
 import { inngestEdgeClient } from "../../clients";
 import { argSchema, eventName } from "./schema";
@@ -34,16 +34,36 @@ export const handler = inngestEdgeClient.createFunction(
       throw new Error("Invalid date: " + date);
     }
 
-    const notes = await prisma.note.aggregateRaw({
+    const notes = (await prisma.note.aggregateRaw({
       pipeline: [
         {
           $match: {
-            createdAt: {
-              $gte: startDate.toISO()!,
-              $lte: endDate.toISO()!,
+            $expr: {
+              $and: [
+                {
+                  $gte: [
+                    "$createdAt",
+                    {
+                      $dateFromString: {
+                        dateString: startDate.toISO()!,
+                      },
+                    },
+                  ],
+                },
+                {
+                  $lte: [
+                    "$createdAt",
+                    {
+                      $dateFromString: {
+                        dateString: endDate.toISO()!,
+                      },
+                    },
+                  ],
+                },
+                { $eq: ["$active", true] },
+                { $eq: ["$digestSpan", "SINGLE"] },
+              ],
             },
-            active: true,
-            digestSpan: "SINGLE",
           },
         },
         {
@@ -54,6 +74,9 @@ export const handler = inngestEdgeClient.createFunction(
         {
           $group: {
             _id: "$owner",
+            owner: {
+              $first: "$owner",
+            },
             notes: {
               $push: {
                 id: "$_id",
@@ -65,30 +88,30 @@ export const handler = inngestEdgeClient.createFunction(
           },
         },
       ],
-    });
+    })) as unknown as NoteGroup[];
 
-    console.log(notes);
+    for (const noteGroup of notes) {
+      const { title, highlights, reflection, nextSteps } =
+        await digestNotesStructured(noteGroup.notes, span);
+      let content = `## Highlights\n\n${highlights}\n\n\n## Reflection\n\n${reflection}`;
+      if (nextSteps) {
+        content += `\n\n\n## Next steps\n\n${nextSteps}`;
+      }
 
-    // const { title, highlights, reflection, nextSteps } =
-    //   await digestNotesStructured(notes, span);
-    // let content = `## Highlights\n\n${highlights}\n\n\n## Reflection\n\n${reflection}`;
-    // if (nextSteps) {
-    //   content += `\n\n\n## Next steps\n\n${nextSteps}`;
-    // }
-
-    // const noteId = generateId("note");
-    // const note = await prisma.note.create({
-    //   data: {
-    //     id: noteId,
-    //     owner: userId,
-    //     title,
-    //     content,
-    //     digestSpan: span,
-    //     digestStartDate: startDate.toISO()!,
-    //     parents: {
-    //       connect: notes.map((note) => ({ id: note.id })),
-    //     },
-    //   },
-    // });
+      const noteId = generateId("note");
+      await prisma.note.create({
+        data: {
+          id: noteId,
+          owner: noteGroup.owner,
+          title,
+          content,
+          digestSpan: span,
+          digestStartDate: startDate.toISO()!,
+          parents: {
+            connect: noteGroup.notes.map((note) => ({ id: note.id })),
+          },
+        },
+      });
+    }
   },
 );
