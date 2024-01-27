@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -189,7 +188,7 @@ export default function HomePage() {
           </Pressable>
         </View>
         {/* Content */}
-        <View className="flex max-h-[80vh] flex-grow flex-col items-start justify-start gap-2">
+        <View className="flex max-h-[70vh] flex-grow flex-col items-start justify-start gap-2">
           {notesLoading && (
             <View className="flex h-[50vh] w-full items-center justify-center">
               <Loader2Icon size={48} className="animate-spin text-gray-400" />
@@ -213,49 +212,38 @@ export default function HomePage() {
               />
             </View>
           )}
-          <View className="relative flex flex-[1] flex-col">
-            <FlatList
-              data={filteredNotes}
-              keyExtractor={(note) => note.id}
-              renderItem={({ item: note }) => {
-                if (note.active) {
-                  // Using Pressable because for some reason, Link screws up the cell layout
-                  return (
-                    <Pressable
-                      onPress={() => router.push(`/note/${note.id}`)}
-                      key={note.id}
+          <FlatList
+            data={filteredNotes}
+            keyExtractor={(note) => note.id}
+            fadingEdgeLength={100}
+            renderItem={({ item: note }) => {
+              if (note.active) {
+                // Using Pressable because for some reason, Link screws up the cell layout
+                return (
+                  <Pressable
+                    onPress={() => router.push(`/note/${note.id}`)}
+                    key={note.id}
+                  >
+                    <Swipeable
+                      renderRightActions={NoteListItemRightSwipeActions}
+                      onSwipeableOpen={() => deleteNote(note.id)}
                     >
-                      <Swipeable
-                        renderRightActions={NoteListItemRightSwipeActions}
-                        onSwipeableOpen={() => deleteNote(note.id)}
-                      >
-                        <NoteCard note={note} />
-                      </Swipeable>
-                    </Pressable>
-                  );
-                } else {
-                  // Disable interaction if note is not active (placeholder from optimistic updates)
-                  return <NoteCard note={note} key={note.id} />;
-                }
-              }}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing || notesLoading}
-                  onRefresh={onRefresh}
-                />
+                      <NoteCard note={note} />
+                    </Swipeable>
+                  </Pressable>
+                );
+              } else {
+                // Disable interaction if note is not active (placeholder from optimistic updates)
+                return <NoteCard note={note} key={note.id} />;
               }
-            />
-
-            {/* Blur masks */}
-            {/* <LinearGradient
-              colors={["#FFFFFF", "transparent"]}
-              className="absolute left-0 right-0 top-0 h-[10vh]"
-            /> */}
-            <LinearGradient
-              colors={["transparent", "#FFFFFF"]}
-              className="absolute bottom-0 left-0 right-0 h-[10vh]"
-            />
-          </View>
+            }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing || notesLoading}
+                onRefresh={onRefresh}
+              />
+            }
+          />
         </View>
         {/* FAB */}
         <TouchableOpacity
