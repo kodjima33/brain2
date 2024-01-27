@@ -11,7 +11,7 @@ export default function Avatar() {
 
   return (
     <Link href="/settings">
-      <View className="rounded-full border border-gray-300">
+      <View className="rounded-full border border-gray-500">
         {user?.imageUrl ? (
           <Image
             source={{

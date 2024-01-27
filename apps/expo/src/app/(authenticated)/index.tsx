@@ -1,6 +1,6 @@
 import type { Recording } from "expo-av/build/Audio";
 import React, { useCallback, useMemo, useState } from "react";
-import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 import {
   RefreshControl,
   Swipeable,
@@ -15,6 +15,7 @@ import {
   Loader2Icon,
   MicIcon,
   RefreshCwIcon,
+  SearchIcon,
   SquareIcon,
 } from "lucide-react-native";
 import { DateTime } from "luxon";
@@ -27,6 +28,7 @@ import Button from "~/components/button";
 import { NoteCard, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
+import Brain2Icon from "../../../assets/brain2.png";
 
 /**
  * Home page for authenticated users
@@ -135,12 +137,14 @@ export default function HomePage() {
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
         {/* Header */}
-        <View className="flex w-full flex-row items-center justify-between gap-4 px-4">
-          <TextInput
-            className="h-10 flex-grow rounded-full border border-black px-4 py-2"
-            placeholder="Search..."
-          />
-          <Avatar />
+        <View className="flex w-full flex-row items-center justify-between px-4">
+          <Image source={Brain2Icon} className="h-10 w-10" />
+          <View className="flex flex-row items-center gap-5">
+            <Pressable>
+              <SearchIcon className="h-10 w-10 text-black" />
+            </Pressable>
+            <Avatar />
+          </View>
         </View>
         {/* Badges */}
         <View className="flex w-full flex-row items-center justify-start gap-2 p-4">
