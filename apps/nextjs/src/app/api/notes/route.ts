@@ -20,7 +20,7 @@ export async function GET(_req: Request): Promise<Response> {
       active: true,
     },
     orderBy: {
-      createdAt: "desc",
+      digestStartDate: "desc",
     },
   });
   return Response.json(notes);

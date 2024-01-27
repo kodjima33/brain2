@@ -28,7 +28,7 @@ export function NoteListItemRightSwipeActions() {
 export function NoteCard({ note }: NoteCardProps) {
   // Prisma-returned JS date doesn't have toISOString() method
   const dateStringRaw =
-    note.createdAt.toISOString?.() ?? note.createdAt.toString();
+    note.digestStartDate.toISOString?.() ?? note.digestStartDate.toString();
   const date = DateTime.fromISO(dateStringRaw);
   const dateString = date.toFormat("cccc, LLL dd");
   const timeString = date.toFormat("hh:mm a");

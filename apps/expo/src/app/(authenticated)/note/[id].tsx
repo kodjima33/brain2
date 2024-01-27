@@ -27,7 +27,7 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
     setRefreshing(false);
   }, [refetch]);
 
-  const date = DateTime.fromISO(note.createdAt.toString());
+  const date = DateTime.fromISO(note.digestStartDate.toString());
   const dateString = date.toFormat("cccc, LLL dd");
   const timeString = date.toFormat("hh:mm a");
 
