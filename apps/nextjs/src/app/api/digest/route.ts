@@ -3,8 +3,8 @@ import { auth } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
-import { digestNotesStructured } from "@brain2/ai";
-import { generateId, NoteDigestSpan, prisma } from "@brain2/db";
+import { digestNotesStructured } from "@brain2/ai/pipelines/digestNotesStructured";
+import { generateId, NoteDigestSpan, prisma } from "@brain2/db/edge";
 
 const digestNoteSchema = z.object({
   span: z.enum([NoteDigestSpan.DAY, NoteDigestSpan.WEEK]),
@@ -49,10 +49,8 @@ export async function POST(req: NextRequest) {
     return new Response("No notes found", { status: 404 });
   }
 
-  const { title, highlights, reflection, nextSteps } = await digestNotesStructured(
-    notes,
-    span,
-  );
+  const { title, highlights, reflection, nextSteps } =
+    await digestNotesStructured(notes, span);
   let content = `## Highlights\n\n${highlights}\n\n\n## Reflection\n\n${reflection}`;
   if (nextSteps) {
     content += `\n\n\n## Next steps\n\n${nextSteps}`;

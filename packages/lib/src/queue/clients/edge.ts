@@ -1,7 +1,11 @@
 import { EventSchemas, Inngest } from "inngest";
 
 import { env } from "../..";
-import { dummySchema, refineNoteTranscriptSchema } from "../functions/schemas";
+import {
+  batchDigestSchema,
+  dummySchema,
+  refineNoteTranscriptSchema,
+} from "../functions/schemas";
 
 /**
  * Inngest client for task queue management
@@ -9,5 +13,9 @@ import { dummySchema, refineNoteTranscriptSchema } from "../functions/schemas";
 export const inngestEdgeClient = new Inngest({
   id: "inngest-edge",
   eventKey: env.INNGEST_EVENT_KEY,
-  schemas: new EventSchemas().fromZod([refineNoteTranscriptSchema, dummySchema]),
+  schemas: new EventSchemas().fromZod([
+    refineNoteTranscriptSchema,
+    dummySchema,
+    batchDigestSchema,
+  ]),
 });

@@ -1,15 +1,17 @@
-import type { NextRequest} from "next/server";
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { DateTime } from "luxon";
 
 import { inngestEdgeClient } from "@brain2/lib/queue/clients";
 
 export async function POST(_req: NextRequest) {
   await inngestEdgeClient.send({
-    name: "dummy.event",
+    name: "digest.batch",
     data: {
-      argument: "Hello world",
+      span: "DAY",
+      date: DateTime.now().toISODate(),
     },
   });
 
-  return new NextResponse("OK")
+  return new NextResponse("OK");
 }
