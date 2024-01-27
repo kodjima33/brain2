@@ -209,7 +209,7 @@ export default function HomePage() {
               />
             </View>
           )}
-          <View className="relative flex flex-[1] flex-col mt-[-2em]">
+          <View className="relative flex flex-[1] flex-col">
             <FlatList
               data={filteredNotes}
               keyExtractor={(note) => note.id}
@@ -269,7 +269,7 @@ export default function HomePage() {
             }
           }}
         >
-          <View className="mt-[-5em] flex items-center">
+          <View className="flex items-center">
             <View className="rounded-full border border-black p-4">
               {recording ? (
                 <SquareIcon className="h-10 w-10 text-black" />

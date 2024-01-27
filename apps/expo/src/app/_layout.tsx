@@ -1,13 +1,13 @@
-import { ClerkProvider } from "@clerk/clerk-expo";
+import React from "react";
 import Constants from "expo-constants";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import { ClerkProvider } from "@clerk/clerk-expo";
 
 import "../styles.css";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const tokenCache = {
   async getToken(key: string) {
@@ -19,7 +19,9 @@ const tokenCache = {
         console.error("Failed to get token", err);
       }
     }
-    console.log(`Failed to get token after ${attempts} attempts. Deleting token.`)
+    console.log(
+      `Failed to get token after ${attempts} attempts. Deleting token.`,
+    );
     await SecureStore.deleteItemAsync(key);
     return null;
   },
