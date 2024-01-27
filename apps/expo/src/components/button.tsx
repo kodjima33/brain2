@@ -23,7 +23,7 @@ export default function Button({
       className={clsx(
         "flex flex-row items-center gap-4 rounded-xl border border-gray-300 px-6 py-3",
         "hover:bg-gray-500 focus:bg-gray-800",
-        enabled ? "bg-white" : "bg-gray-500",
+        enabled ? "bg-white" : "bg-gray-200",
       )}
     >
       {icon}

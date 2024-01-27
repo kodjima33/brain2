@@ -17,7 +17,8 @@
     "ios": "expo run:ios",
     "with-env": "dotenv -e ../../.env --",
     "set-ip": "REACT_NATIVE_PACKAGER_HOSTNAME=",
-    "open-url": "uri-scheme open --android"
+    "open-url": "uri-scheme open --android",
+    "twdump": "tailwind -o output.css"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^0.19.27",
