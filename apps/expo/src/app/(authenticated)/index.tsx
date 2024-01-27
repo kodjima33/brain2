@@ -1,15 +1,5 @@
-import { useAuth } from "@clerk/clerk-expo";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Recording } from "expo-av/build/Audio";
-import { Stack, router } from "expo-router";
-import {
-  Loader2Icon,
-  MicIcon,
-  RefreshCwIcon,
-  SquareIcon,
-} from "lucide-react-native";
-import { DateTime } from "luxon";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import {
   RefreshControl,
@@ -17,13 +7,23 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router, Stack } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Loader2Icon,
+  MicIcon,
+  RefreshCwIcon,
+  SquareIcon,
+} from "lucide-react-native";
+import { DateTime } from "luxon";
 
-import type { Note } from "@brain2/db/client";
+import type { Note, NoteDigestSpan } from "@brain2/db/client";
 
 import Avatar from "~/components/avatar";
 import Badge from "~/components/badge";
 import Button from "~/components/button";
-import { NoteListItem, NoteListItemRightSwipeActions } from "~/components/note";
+import { NoteCard, NoteListItemRightSwipeActions } from "~/components/note";
 import { deleteNoteById, getNotes, uploadRecording } from "~/utils/api";
 import { startRecording, stopRecording } from "~/utils/audio";
 
@@ -119,6 +119,11 @@ export default function HomePage() {
     setRefreshing(false);
   }, [refetchNotes]);
 
+  const [selectedSpan, setSelectedSpan] = useState<NoteDigestSpan>("SINGLE");
+  const filteredNotes = useMemo(() => {
+    return notes?.filter((note) => note.digestSpan === selectedSpan);
+  }, [notes, selectedSpan]);
+
   return (
     <SafeAreaView className="bg-white pt-10">
       <Stack.Screen
@@ -138,8 +143,45 @@ export default function HomePage() {
         </View>
         {/* Badges */}
         <View className="flex w-full flex-row items-center justify-start gap-2 p-4">
-          <Badge text="Notes" />
-          <Badge text="Digests" />
+          <Pressable onPress={() => setSelectedSpan("SINGLE")}>
+            <Badge
+              text="Notes"
+              containerClassName={
+                selectedSpan === "SINGLE"
+                  ? "border-black bg-[#BAE6FD]"
+                  : "border-gray-500 bg-gray-100"
+              }
+              textClassName={
+                selectedSpan === "SINGLE" ? "color-black" : "color-gray-500"
+              }
+            />
+          </Pressable>
+          <Pressable onPress={() => setSelectedSpan("DAY")}>
+            <Badge
+              text="Dailies"
+              containerClassName={
+                selectedSpan === "DAY"
+                  ? "border-black bg-[#BAE6FD]"
+                  : "border-gray-500 bg-gray-100"
+              }
+              textClassName={
+                selectedSpan === "DAY" ? "color-black" : "color-gray-500"
+              }
+            />
+          </Pressable>
+          <Pressable onPress={() => setSelectedSpan("WEEK")}>
+            <Badge
+              text="Weeklies"
+              containerClassName={
+                selectedSpan === "WEEK"
+                  ? "border-black bg-[#BAE6FD]"
+                  : "border-gray-500 bg-gray-100"
+              }
+              textClassName={
+                selectedSpan === "WEEK" ? "color-black" : "color-gray-500"
+              }
+            />
+          </Pressable>
         </View>
         {/* Content */}
         <View className="flex max-h-[70vh] flex-grow flex-col items-start justify-start gap-2">
@@ -148,7 +190,7 @@ export default function HomePage() {
               <Loader2Icon size={48} className="animate-spin text-gray-400" />
             </View>
           )}
-          {!notesLoading && notes?.length === 0 && (
+          {!notesLoading && filteredNotes?.length === 0 && (
             <View className="flex h-[50vh] w-full items-center justify-center gap-5">
               <Text className="text-xl font-semibold text-gray-500">
                 Nothing here yet!
@@ -167,7 +209,7 @@ export default function HomePage() {
             </View>
           )}
           <FlatList
-            data={notes}
+            data={filteredNotes}
             keyExtractor={(note) => note.id}
             renderItem={({ item: note }) => {
               if (note.active) {
@@ -178,18 +220,15 @@ export default function HomePage() {
                       renderRightActions={NoteListItemRightSwipeActions}
                       onSwipeableOpen={() => deleteNote(note.id)}
                     >
-                      <NoteListItem note={note} />
+                      <NoteCard note={note} />
                     </Swipeable>
                   </Pressable>
                 );
               } else {
                 // Disable interaction if note is not active (placeholder from optimistic updates)
-                return <NoteListItem note={note} />;
+                return <NoteCard note={note} />;
               }
             }}
-            ItemSeparatorComponent={() => (
-              <View className="h-[1px] bg-gray-400" />
-            )}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing || notesLoading}

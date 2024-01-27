@@ -3,19 +3,20 @@ import clsx from "clsx";
 
 interface Props {
   text: string;
-  className?: string;
+  containerClassName?: string;
+  textClassName?: string;
 }
 
-export default function Badge({ text, className }: Props) {
+export default function Badge({ text, containerClassName, textClassName }: Props) {
   return (
     <View className="flex flex-row items-start">
       <View
         className={clsx(
-          "rounded-full border border-black bg-gray-200 px-4 py-2",
-          className,
+          "rounded-full border px-4 py-2",
+          containerClassName,
         )}
       >
-        <Text>{text}</Text>
+        <Text className={clsx(textClassName)}>{text}</Text>
       </View>
     </View>
   );
