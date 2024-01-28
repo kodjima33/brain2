@@ -98,7 +98,7 @@ export default function NotePage() {
   const [editMode, setEditMode] = useState(false);
 
   return (
-    <SafeAreaView className="bg-white pt-10">
+    <SafeAreaView className="bg-white">
       <Stack.Screen
         options={{
           headerRight: () => {
