@@ -80,6 +80,7 @@ function NoteView({
       <ScrollView
         className="flex-grow"
         overScrollMode="always"
+        fadingEdgeLength={100}
         refreshControl={
           <RefreshControl
             refreshing={refreshing || loading}
