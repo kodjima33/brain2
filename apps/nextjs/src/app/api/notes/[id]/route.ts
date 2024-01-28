@@ -79,7 +79,5 @@ export async function PATCH(
     data: { title, content },
   });
 
-  console.log("Updated note");
-
   return Response.json(updatedNote);
 }

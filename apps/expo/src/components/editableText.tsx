@@ -9,7 +9,8 @@ interface TextComponentProps {
 interface Props {
   editable: boolean;
   text?: string;
-  onChange?: (text: string) => void;
+  setText?: (text: string) => void;
+  onSave?: (text: string) => void;
   className?: string;
   TextComponent?: React.ComponentType<TextComponentProps>;
 }
@@ -17,18 +18,21 @@ interface Props {
 export function EditableText({
   editable,
   text,
-  onChange,
+  onSave,
   className,
   TextComponent,
 }: Props) {
   const [value, setValue] = useState(text ?? "");
+  useEffect(() => {
+    if (!editable && value != text) {
+      // Save changes
+      onSave?.(value);
+    }
+  }, [editable, onSave, value, text]);
 
   useEffect(() => {
-    if (!editable) {
-      // Save changes
-      onChange?.(value);
-    }
-  }, [editable, onChange, value]);
+    setValue(text ?? "");
+  }, [text])
 
   return editable ? (
     <TextInput
@@ -37,7 +41,7 @@ export function EditableText({
       value={value}
       onChangeText={setValue}
       autoCorrect={false}
-      onEndEditing={() => onChange?.(value)}
+      cursorColor={"#000"}
     />
   ) : TextComponent ? (
     <TextComponent className={className ?? ""}>{value}</TextComponent>

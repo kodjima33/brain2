@@ -45,19 +45,21 @@ function NoteView({
   const dateString = date.toFormat("cccc, LLL dd");
   const timeString = date.toFormat("hh:mm a");
 
+  const [edited, setEdited] = useState(false);
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
 
   useEffect(() => {
-    console.log("Ref:", note.title);
-    console.log("Exp:", title);
     const changeDetected = note.title != title || note.content != content;
-    if (!editMode && changeDetected) {
-      console.log("Running update");
+    if (!editMode && edited && changeDetected) {
       // Save changes
       updateNote({ title, content });
+      setEdited(false);
+    } else if (editMode) {
+      // Mark that we entered edit mode
+      setEdited(true);
     }
-  }, [title, content, note, updateNote, editMode]);
+  }, [title, content, note, updateNote, editMode, setEdited, edited]);
 
   return (
     <View className="mb-12 flex flex-col gap-2">
@@ -65,7 +67,7 @@ function NoteView({
         editable={editMode}
         text={note.title}
         className="text-3xl"
-        onChange={async (newTitle) => {
+        onSave={async (newTitle) => {
           setTitle(newTitle);
         }}
       />
@@ -89,7 +91,7 @@ function NoteView({
           editable={editMode}
           text={note.content}
           TextComponent={Markdown}
-          onChange={async (newContent) => {
+          onSave={async (newContent) => {
             setContent(newContent);
           }}
         />
@@ -111,7 +113,6 @@ export default function NotePage() {
   } = useQuery({
     queryKey: [id],
     queryFn: async () => {
-      console.log("Refetching singlenote");
       const token = await getToken();
       return getNoteById(id as string, token!);
     },
@@ -126,7 +127,10 @@ export default function NotePage() {
       console.error(err);
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [id, "notes"] });
+      await queryClient.invalidateQueries({
+        queryKey: [id, "notes"],
+        refetchType: "all",
+      });
     },
   });
 
