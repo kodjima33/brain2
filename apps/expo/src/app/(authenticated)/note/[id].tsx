@@ -1,25 +1,34 @@
 import { useCallback, useState } from "react";
-import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
 import Markdown from "react-native-markdown-display";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2Icon, PencilIcon, SearchIcon } from "lucide-react-native";
+import { Edit, Loader2Icon, PencilIcon, SaveIcon } from "lucide-react-native";
 import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
 import Avatar from "~/components/avatar";
+import { EditableText } from "~/components/editableText";
 import { getNoteById } from "~/utils/api";
 
 interface NoteViewProps {
   note: Note;
   loading: boolean;
+  editMode: boolean;
   refetch: () => Promise<unknown>;
 }
 
-function NoteView({ note, loading, refetch }: NoteViewProps) {
+function NoteView({ note, loading, refetch, editMode }: NoteViewProps) {
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -33,7 +42,11 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
 
   return (
     <View className="mb-12 flex flex-col gap-2">
-      <Text className="text-3xl">{note.title}</Text>
+      <EditableText
+        editable={editMode}
+        text={note.title}
+        className="text-3xl"
+      />
       <View className="flex flex-col gap-1">
         <Text className="text-md font-light text-gray-700">{dateString}</Text>
         {note.digestSpan == "SINGLE" ? (
@@ -50,7 +63,11 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
           />
         }
       >
-        <Markdown>{note.content}</Markdown>
+        <EditableText
+          editable={editMode}
+          text={note.content}
+          TextComponent={Markdown}
+        />
       </ScrollView>
     </View>
   );
@@ -78,6 +95,8 @@ export default function NotePage() {
     console.error(noteError);
   }
 
+  const [editMode, setEditMode] = useState(false);
+
   return (
     <SafeAreaView className="bg-white pt-10">
       <Stack.Screen
@@ -85,8 +104,12 @@ export default function NotePage() {
           headerRight: () => {
             return (
               <View className="flex flex-row items-center gap-5">
-                <Pressable>
-                  <PencilIcon className="h-10 w-10 text-black" />
+                <Pressable onPress={() => setEditMode(!editMode)}>
+                  {editMode ? (
+                    <SaveIcon className="h-10 w-10 text-black" />
+                  ) : (
+                    <PencilIcon className="h-10 w-10 text-black" />
+                  )}
                 </Pressable>
                 <Avatar />
               </View>
@@ -111,7 +134,12 @@ export default function NotePage() {
             </View>
           )}
           {note != null && (
-            <NoteView note={note} loading={noteLoading} refetch={refetch} />
+            <NoteView
+              note={note}
+              loading={noteLoading}
+              refetch={refetch}
+              editMode={editMode}
+            />
           )}
         </View>
       </View>
