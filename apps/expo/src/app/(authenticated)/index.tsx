@@ -133,8 +133,7 @@ export default function HomePage() {
           },
         }}
       />
-      {/* Changes page title visible on the header */}
-      <View className="flex h-full w-full flex-col justify-between pb-5">
+      <View className="flex h-full w-full flex-col items-center justify-between pb-5">
         {/* Badges */}
         <View className="flex w-full flex-row items-center justify-start gap-2 px-4">
           <Pressable onPress={() => setSelectedSpan("SINGLE")}>
