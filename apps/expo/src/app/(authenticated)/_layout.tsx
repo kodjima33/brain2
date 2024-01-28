@@ -17,6 +17,7 @@ export default function AuthenticatedLayout() {
       <SignedIn>
         <Stack
           screenOptions={{
+            animation: "fade",
             headerShadowVisible: false,
             headerTitle: "",
             headerRight: () => {
