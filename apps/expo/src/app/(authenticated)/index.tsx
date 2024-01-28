@@ -14,14 +14,12 @@ import {
   Loader2Icon,
   MicIcon,
   RefreshCwIcon,
-  SearchIcon,
   SquareIcon,
 } from "lucide-react-native";
 import { DateTime } from "luxon";
 
 import type { Note, NoteDigestSpan } from "@brain2/db/client";
 
-import Avatar from "~/components/avatar";
 import Badge from "~/components/badge";
 import Button from "~/components/button";
 import { NoteCard, NoteListItemRightSwipeActions } from "~/components/note";
@@ -127,26 +125,17 @@ export default function HomePage() {
   }, [notes, selectedSpan]);
 
   return (
-    <SafeAreaView className="bg-white pt-10">
+    <SafeAreaView className="bg-white">
       <Stack.Screen
         options={{
-          headerShown: false,
+          headerLeft: () => {
+            return <Image source={Brain2Icon} className="h-10 w-10" />;
+          },
         }}
       />
-      {/* Changes page title visible on the header */}
-      <View className="flex h-full w-full flex-col justify-between pb-5">
-        {/* Header */}
-        <View className="flex w-full flex-row items-center justify-between px-4">
-          <Image source={Brain2Icon} className="h-10 w-10" />
-          <View className="flex flex-row items-center gap-5">
-            <Pressable>
-              <SearchIcon className="h-10 w-10 text-black" />
-            </Pressable>
-            <Avatar />
-          </View>
-        </View>
+      <View className="flex h-full w-full flex-col items-center justify-between pb-5">
         {/* Badges */}
-        <View className="flex w-full flex-row items-center justify-start gap-2 p-4">
+        <View className="flex w-full flex-row items-center justify-start gap-2 px-4">
           <Pressable onPress={() => setSelectedSpan("SINGLE")}>
             <Badge
               text="Notes"

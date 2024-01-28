@@ -1,9 +1,9 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import clsx from "clsx";
-import { Stack, router } from "expo-router";
-import { LogOutIcon } from "lucide-react-native";
 import { Image, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router, Stack } from "expo-router";
+import { useAuth, useUser } from "@clerk/clerk-expo";
+import clsx from "clsx";
+import { LogOutIcon } from "lucide-react-native";
 
 interface SettingEntryProps {
   icon: JSX.Element;
@@ -44,7 +44,7 @@ export default function SettingsPage() {
     <SafeAreaView className="bg-white">
       <Stack.Screen
         options={{
-          headerTitle: "Settings",
+          headerRight: () => null,
         }}
       />
       <View className="flex h-full w-full flex-col gap-4 p-4">

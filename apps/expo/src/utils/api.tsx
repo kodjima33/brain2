@@ -71,6 +71,24 @@ async function post<T>(
 }
 
 /**
+ * Send a json-encoded PATCH request
+ */
+async function patch<T>(
+  path: string,
+  body: Record<string, unknown>,
+  authToken: string,
+): Promise<T> {
+  return sendRequest(path, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+    data: JSON.stringify(body),
+  });
+}
+
+/**
  * Send a json-encoded DELETE request
  */
 async function del<T>(path: string, authToken: string): Promise<T> {
@@ -125,6 +143,15 @@ export async function createNote(
   authToken: string,
 ): Promise<void> {
   return post("/api/notes", { content }, authToken);
+}
+
+export async function updateNote(
+  id: string,
+  title: string,
+  content: string,
+  authToken: string,
+): Promise<void> {
+  return patch(`/api/notes/${id}`, { title, content }, authToken);
 }
 
 export async function uploadRecording(

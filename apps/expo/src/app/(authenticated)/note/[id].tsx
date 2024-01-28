@@ -1,25 +1,39 @@
-import { useCallback, useState } from "react";
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
 import Markdown from "react-native-markdown-display";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
-import { useQuery } from "@tanstack/react-query";
-import { Loader2Icon } from "lucide-react-native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2Icon, PencilIcon, SaveIcon } from "lucide-react-native";
 import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
 import Avatar from "~/components/avatar";
-import { getNoteById } from "~/utils/api";
+import { EditableText } from "~/components/editableText";
+import { getNoteById, updateNote } from "~/utils/api";
+
+interface NoteUpdateParams {
+  title: string;
+  content: string;
+}
 
 interface NoteViewProps {
   note: Note;
   loading: boolean;
+  editMode: boolean;
   refetch: () => Promise<unknown>;
+  updateNote: ({ title, content }: NoteUpdateParams) => unknown;
 }
 
-function NoteView({ note, loading, refetch }: NoteViewProps) {
+function NoteView({
+  note,
+  loading,
+  refetch,
+  editMode,
+  updateNote,
+}: NoteViewProps) {
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -31,9 +45,32 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
   const dateString = date.toFormat("cccc, LLL dd");
   const timeString = date.toFormat("hh:mm a");
 
+  const [edited, setEdited] = useState(false);
+  const [title, setTitle] = useState(note.title);
+  const [content, setContent] = useState(note.content);
+
+  useEffect(() => {
+    const changeDetected = note.title != title || note.content != content;
+    if (!editMode && edited && changeDetected) {
+      // Save changes
+      updateNote({ title, content });
+      setEdited(false);
+    } else if (editMode) {
+      // Mark that we entered edit mode
+      setEdited(true);
+    }
+  }, [title, content, note, updateNote, editMode, setEdited, edited]);
+
   return (
     <View className="mb-12 flex flex-col gap-2">
-      <Text className="text-3xl">{note.title}</Text>
+      <EditableText
+        editable={editMode}
+        text={note.title}
+        className="text-3xl"
+        onSave={async (newTitle) => {
+          setTitle(newTitle);
+        }}
+      />
       <View className="flex flex-col gap-1">
         <Text className="text-md font-light text-gray-700">{dateString}</Text>
         {note.digestSpan == "SINGLE" ? (
@@ -50,7 +87,14 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
           />
         }
       >
-        <Markdown>{note.content}</Markdown>
+        <EditableText
+          editable={editMode}
+          text={note.content}
+          TextComponent={Markdown}
+          onSave={async (newContent) => {
+            setContent(newContent);
+          }}
+        />
       </ScrollView>
     </View>
   );
@@ -59,6 +103,7 @@ function NoteView({ note, loading, refetch }: NoteViewProps) {
 export default function NotePage() {
   const { id } = useLocalSearchParams();
   const { isLoaded: isUserLoaded, getToken } = useAuth();
+  const queryClient = useQueryClient();
 
   const {
     data: note,
@@ -74,16 +119,45 @@ export default function NotePage() {
     enabled: isUserLoaded,
   });
 
+  const { mutate: updateNoteMutation } = useMutation({
+    mutationFn: async ({ title, content }: NoteUpdateParams) => {
+      return updateNote(id as string, title, content, (await getToken())!);
+    },
+    onError: (err, _noteId) => {
+      console.error(err);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: [id, "notes"],
+        refetchType: "all",
+      });
+    },
+  });
+
   if (noteError) {
     console.error(noteError);
   }
+
+  const [editMode, setEditMode] = useState(false);
 
   return (
     <SafeAreaView className="bg-white">
       <Stack.Screen
         options={{
-          headerTitle: "Note",
-          headerRight: Avatar,
+          headerRight: () => {
+            return (
+              <View className="flex flex-row items-center gap-5">
+                <Pressable onPress={() => setEditMode(!editMode)}>
+                  {editMode ? (
+                    <SaveIcon className="h-10 w-10 text-black" />
+                  ) : (
+                    <PencilIcon className="h-10 w-10 text-black" />
+                  )}
+                </Pressable>
+                <Avatar />
+              </View>
+            );
+          },
         }}
       />
       {/* Changes page title visible on the header */}
@@ -103,7 +177,13 @@ export default function NotePage() {
             </View>
           )}
           {note != null && (
-            <NoteView note={note} loading={noteLoading} refetch={refetch} />
+            <NoteView
+              note={note}
+              loading={noteLoading}
+              refetch={refetch}
+              editMode={editMode}
+              updateNote={updateNoteMutation}
+            />
           )}
         </View>
       </View>
