@@ -10,7 +10,6 @@ import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
-import Avatar from "~/components/avatar";
 import { getNoteById } from "~/utils/api";
 
 interface NoteViewProps {
@@ -79,13 +78,8 @@ export default function NotePage() {
   }
 
   return (
-    <SafeAreaView className="bg-white">
-      <Stack.Screen
-        options={{
-          headerTitle: "Note",
-          headerRight: Avatar,
-        }}
-      />
+    <SafeAreaView className="bg-white pt-10">
+      <Stack.Screen />
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
         {/* Content */}
