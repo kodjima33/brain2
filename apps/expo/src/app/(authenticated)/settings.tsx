@@ -42,7 +42,11 @@ export default function SettingsPage() {
 
   return (
     <SafeAreaView className="bg-white">
-      <Stack.Screen />
+      <Stack.Screen
+        options={{
+          headerRight: () => null,
+        }}
+      />
       <View className="flex h-full w-full flex-col gap-4 p-4">
         {/* Avatar */}
         <View className="flex flex-row gap-5">
