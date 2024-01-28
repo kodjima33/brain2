@@ -1,34 +1,39 @@
-import { useCallback, useState } from "react";
-import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
 import Markdown from "react-native-markdown-display";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
-import { useQuery } from "@tanstack/react-query";
-import { Edit, Loader2Icon, PencilIcon, SaveIcon } from "lucide-react-native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2Icon, PencilIcon, SaveIcon } from "lucide-react-native";
 import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
 import Avatar from "~/components/avatar";
 import { EditableText } from "~/components/editableText";
-import { getNoteById } from "~/utils/api";
+import { getNoteById, updateNote } from "~/utils/api";
+
+interface NoteUpdateParams {
+  title: string;
+  content: string;
+}
 
 interface NoteViewProps {
   note: Note;
   loading: boolean;
   editMode: boolean;
   refetch: () => Promise<unknown>;
+  updateNote: ({ title, content }: NoteUpdateParams) => unknown;
 }
 
-function NoteView({ note, loading, refetch, editMode }: NoteViewProps) {
+function NoteView({
+  note,
+  loading,
+  refetch,
+  editMode,
+  updateNote,
+}: NoteViewProps) {
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -40,12 +45,29 @@ function NoteView({ note, loading, refetch, editMode }: NoteViewProps) {
   const dateString = date.toFormat("cccc, LLL dd");
   const timeString = date.toFormat("hh:mm a");
 
+  const [title, setTitle] = useState(note.title);
+  const [content, setContent] = useState(note.content);
+
+  useEffect(() => {
+    console.log("Ref:", note.title);
+    console.log("Exp:", title);
+    const changeDetected = note.title != title || note.content != content;
+    if (!editMode && changeDetected) {
+      console.log("Running update");
+      // Save changes
+      updateNote({ title, content });
+    }
+  }, [title, content, note, updateNote, editMode]);
+
   return (
     <View className="mb-12 flex flex-col gap-2">
       <EditableText
         editable={editMode}
         text={note.title}
         className="text-3xl"
+        onChange={async (newTitle) => {
+          setTitle(newTitle);
+        }}
       />
       <View className="flex flex-col gap-1">
         <Text className="text-md font-light text-gray-700">{dateString}</Text>
@@ -67,6 +89,9 @@ function NoteView({ note, loading, refetch, editMode }: NoteViewProps) {
           editable={editMode}
           text={note.content}
           TextComponent={Markdown}
+          onChange={async (newContent) => {
+            setContent(newContent);
+          }}
         />
       </ScrollView>
     </View>
@@ -76,6 +101,7 @@ function NoteView({ note, loading, refetch, editMode }: NoteViewProps) {
 export default function NotePage() {
   const { id } = useLocalSearchParams();
   const { isLoaded: isUserLoaded, getToken } = useAuth();
+  const queryClient = useQueryClient();
 
   const {
     data: note,
@@ -85,10 +111,23 @@ export default function NotePage() {
   } = useQuery({
     queryKey: [id],
     queryFn: async () => {
+      console.log("Refetching singlenote");
       const token = await getToken();
       return getNoteById(id as string, token!);
     },
     enabled: isUserLoaded,
+  });
+
+  const { mutate: updateNoteMutation } = useMutation({
+    mutationFn: async ({ title, content }: NoteUpdateParams) => {
+      return updateNote(id as string, title, content, (await getToken())!);
+    },
+    onError: (err, _noteId) => {
+      console.error(err);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [id, "notes"] });
+    },
   });
 
   if (noteError) {
@@ -139,6 +178,7 @@ export default function NotePage() {
               loading={noteLoading}
               refetch={refetch}
               editMode={editMode}
+              updateNote={updateNoteMutation}
             />
           )}
         </View>

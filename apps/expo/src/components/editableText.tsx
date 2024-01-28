@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, TextInput } from "react-native";
 
 interface TextComponentProps {
@@ -22,6 +22,13 @@ export function EditableText({
   TextComponent,
 }: Props) {
   const [value, setValue] = useState(text ?? "");
+
+  useEffect(() => {
+    if (!editable) {
+      // Save changes
+      onChange?.(value);
+    }
+  }, [editable, onChange, value]);
 
   return editable ? (
     <TextInput
