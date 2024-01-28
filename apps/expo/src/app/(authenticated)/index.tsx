@@ -136,7 +136,7 @@ export default function HomePage() {
       {/* Changes page title visible on the header */}
       <View className="flex h-full w-full flex-col justify-between pb-5">
         {/* Badges */}
-        <View className="flex w-full flex-row items-center justify-start gap-2 p-4">
+        <View className="flex w-full flex-row items-center justify-start gap-2 px-4">
           <Pressable onPress={() => setSelectedSpan("SINGLE")}>
             <Badge
               text="Notes"
