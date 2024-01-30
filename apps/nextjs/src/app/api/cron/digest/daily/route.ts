@@ -13,7 +13,7 @@ export async function GET() {
     name: "digest.batch",
     data: {
       span: "DAY",
-      date: DateTime.now().toISODate(),
+      date: DateTime.now().toISO(),
     },
   });
 
