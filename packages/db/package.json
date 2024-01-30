@@ -25,6 +25,7 @@
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^5.6.0",
+    "@prisma/extension-accelerate": "^0.6.2",
     "@t3-oss/env-core": "^0.7.1",
     "core": "link:@t3-oss/env/core",
     "zod": "^3.22.4"
