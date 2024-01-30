@@ -7,10 +7,9 @@ export default authMiddleware({
   // eslint-disable-next-line no-useless-escape
   ignoredRoutes: [
     "/api/conversations/messenger-hook",
+    "/api/debug",
     "/api/inngest",
-    "/api/inngest/base",
-    "/api/inngest/edge",
-    "/api/debug"
+    "/api/cron/digest/:span"
   ],
 });
 

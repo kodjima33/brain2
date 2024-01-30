@@ -6,8 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./pipelines": "./src/pipelines/index.ts",
-    "./pipelines/refineTranscript": "./src/pipelines/refineTranscript.ts",
-    "./pipelines/digestNotesStructured": "./src/pipelines/digestNotesStructured.ts"
+    "./pipelines/edge": "./src/pipelines/edge.ts"
   },
   "license": "MIT",
   "scripts": {
