@@ -115,5 +115,7 @@ export const handler = inngestEdgeClient.createFunction(
         },
       });
     }
+    
+    console.log(`Created ${notes.length} digests`);
   },
 );
