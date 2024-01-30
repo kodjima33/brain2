@@ -8,8 +8,8 @@ export default authMiddleware({
   ignoredRoutes: [
     "/api/conversations/messenger-hook",
     "/api/debug",
-    "/api/inngest/(.*)",
-    "/api/cron/(.*)"
+    "/api/inngest",
+    "/api/cron/digest/:span"
   ],
 });
 
