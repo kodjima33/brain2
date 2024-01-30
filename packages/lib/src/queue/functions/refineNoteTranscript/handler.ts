@@ -1,4 +1,4 @@
-import { refineTranscript } from "@brain2/ai/pipelines/refineTranscript";
+import { refineTranscript } from "@brain2/ai/pipelines/edge";
 import { prisma } from "@brain2/db/edge";
 
 import { inngestEdgeClient } from "../../clients";

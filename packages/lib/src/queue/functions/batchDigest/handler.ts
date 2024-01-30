@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/edge";
-import { digestNotesStructured } from "@brain2/ai";
+import { digestNotesStructured } from "@brain2/ai/pipelines/edge";
 import { generateId, prisma } from "@brain2/db/edge";
 
 import { inngestEdgeClient } from "../../clients";
