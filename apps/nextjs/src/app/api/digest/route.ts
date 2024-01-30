@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
-import { digestNotesStructured } from "@brain2/ai/pipelines/digestNotesStructured";
+import { digestNotesStructured } from "@brain2/ai/pipelines/edge";
 import { generateId, NoteDigestSpan, prisma } from "@brain2/db/edge";
 
 const digestNoteSchema = z.object({
