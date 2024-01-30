@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
+import type { Note } from "@brain2/db/edge";
 import { digestNotesStructured } from "@brain2/ai";
-import type { Note} from "@brain2/db/edge";
 import { generateId, prisma } from "@brain2/db/edge";
 
 import { inngestEdgeClient } from "../../clients";
@@ -20,6 +20,7 @@ export const handler = inngestEdgeClient.createFunction(
   { event: eventName },
   async ({ event }) => {
     const { span, date } = argSchema.parse(event.data);
+    console.log(`Digesting notes for span ${span} and date ${date}`);
 
     const startDate = DateTime.fromISO(date);
     let endDate = startDate;
