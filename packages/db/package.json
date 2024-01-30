@@ -8,7 +8,8 @@
     "./edge": "./src/edge.ts"
   },
   "scripts": {
-    "build": "prisma generate",
+    "build": "prisma generate --no-engine",
+    "build:base": "prisma generate",
     "clean": "rm -rf .turbo node_modules",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
