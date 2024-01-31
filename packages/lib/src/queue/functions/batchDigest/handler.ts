@@ -36,6 +36,8 @@ export const handler = inngestEdgeClient.createFunction(
       throw new Error("Invalid date: " + date);
     }
 
+    console.log("Range", startDate.toISO(), endDate.toISO()!);
+
     const notes = (await prisma.note.aggregateRaw({
       pipeline: [
         {
