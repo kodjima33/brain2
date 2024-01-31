@@ -7,11 +7,6 @@ import { generateId, prisma } from "@brain2/db/edge";
 import { inngestEdgeClient } from "../../clients";
 import { argSchema, eventName } from "./schema";
 
-interface NoteGroup {
-  owner: string;
-  notes: Note[];
-}
-
 /**
  * Digest batches of notes, based on the current date/time and specified note digest span
  */
@@ -38,65 +33,34 @@ export const handler = inngestEdgeClient.createFunction(
 
     console.log("Range", startDate.toISO(), endDate.toISO()!);
 
-    const notes = (await prisma.note.aggregateRaw({
-      pipeline: [
-        {
-          $match: {
-            $expr: {
-              $and: [
-                {
-                  $gte: [
-                    "$createdAt",
-                    {
-                      $dateFromString: {
-                        dateString: startDate.toISO()!,
-                      },
-                    },
-                  ],
-                },
-                {
-                  $lte: [
-                    "$createdAt",
-                    {
-                      $dateFromString: {
-                        dateString: endDate.toISO()!,
-                      },
-                    },
-                  ],
-                },
-                { $eq: ["$active", true] },
-                { $eq: ["$digestSpan", "SINGLE"] },
-              ],
-            },
-          },
+    // Not using an aggregation here, because prisma accelerate has stricter limits than vercel edge runtime
+    const allNotes = await prisma.note.findMany({
+      where: {
+        createdAt: {
+          gte: startDate.toISO()!,
+          lte: endDate.toISO()!,
         },
-        {
-          $sort: {
-            createdAt: 1,
-          },
-        },
-        {
-          $group: {
-            _id: "$owner",
-            owner: {
-              $first: "$owner",
-            },
-            notes: {
-              $push: {
-                id: "$_id",
-                title: "$title",
-                content: "$content",
-                createdAt: "$createdAt",
-              },
-            },
-          },
-        },
-      ],
-    })) as unknown as NoteGroup[];
+        active: true,
+        digestSpan: "SINGLE",
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
 
-    for (const noteGroup of notes) {
+    // Group notes by owner
+    const noteGroups: Record<string, Note[]> = {};
+    for (const note of allNotes) {
+      if (!noteGroups[note.owner]) {
+        noteGroups[note.owner] = [];
+      }
+      noteGroups[note.owner]!.push(note);
+    }
+
+    // Digest each group
+    for (const [owner, notes] of Object.entries(noteGroups)) {
       const { title, highlights, reflection, nextSteps } =
-        await digestNotesStructured(noteGroup.notes, span);
+        await digestNotesStructured(notes, span);
       let content = `## Highlights\n\n${highlights}\n\n\n## Reflection\n\n${reflection}`;
       if (nextSteps) {
         content += `\n\n\n## Next steps\n\n${nextSteps}`;
@@ -106,18 +70,18 @@ export const handler = inngestEdgeClient.createFunction(
       await prisma.note.create({
         data: {
           id: noteId,
-          owner: noteGroup.owner,
+          owner: owner,
           title,
           content,
           digestSpan: span,
           digestStartDate: startDate.toISO()!,
           parents: {
-            connect: noteGroup.notes.map((note) => ({ id: note.id })),
+            connect: notes.map((note) => ({ id: note.id })),
           },
         },
       });
     }
-    
-    console.log(`Created ${notes.length} digests`);
+
+    console.log(`Created ${allNotes.length} digests`);
   },
 );
