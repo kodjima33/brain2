@@ -1,4 +1,5 @@
 import React from "react";
+import { PaperProvider } from "react-native-paper";
 import Constants from "expo-constants";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -47,7 +48,9 @@ function RootLayout() {
       }
     >
       <QueryClientProvider client={queryClient}>
-        <Slot />
+        <PaperProvider>
+          <Slot />
+        </PaperProvider>
         <StatusBar />
       </QueryClientProvider>
     </ClerkProvider>
