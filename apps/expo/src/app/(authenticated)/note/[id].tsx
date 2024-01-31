@@ -19,6 +19,7 @@ import {
   Loader2Icon,
   MoreHorizontalIcon,
   PencilIcon,
+  RefreshCwIcon,
   SaveIcon,
   Share2Icon,
 } from "lucide-react-native";
@@ -203,13 +204,15 @@ export default function NotePage() {
                       )}
                       title="History"
                     />
-                    <Menu.Item
-                      onPress={() => {}}
-                      leadingIcon={() => (
-                        <PencilIcon className="h-6 w-6 text-black" />
-                      )}
-                      title="Edit"
-                    />
+                    {(note && note.digestSpan !== "SINGLE") ? (
+                      <Menu.Item
+                        onPress={() => {}}
+                        leadingIcon={() => (
+                          <RefreshCwIcon className="h-6 w-6 text-black" />
+                        )}
+                        title="Rebuild"
+                      />
+                    ) : null}
                   </Menu>
                 </View>
               </View>
