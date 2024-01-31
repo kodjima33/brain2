@@ -9,10 +9,10 @@ export default authMiddleware({
     "/api/conversations/messenger-hook",
     "/api/debug",
     "/api/inngest",
-    "/api/cron/digest/:span"
+    "/api/cron/digest/:span",
   ],
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/"],
+  matcher: ["/api/((?!.+\\.[\\w]+$|_next).*)", "/debug"],
 };

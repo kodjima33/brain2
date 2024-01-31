@@ -1,5 +1,6 @@
 // Importing env files here to validate on build
 import "./src/env.js";
+import withMdx from "@next/mdx";
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -17,6 +18,7 @@ const config = {
     );
     return config;
   },
+  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 };
 
-export default config;
+export default withMdx()(config);
