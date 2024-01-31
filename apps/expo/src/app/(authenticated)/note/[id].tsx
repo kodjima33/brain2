@@ -1,16 +1,31 @@
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
 import Markdown from "react-native-markdown-display";
+import { Icon, Menu } from "react-native-paper";
+import { BlurView } from "expo-blur";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon, PencilIcon, SaveIcon } from "lucide-react-native";
+import {
+  HistoryIcon,
+  Loader2Icon,
+  MoreHorizontalIcon,
+  PencilIcon,
+  SaveIcon,
+  Share2Icon,
+} from "lucide-react-native";
 import { DateTime } from "luxon";
 
 import type { Note } from "@brain2/db/client";
 
-import Avatar from "~/components/avatar";
 import { EditableText } from "~/components/editableText";
 import { getNoteById, updateNote } from "~/utils/api";
 
@@ -140,6 +155,7 @@ export default function NotePage() {
   }
 
   const [editMode, setEditMode] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(true);
 
   return (
     <SafeAreaView className="bg-white">
@@ -147,7 +163,10 @@ export default function NotePage() {
         options={{
           headerRight: () => {
             return (
-              <View className="flex flex-row items-center gap-5">
+              <View className="flex flex-row items-center gap-7">
+                <Pressable>
+                  <Share2Icon className="h-10 w-10 text-black" />
+                </Pressable>
                 <Pressable onPress={() => setEditMode(!editMode)}>
                   {editMode ? (
                     <SaveIcon className="h-10 w-10 text-black" />
@@ -155,7 +174,44 @@ export default function NotePage() {
                     <PencilIcon className="h-10 w-10 text-black" />
                   )}
                 </Pressable>
-                <Avatar />
+                <View>
+                  <Menu
+                    visible={menuOpen}
+                    onDismiss={() => setMenuOpen(false)}
+                    anchor={
+                      <Pressable onPress={() => setMenuOpen(true)}>
+                        <MoreHorizontalIcon className="h-10 w-10 text-black" />
+                      </Pressable>
+                    }
+                    anchorPosition="bottom"
+                    elevation={1}
+                    style={styles.menu}
+                    theme={{
+                      colors: {
+                        background: "#ff0000",
+                        elevation: {
+                          level0: "transparent",
+                          level1: "#ffffff",
+                        },
+                      },
+                    }}
+                  >
+                    <Menu.Item
+                      onPress={() => {}}
+                      leadingIcon={() => (
+                        <HistoryIcon className="h-6 w-6 text-black" />
+                      )}
+                      title="History"
+                    />
+                    <Menu.Item
+                      onPress={() => {}}
+                      leadingIcon={() => (
+                        <PencilIcon className="h-6 w-6 text-black" />
+                      )}
+                      title="Edit"
+                    />
+                  </Menu>
+                </View>
               </View>
             );
           },
@@ -191,3 +247,9 @@ export default function NotePage() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  menu: {
+    marginTop: 20,
+  },
+});
