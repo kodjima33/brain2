@@ -22,14 +22,14 @@ export const handler = inngestEdgeClient.createFunction(
     const { span, date } = argSchema.parse(event.data);
     console.log(`Digesting notes for span ${span} and date ${date}`);
 
-    const startDate = DateTime.fromISO(date);
-    let endDate = startDate;
+    const endDate = DateTime.fromISO(date);
+    let startDate = endDate;
 
     // Compute end date based on span
     if (span === "DAY") {
-      endDate = startDate.plus({ days: 1 });
+      startDate = endDate.minus({ days: 1 });
     } else if (span === "WEEK") {
-      endDate = startDate.plus({ days: 7 });
+      startDate = endDate.minus({ days: 7 });
     }
 
     if (startDate == null || endDate == null) {
