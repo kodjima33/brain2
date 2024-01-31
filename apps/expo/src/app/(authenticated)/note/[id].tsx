@@ -1,3 +1,16 @@
+import { useAuth } from "@clerk/clerk-expo";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Stack, useLocalSearchParams } from "expo-router";
+import {
+  HistoryIcon,
+  Loader2Icon,
+  MoreHorizontalIcon,
+  PencilIcon,
+  RefreshCwIcon,
+  SaveIcon,
+  Share2Icon,
+} from "lucide-react-native";
+import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import {
   Pressable,
@@ -9,21 +22,7 @@ import {
 } from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
 import Markdown from "react-native-markdown-display";
-import { Icon, Menu } from "react-native-paper";
-import { BlurView } from "expo-blur";
-import { Stack, useLocalSearchParams } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  HistoryIcon,
-  Loader2Icon,
-  MoreHorizontalIcon,
-  PencilIcon,
-  RefreshCwIcon,
-  SaveIcon,
-  Share2Icon,
-} from "lucide-react-native";
-import { DateTime } from "luxon";
+import { Menu } from "react-native-paper";
 
 import type { Note } from "@brain2/db/client";
 
