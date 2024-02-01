@@ -86,6 +86,8 @@ model NoteRevision {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([noteId])
 }
 
 // Represents the span of a note digest
