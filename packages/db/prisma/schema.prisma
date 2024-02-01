@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider  = "mongodb"
+  url       = env("DATABASE_URL")
   directUrl = env("MONGO_URL")
 }
 
@@ -51,8 +51,16 @@ model Note {
   id    String @id @map("_id")
   owner String //userId
 
-  title      String
-  content    String
+  // Deprecated
+  title   String?
+  content String?
+
+  // Current active revision
+  activeRevisionId String?       @unique
+  activeRevision   NoteRevision? @relation(name: "activeRevision", fields: [activeRevisionId], references: [id])
+
+  revisions NoteRevision[] @relation(name: "noteRevisions")
+
   digestSpan NoteDigestSpan
   recording  AudioBlob?
 
@@ -68,6 +76,20 @@ model Note {
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model NoteRevision {
+  id     String @id @map("_id")
+  noteId String
+  note   Note   @relation(name: "noteRevisions", fields: [noteId], references: [id], onUpdate: NoAction)
+
+  activeNote Note? @relation(name: "activeRevision")
+
+  title   String
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Represents the span of a note digest
