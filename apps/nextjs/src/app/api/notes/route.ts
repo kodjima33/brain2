@@ -22,6 +22,9 @@ export async function GET(_req: Request): Promise<Response> {
     orderBy: {
       digestStartDate: "desc",
     },
+    include: {
+      revision: true,
+    },
   });
   return Response.json(notes);
 }
