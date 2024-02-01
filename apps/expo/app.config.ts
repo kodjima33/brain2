@@ -4,7 +4,7 @@ const defineConfig = (): ExpoConfig => ({
   name: "Brain²",
   slug: "brain2",
   scheme: "brain2",
-  version: "0.1.1",
+  version: "0.1.3",
   orientation: "portrait",
   icon: "./assets/app-icon.png",
   userInterfaceStyle: "light",
@@ -23,7 +23,7 @@ const defineConfig = (): ExpoConfig => ({
   },
   android: {
     package: "com.brain2.app",
-    versionCode: 2,
+    versionCode: 3,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-app-icon.png",
       backgroundColor: "#E4DFDA",
