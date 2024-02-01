@@ -51,10 +51,6 @@ model Note {
   id    String @id @map("_id")
   owner String //userId
 
-  // Deprecated
-  title   String?
-  content String?
-
   // Current active revision
   revisionId String?       @unique
   revision   NoteRevision? @relation(name: "activeRevision", fields: [revisionId], references: [id])
