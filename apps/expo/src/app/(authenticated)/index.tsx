@@ -20,6 +20,7 @@ import { DateTime } from "luxon";
 
 import type { Note, NoteDigestSpan } from "@brain2/db/client";
 
+import type { PopulatedNote } from "~/components/note";
 import Badge from "~/components/badge";
 import Button from "~/components/button";
 import { NoteCard, NoteListItemRightSwipeActions } from "~/components/note";
@@ -59,13 +60,20 @@ export default function HomePage() {
       await queryClient.cancelQueries({ queryKey: ["notes"] });
 
       const date = DateTime.now().toJSDate();
-      const staleNotes: Note[] = queryClient.getQueryData(["notes"])!;
-      const dummyNote: Note = {
-        id: "note_optimistic_placeholder",
+      const staleNotes: PopulatedNote[] = queryClient.getQueryData(["notes"])!;
+      const dummyNote: PopulatedNote = {
+        id: "note-id",
         owner: userId!,
-        title: "New Recording (Processing...)",
-        content: "New Recording (Processing...)",
         digestSpan: "SINGLE",
+        revisionId: "note-revision-id",
+        revision: {
+          id: "note-revision-id",
+          noteId: "note-id",
+          title: "New Recording (Processing...)",
+          content: "New Recording (Processing...)",
+          createdAt: date,
+          updatedAt: date,
+        },
         childrenIds: [],
         parentIds: [],
         active: false,

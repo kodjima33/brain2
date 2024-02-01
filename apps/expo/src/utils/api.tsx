@@ -5,6 +5,8 @@ import axios from "axios";
 
 import type { Note } from "@brain2/db/client";
 
+import type { PopulatedNote } from "~/components/note";
+
 /**
  * Extend this function when going to production by
  * setting the baseUrl to your production API URL.
@@ -123,7 +125,7 @@ async function postForm<T>(
 export async function getNoteById(
   id: string,
   authToken: string,
-): Promise<Note> {
+): Promise<PopulatedNote> {
   return get(`/api/notes/${id}`, authToken);
 }
 
@@ -134,7 +136,7 @@ export async function deleteNoteById(
   return del(`/api/notes/${id}`, authToken);
 }
 
-export async function getNotes(authToken: string): Promise<Note[]> {
+export async function getNotes(authToken: string): Promise<PopulatedNote[]> {
   return get("/api/notes", authToken);
 }
 

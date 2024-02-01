@@ -1,16 +1,3 @@
-import { useAuth } from "@clerk/clerk-expo";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Stack, useLocalSearchParams } from "expo-router";
-import {
-  HistoryIcon,
-  Loader2Icon,
-  MoreHorizontalIcon,
-  PencilIcon,
-  RefreshCwIcon,
-  SaveIcon,
-  Share2Icon,
-} from "lucide-react-native";
-import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import {
   Pressable,
@@ -23,9 +10,21 @@ import {
 import { RefreshControl } from "react-native-gesture-handler";
 import Markdown from "react-native-markdown-display";
 import { Menu } from "react-native-paper";
+import { Stack, useLocalSearchParams } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  HistoryIcon,
+  Loader2Icon,
+  MoreHorizontalIcon,
+  PencilIcon,
+  RefreshCwIcon,
+  SaveIcon,
+  Share2Icon,
+} from "lucide-react-native";
+import { DateTime } from "luxon";
 
-import type { Note } from "@brain2/db/client";
-
+import type { PopulatedNote } from "~/components/note";
 import { EditableText } from "~/components/editableText";
 import { getNoteById, updateNote } from "~/utils/api";
 
@@ -35,7 +34,7 @@ interface NoteUpdateParams {
 }
 
 interface NoteViewProps {
-  note: Note;
+  note: PopulatedNote;
   loading: boolean;
   editMode: boolean;
   refetch: () => Promise<unknown>;
@@ -61,11 +60,12 @@ function NoteView({
   const timeString = date.toFormat("hh:mm a");
 
   const [edited, setEdited] = useState(false);
-  const [title, setTitle] = useState(note.title);
-  const [content, setContent] = useState(note.content);
+  const [title, setTitle] = useState(note.revision.title);
+  const [content, setContent] = useState(note.revision.content);
 
   useEffect(() => {
-    const changeDetected = note.title != title || note.content != content;
+    const changeDetected =
+      note.revision.title != title || note.revision.content != content;
     if (!editMode && edited && changeDetected) {
       // Save changes
       updateNote({ title, content });
@@ -80,7 +80,7 @@ function NoteView({
     <View className="mb-12 flex flex-col gap-2">
       <EditableText
         editable={editMode}
-        text={note.title}
+        text={note.revision.title}
         className="text-3xl"
         onSave={async (newTitle) => {
           setTitle(newTitle);
@@ -105,7 +105,7 @@ function NoteView({
       >
         <EditableText
           editable={editMode}
-          text={note.content}
+          text={note.revision.content}
           TextComponent={Markdown}
           onSave={async (newContent) => {
             setContent(newContent);
@@ -203,7 +203,7 @@ export default function NotePage() {
                       )}
                       title="History"
                     />
-                    {(note && note.digestSpan !== "SINGLE") ? (
+                    {note && note.digestSpan !== "SINGLE" ? (
                       <Menu.Item
                         onPress={() => {}}
                         leadingIcon={() => (
