@@ -24,6 +24,7 @@ export async function GET(
   const { id } = getNoteSchema.parse(params);
   const note = await prisma.note.findUniqueOrThrow({
     where: { id, owner: userId },
+    include: { revision: true },
   });
   return Response.json(note);
 }
