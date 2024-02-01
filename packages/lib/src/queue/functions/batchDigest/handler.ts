@@ -76,7 +76,7 @@ export const handler = inngestEdgeClient.createFunction(
           parents: {
             connect: notes.map((note) => ({ id: note.id })),
           },
-          activeRevision: {
+          revision: {
             create: {
               id: generateId("noteRevision"),
               noteId,

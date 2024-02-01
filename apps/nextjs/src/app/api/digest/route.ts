@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       parents: {
         connect: notes.map((note) => ({ id: note.id })),
       },
-      activeRevision: {
+      revision: {
         create: {
           id: generateId("noteRevision"),
           noteId,
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
       },
     },
     include: {
-      activeRevision: true,
+      revision: true,
     },
   });
   return Response.json(note);

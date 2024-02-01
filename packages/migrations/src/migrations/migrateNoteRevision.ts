@@ -24,7 +24,7 @@ export default async function migrateNoteRevision() {
           id: revision.noteId,
         },
         data: {
-          activeRevisionId: revision.id,
+          revisionId: revision.id,
         },
       }),
     ),

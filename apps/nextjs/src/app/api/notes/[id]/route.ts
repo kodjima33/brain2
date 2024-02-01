@@ -84,7 +84,8 @@ export async function PATCH(
 
   const updatedNote = await prisma.note.update({
     where: { id },
-    data: { activeRevisionId: revision.id },
+    data: { revisionId: revision.id },
+    include: { revision: true },
   });
 
   return Response.json(updatedNote);

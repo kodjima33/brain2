@@ -52,7 +52,7 @@ export async function POST(req: Request): Promise<Response> {
       id: noteId,
       owner: userId,
       digestSpan: "SINGLE",
-      activeRevision: {
+      revision: {
         create: {
           id: generateId("noteRevision"),
           noteId,
@@ -62,7 +62,7 @@ export async function POST(req: Request): Promise<Response> {
       },
     },
     include: {
-      activeRevision: true,
+      revision: true,
     },
   });
   return Response.json(note);
