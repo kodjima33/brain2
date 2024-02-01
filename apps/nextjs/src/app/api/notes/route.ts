@@ -22,6 +22,9 @@ export async function GET(_req: Request): Promise<Response> {
     orderBy: {
       digestStartDate: "desc",
     },
+    include: {
+      revision: true,
+    },
   });
   return Response.json(notes);
 }
@@ -46,13 +49,23 @@ export async function POST(req: Request): Promise<Response> {
   const formattedDate = DateTime.now().toFormat("dd/MM/yyyy HH:mm:ss");
   const fallbackTitle = `New Note ${formattedDate}`;
 
+  const noteId = generateId("note");
   const note = await prisma.note.create({
     data: {
-      id: generateId("note"),
-      title: title ?? fallbackTitle,
-      content,
+      id: noteId,
       owner: userId,
       digestSpan: "SINGLE",
+      revision: {
+        create: {
+          id: generateId("noteRevision"),
+          noteId,
+          title: title ?? fallbackTitle,
+          content,
+        },
+      },
+    },
+    include: {
+      revision: true,
     },
   });
   return Response.json(note);

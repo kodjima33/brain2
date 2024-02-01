@@ -1,9 +1,8 @@
 import type { NextApiRequest } from "next";
-import { NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs";
 import { z } from "zod";
 
-import { prisma } from "@brain2/db";
+import { generateId, prisma } from "@brain2/db";
 
 const getNoteSchema = z.object({
   id: z.string(),
@@ -25,6 +24,7 @@ export async function GET(
   const { id } = getNoteSchema.parse(params);
   const note = await prisma.note.findUniqueOrThrow({
     where: { id, owner: userId },
+    include: { revision: true },
   });
   return Response.json(note);
 }
@@ -74,9 +74,19 @@ export async function PATCH(
     where: { id, owner: userId },
   });
 
+  const revision = await prisma.noteRevision.create({
+    data: {
+      id: generateId("noteRevision"),
+      noteId: id,
+      title,
+      content,
+    },
+  });
+
   const updatedNote = await prisma.note.update({
-    where: { id, owner: userId },
-    data: { title, content },
+    where: { id },
+    data: { revisionId: revision.id },
+    include: { revision: true },
   });
 
   return Response.json(updatedNote);

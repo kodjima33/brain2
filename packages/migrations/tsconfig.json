@@ -1,0 +1,11 @@
+{
+  "extends": "./node_modules/@brain2/tsconfig/node.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "paths": {
+      "@brain2/db/*": ["../db/src/*"],
+    },
+  },
+  "include": ["*.ts", "src/**/*"],
+  "exclude": ["node_modules"]
+}

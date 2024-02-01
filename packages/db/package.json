@@ -2,7 +2,6 @@
   "name": "@brain2/db",
   "version": "1.0.0",
   "license": "MIT",
-  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./edge": "./src/edge.ts"
@@ -21,7 +20,8 @@
     "prebuild": "npm run generate",
     "predev": "npm run generate",
     "studio": "prisma studio",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",

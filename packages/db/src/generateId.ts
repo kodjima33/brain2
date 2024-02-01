@@ -16,6 +16,7 @@ const prefixes: Record<PrismaModelName, string> = {
   note: "note",
   chatConversation: "conv",
   messengerUser: "messenger_user",
+  noteRevision: "ntrv",
 };
 
 /**

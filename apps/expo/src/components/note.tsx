@@ -3,10 +3,12 @@ import { Text, View } from "react-native";
 import { TrashIcon } from "lucide-react-native";
 import { DateTime } from "luxon";
 
-import type { Note } from "@brain2/db/client";
+import type { Note, NoteRevision } from "@brain2/db/client";
+
+export type PopulatedNote = Note & { revision: NoteRevision };
 
 interface NoteCardProps {
-  note: Note;
+  note: PopulatedNote;
 }
 
 /**
@@ -36,7 +38,7 @@ export function NoteCard({ note }: NoteCardProps) {
   return (
     <View className="flex flex-col gap-2 px-4 py-2">
       <View className="flex flex-col gap-2 rounded-2xl border border-black bg-white p-4">
-        <Text className="text-lg font-semibold">{note.title}</Text>
+        <Text className="text-lg font-semibold">{note.revision.title}</Text>
         <View className="flex flex-col gap-1">
           <Text className="text-md font-light text-gray-700">{dateString}</Text>
           {note.digestSpan == "SINGLE" ? (
