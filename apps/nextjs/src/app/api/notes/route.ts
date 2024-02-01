@@ -46,13 +46,23 @@ export async function POST(req: Request): Promise<Response> {
   const formattedDate = DateTime.now().toFormat("dd/MM/yyyy HH:mm:ss");
   const fallbackTitle = `New Note ${formattedDate}`;
 
+  const noteId = generateId("note");
   const note = await prisma.note.create({
     data: {
-      id: generateId("note"),
-      title: title ?? fallbackTitle,
-      content,
+      id: noteId,
       owner: userId,
       digestSpan: "SINGLE",
+      activeRevision: {
+        create: {
+          id: generateId("noteRevision"),
+          noteId,
+          title: title ?? fallbackTitle,
+          content,
+        },
+      },
+    },
+    include: {
+      activeRevision: true,
     },
   });
   return Response.json(note);

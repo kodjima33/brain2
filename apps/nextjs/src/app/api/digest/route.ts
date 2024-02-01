@@ -61,13 +61,22 @@ export async function POST(req: NextRequest) {
     data: {
       id: noteId,
       owner: userId,
-      title,
-      content,
       digestSpan: span,
       digestStartDate: startDate.toISO()!,
       parents: {
         connect: notes.map((note) => ({ id: note.id })),
       },
+      activeRevision: {
+        create: {
+          id: generateId("noteRevision"),
+          noteId,
+          title,
+          content,
+        },
+      },
+    },
+    include: {
+      activeRevision: true,
     },
   });
   return Response.json(note);

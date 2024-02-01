@@ -71,12 +71,18 @@ export const handler = inngestEdgeClient.createFunction(
         data: {
           id: noteId,
           owner: owner,
-          title,
-          content,
           digestSpan: span,
           digestStartDate: startDate.toISO()!,
           parents: {
             connect: notes.map((note) => ({ id: note.id })),
+          },
+          activeRevision: {
+            create: {
+              id: generateId("noteRevision"),
+              noteId,
+              title,
+              content,
+            },
           },
         },
       });
