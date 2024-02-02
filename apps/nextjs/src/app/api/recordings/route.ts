@@ -105,6 +105,7 @@ export async function POST(req: Request): Promise<Response> {
   const formattedDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
   const title = `Recording ${formattedDate}`;
 
+  const noteId = generateId("note");
   const [audioBlob, _] = await Promise.all([
     prisma.audioBlob.create({
       data: {
@@ -113,12 +114,18 @@ export async function POST(req: Request): Promise<Response> {
         owner: userId,
         note: {
           create: {
-            id: generateId("note"),
-            title,
-            content: "",
+            id: noteId,
             owner: userId,
             digestSpan: "SINGLE",
             active: true,
+            revision: {
+              create: {
+                id: generateId("noteRevision"),
+                noteId: noteId,
+                title,
+                content: "",
+              },
+            },
           },
         },
       },

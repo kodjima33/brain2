@@ -52,8 +52,8 @@ model Note {
   owner String //userId
 
   // Current active revision
-  revisionId String?       @unique
-  revision   NoteRevision? @relation(name: "activeRevision", fields: [revisionId], references: [id])
+  revisionId String       @unique
+  revision   NoteRevision @relation(name: "activeRevision", fields: [revisionId], references: [id])
 
   revisions NoteRevision[] @relation(name: "noteRevisions")
 

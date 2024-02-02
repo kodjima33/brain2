@@ -16,8 +16,11 @@ export const handler = inngestEdgeClient.createFunction(
       where: {
         id: noteId,
       },
+      include: {
+        revision: true,
+      },
     });
-    const transcript = note.content;
+    const transcript = note.revision.content;
 
     const refinedTranscript = await refineTranscript(transcript);
 
@@ -27,7 +30,11 @@ export const handler = inngestEdgeClient.createFunction(
         id: noteId,
       },
       data: {
-        content: refinedTranscript,
+        revision: {
+          update: {
+            content: refinedTranscript,
+          },
+        },
         active: true,
       },
     });
