@@ -11,6 +11,7 @@ export const { GET, POST, PUT } = serve({
     handlers.refineNoteTranscriptHandler,
     handlers.dummyHandler,
     handlers.batchDigestHandler,
+    handlers.rebuildDigestHandler,
   ],
   streaming: "allow",
 });
