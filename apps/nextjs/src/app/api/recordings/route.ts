@@ -42,8 +42,12 @@ async function transcribeAudio(data: Blob, audioBlob: AudioBlob) {
       title,
       note: {
         update: {
-          title,
-          content: transcription.text,
+          revision: {
+            update: {
+              title,
+              content: transcription.text,
+            },
+          },
         },
       },
     },
