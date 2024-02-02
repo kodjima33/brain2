@@ -26,7 +26,7 @@ import { DateTime } from "luxon";
 
 import type { PopulatedNote } from "~/components/note";
 import { EditableText } from "~/components/editableText";
-import { getNoteById, updateNote } from "~/utils/api";
+import { getNoteById, rebuildDigest, updateNote } from "~/utils/api";
 
 interface NoteUpdateParams {
   title: string;
@@ -124,7 +124,7 @@ export default function NotePage() {
   const {
     data: note,
     error: noteError,
-    isLoading: noteLoading,
+    isLoading: fetchNoteLoading,
     refetch,
   } = useQuery({
     queryKey: [id],
@@ -150,9 +150,26 @@ export default function NotePage() {
     },
   });
 
+  const { mutate: rebuildDigestMutation, isPending: rebuildNoteLoading } = useMutation({
+    mutationFn: async (noteId: string) => {
+      return rebuildDigest(noteId, (await getToken())!);
+    },
+    onError: (err, _noteId) => {
+      console.error(err);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: [id, "notes"],
+        refetchType: "all",
+      });
+    },
+  });
+
   if (noteError) {
     console.error(noteError);
   }
+
+  const noteLoading = fetchNoteLoading || rebuildNoteLoading;
 
   const [editMode, setEditMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(true);
@@ -205,7 +222,9 @@ export default function NotePage() {
                     />
                     {note && note.digestSpan !== "SINGLE" ? (
                       <Menu.Item
-                        onPress={() => {}}
+                        onPress={() => {
+                          rebuildDigestMutation(note.id);
+                        }}
                         leadingIcon={() => (
                           <RefreshCwIcon className="h-6 w-6 text-black" />
                         )}
@@ -235,7 +254,7 @@ export default function NotePage() {
               </Text>
             </View>
           )}
-          {note != null && (
+          {!noteLoading && note != null && (
             <NoteView
               note={note}
               loading={noteLoading}

@@ -7,9 +7,11 @@ import { DateTime } from "luxon";
 import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 
-import type { Note, NoteDigestSpan } from "@brain2/db/edge";
+import type { Note, NoteDigestSpan, NoteRevision } from "@brain2/db/edge";
 
 import { createChatModel } from "../openai";
+
+type PopulatedNote = Note & { revision: NoteRevision };
 
 const promptString = `You are a seasoned personal assistant. You will be provided with multiple transcripts and notes over the past {{span}}. \
 Think step-by-step and create a comprehensive summary of the highlights, as well as synthesize areas of interest or personal reflection.
@@ -50,14 +52,14 @@ const promptTemplate = new SystemMessagePromptTemplate({
   }),
 });
 
-function noteToMessage(note: Note): HumanMessage {
+function noteToMessage(note: PopulatedNote): HumanMessage {
   const components = [
-    ["Title: ", note.title],
+    ["Title: ", note.revision.title],
     [
       "Date: ",
       DateTime.fromISO(note.createdAt.toString()).toFormat("yyyy-MM-dd HH:mm"),
     ],
-    ["Content: \n", note.content],
+    ["Content: \n", note.revision.content],
   ];
   const message = components
     .map(([prefix, content]) => `${prefix}${content}`)
@@ -69,7 +71,7 @@ function noteToMessage(note: Note): HumanMessage {
  * Create a digest over the provided notes, using function calling to constrain the output
  */
 export async function digestNotesStructured(
-  notes: Note[],
+  notes: PopulatedNote[],
   span: NoteDigestSpan,
 ): Promise<z.infer<typeof digestParamSchema>> {
   const noteMessages = notes.map(noteToMessage);

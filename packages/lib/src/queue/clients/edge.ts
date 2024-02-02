@@ -4,6 +4,7 @@ import { env } from "../..";
 import {
   batchDigestSchema,
   dummySchema,
+  rebuildDigestSchema,
   refineNoteTranscriptSchema,
 } from "../functions/schemas";
 
@@ -17,5 +18,6 @@ export const inngestEdgeClient = new Inngest({
     refineNoteTranscriptSchema,
     dummySchema,
     batchDigestSchema,
+    rebuildDigestSchema,
   ]),
 });
