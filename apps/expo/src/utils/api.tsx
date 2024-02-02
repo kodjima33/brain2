@@ -156,6 +156,13 @@ export async function updateNote(
   return patch(`/api/notes/${id}`, { title, content }, authToken);
 }
 
+export async function rebuildDigest(
+  id: string,
+  authToken: string,
+): Promise<void> {
+  return post(`/api/notes/${id}/rebuild`, { id }, authToken);
+}
+
 export async function uploadRecording(
   audioUrl: string,
   authToken: string,
