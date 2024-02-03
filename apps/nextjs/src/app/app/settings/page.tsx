@@ -2,8 +2,9 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 "use client";
 
+import Link from "next/link";
 import { useClerk, useUser } from "@clerk/nextjs";
-import { LogOutIcon } from "lucide-react";
+import { LibraryIcon, LogOutIcon, RefreshCwIcon } from "lucide-react";
 
 import Header from "~/components/header";
 import { cn } from "~/lib/utils";
@@ -20,7 +21,7 @@ function SettingsEntry({ icon, text, onClick, className }: SettingsEntryProps) {
     <div
       className={cn(
         className,
-        "flex cursor-pointer flex-row items-center gap-5 p-2",
+        "flex cursor-pointer flex-row items-center gap-5 rounded-md p-2 hover:bg-gray-100",
       )}
       onClick={onClick}
     >
@@ -41,6 +42,11 @@ export default function SettingsPage() {
     <>
       <Header user={user} title="Settings" />
       <div className="flex w-8/12 flex-col items-start gap-2">
+        <p className="font-bold">Notes</p>
+        <SettingsEntry icon={<RefreshCwIcon />} text="Trigger Daily Digest" />
+        <Link href="/app/library">
+          <SettingsEntry icon={<LibraryIcon />} text="Manage Library" />
+        </Link>
         <p className="font-bold">Account</p>
         <SettingsEntry
           icon={<LogOutIcon />}
