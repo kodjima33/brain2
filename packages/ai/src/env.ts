@@ -13,6 +13,9 @@ export const env = createEnv({
     // Momento LLM response caching
     MOMENTO_API_KEY: z.string(),
     MOMENTO_CACHE_NAME: z.string(),
+    // Pinecone vector store
+    PINECONE_API_KEY: z.string(),
+    PINECONE_INDEX: z.string(),
   },
   client: {},
   runtimeEnv: process.env,
