@@ -2,9 +2,11 @@ import { PromptTemplate, SystemMessagePromptTemplate } from "@langchain/core/pro
 import { HumanMessage } from "@langchain/core/messages";
 import { DateTime } from "luxon";
 
-import type { Note, NoteDigestSpan } from "@brain2/db";
+import type { Note, NoteDigestSpan, NoteRevision } from "@brain2/db";
 
 import { createChatModel } from "../openai";
+
+type PopulatedNote = Note & { revision: NoteRevision };
 
 const promptString = `You are a seasoned personal assistant. You will be provided with multiple transcripts and notes over the past {{span}}. \
 Come up with a comprehensive summary and synthesis of the notes.
@@ -21,14 +23,14 @@ const promptTemplate = new SystemMessagePromptTemplate({
   }),
 });
 
-function noteToMessage(note: Note): HumanMessage {
+function noteToMessage(note: PopulatedNote): HumanMessage {
   const components = [
-    ["Title: ", note.title],
+    ["Title: ", note.revision.title],
     [
       "Date: ",
       DateTime.fromISO(note.createdAt.toString()).toFormat("yyyy-MM-dd HH:mm"),
     ],
-    ["Content: \n", note.content],
+    ["Content: \n", note.revision.content],
   ];
   const message = components
     .map(([prefix, content]) => `${prefix}${content}`)
@@ -40,7 +42,7 @@ function noteToMessage(note: Note): HumanMessage {
  * Create a digest of the provided notes
  */
 export async function digestNotes(
-  notes: Note[],
+  notes: PopulatedNote[],
   span: NoteDigestSpan,
 ): Promise<string> {
   const noteMessages = notes.map(noteToMessage);
