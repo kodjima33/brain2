@@ -25,9 +25,9 @@ const digestParamSchema = z.object({
   relevantNoteIds: z
     .string()
     .array()
-    .describe(
-      "The IDs of the provided similar notes, which are actually relevant to this digest",
-    ),
+    .min(0)
+    .max(3)
+    .describe("The IDs of the most relevant notes for this digest."),
   reflection: z
     .string()
     .describe(
