@@ -1,9 +1,5 @@
-import {
-  AIMessage,
-  BaseMessage,
-  FunctionMessage,
-  HumanMessage,
-} from "@langchain/core/messages";
+import type { BaseMessage } from "@langchain/core/messages";
+import { AIMessage, FunctionMessage } from "@langchain/core/messages";
 import {
   PromptTemplate,
   SystemMessagePromptTemplate,
@@ -13,20 +9,21 @@ import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 
 import type { Note, NoteDigestSpan, NoteRevision } from "@brain2/db/edge";
-import { prisma } from "@brain2/db";
+import { prisma } from "@brain2/db/edge";
 
-import { getSimilarNotes } from "..";
+import { getSimilarNotes } from "../retrieval";
 import { createChatModel } from "../openai";
 import { summarizeNotes } from "./summarizeNotes";
 
 type PopulatedNote = Note & { revision: NoteRevision };
 
 const promptString = `You are a seasoned personal assistant. You will be provided with multiple transcripts and notes over the past {{span}}. \
-Think step-by-step and create a comprehensive summary of the highlights, as well as synthesize areas of interest or personal reflection.
+You will then be provided with a summary and potentially related notes.
+Think step-by-step to write a personal reflection on these highlights and connect them to areas of interest and potentially some past notes.
 Use markdown to format the text as needed.`;
 
 const digestParamSchema = z.object({
-  similarNoteIds: z
+  relevantNoteIds: z
     .string()
     .describe(
       "The IDs of the provided similar notes, which are actually relevant to this digest",
@@ -174,7 +171,14 @@ async function prepareMessages(notes: PopulatedNote[], span: NoteDigestSpan) {
     }),
   );
 
-  return messages;
+  return { title, highlights, messages };
+}
+
+interface DigestNotesResult {
+  title: string;
+  highlights: string;
+  reflection: string;
+  nextSteps?: string;
 }
 
 /**
@@ -183,7 +187,7 @@ async function prepareMessages(notes: PopulatedNote[], span: NoteDigestSpan) {
 export async function digestNotesStructured(
   notes: PopulatedNote[],
   span: NoteDigestSpan,
-): Promise<z.infer<typeof digestParamSchema>> {
+): Promise<DigestNotesResult> {
   if (notes.length === 0) {
     throw new Error("No notes provided");
   }
@@ -193,7 +197,7 @@ export async function digestNotesStructured(
     temperature: 0.4,
   });
 
-  const messages = await prepareMessages(notes, span);
+  const { title, highlights, messages } = await prepareMessages(notes, span);
   const response = await chatModel.invoke(messages, {
     functions: [digestFnSchema, getLastNotesFnSchema, getSimilarNotesFnSchema],
     function_call: {
@@ -202,5 +206,11 @@ export async function digestNotesStructured(
   });
 
   const args = response.additional_kwargs.function_call?.arguments;
-  return digestParamSchema.parse(JSON.parse(args ?? ""));
+  const { relevantNoteIds, reflection, nextSteps } = digestParamSchema.parse(
+    JSON.parse(args ?? ""),
+  );
+
+  console.log("Relevant note ids", relevantNoteIds);
+
+  return { title, highlights, reflection, nextSteps };
 }

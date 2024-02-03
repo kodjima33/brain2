@@ -1,9 +1,10 @@
-import { Document, DocumentInterface } from "@langchain/core/documents";
+import type { DocumentInterface } from "@langchain/core/documents";
+import { Document } from "@langchain/core/documents";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 import { Pinecone } from "@pinecone-database/pinecone";
 
-import type { Note, NoteDigestSpan, NoteRevision } from "@brain2/db";
+import type { Note, NoteDigestSpan, NoteRevision } from "@brain2/db/edge";
 
 import { env } from "..";
 
