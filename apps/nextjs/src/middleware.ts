@@ -15,5 +15,5 @@ export default authMiddleware({
 });
 
 export const config = {
-  matcher: ["/api/((?!.+\\.[\\w]+$|_next).*)", "/debug"],
+  matcher: ["/api/((?!.+\\.[\\w]+$|_next).*)", "/debug", "/app"],
 };
