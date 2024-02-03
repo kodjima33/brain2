@@ -74,6 +74,7 @@ export async function getSimilarNotes(
   owner: string,
   span: NoteDigestSpan,
   k: number,
+  excludeIds: string[] = [],
 ): Promise<DocumentInterface<NoteMetadata>[]> {
   const vectorStore = await getVectorStore();
   const results = await vectorStore.similaritySearch(query, k, {
@@ -81,6 +82,9 @@ export async function getSimilarNotes(
     type: "note",
     span,
     active: true,
+    id: {
+      $nin: excludeIds,
+    },
   });
   return results as DocumentInterface<NoteMetadata>[];
 }

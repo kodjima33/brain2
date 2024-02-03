@@ -9,15 +9,16 @@ const schema = z.object({
   owner: z.string(),
   span: z.enum(["SINGLE", "DAY", "WEEK"]),
   k: z.number(),
+  excludeIds: z.string().array(),
 });
 
 /**
  * Get similar notes that are potentially relevant to a given query
  */
 export async function POST(req: Request) {
-  const { query, owner, span, k } = schema.parse(await req.json());
+  const { query, owner, span, k, excludeIds } = schema.parse(await req.json());
   // Find similar notes for digest
-  const similarNotes = await getSimilarNotes(query, owner, span, k);
+  const similarNotes = await getSimilarNotes(query, owner, span, k, excludeIds);
 
   // Populate similar notes to get content
   const populatedSimilarNotes = await prisma.note.findMany({

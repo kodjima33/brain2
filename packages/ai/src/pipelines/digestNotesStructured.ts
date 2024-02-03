@@ -24,6 +24,7 @@ Use markdown to format the text as needed.`;
 const digestParamSchema = z.object({
   relevantNoteIds: z
     .string()
+    .array()
     .describe(
       "The IDs of the provided similar notes, which are actually relevant to this digest",
     ),
@@ -35,7 +36,9 @@ const digestParamSchema = z.object({
   nextSteps: z
     .string()
     .optional()
-    .describe("Further reflection questions or calls to action, if needed. Use lists and bullet points."),
+    .describe(
+      "Further reflection questions or calls to action, if needed. Use markdown lists and bullet points.",
+    ),
 });
 
 const digestFnSchema = {
@@ -91,10 +94,11 @@ async function fetchSimilarNotes(
   owner: string,
   span: NoteDigestSpan,
   k: number,
+  excludeIds: string[] = [],
 ): Promise<PopulatedNote[]> {
   const response = await fetch(`${baseUrl}/api/retrieval`, {
     method: "POST",
-    body: JSON.stringify({ query, owner, span, k }),
+    body: JSON.stringify({ query, owner, span, k, excludeIds }),
   });
 
   if (!response.ok) {
@@ -154,6 +158,7 @@ async function prepareMessages(notes: PopulatedNote[], span: NoteDigestSpan) {
     refNote.owner,
     refNote.digestSpan,
     RETRIEVAL_COUNT,
+    notes.map((note) => note.id),
   );
 
   // Push related notes messages
