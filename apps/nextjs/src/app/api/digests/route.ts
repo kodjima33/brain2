@@ -18,20 +18,20 @@ export async function POST(req: NextRequest) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { span, startDate: startDateRaw } = digestNoteSchema.parse(
-    await req.json(),
-  );
+  const { span, startDate: date } = digestNoteSchema.parse(await req.json());
 
-  const startDate = startDateRaw
-    ? DateTime.fromISO(startDateRaw)
-    : DateTime.now();
-  let endDate = startDate;
+  const endDate = date ? DateTime.fromISO(date) : DateTime.now();
+  let startDate = endDate;
 
   // Compute end date based on span
-  if (span === NoteDigestSpan.DAY) {
-    endDate = startDate.plus({ days: 1 });
-  } else if (span === NoteDigestSpan.WEEK) {
-    endDate = startDate.plus({ days: 7 });
+  if (span === "DAY") {
+    startDate = endDate.minus({ days: 1 });
+  } else if (span === "WEEK") {
+    startDate = endDate.minus({ days: 7 });
+  }
+
+  if (startDate == null || endDate == null) {
+    throw new Error("Invalid date: " + date);
   }
 
   const notes = await prisma.note.findMany({
@@ -42,6 +42,9 @@ export async function POST(req: NextRequest) {
         lte: endDate.toISO()!,
       },
       active: true,
+    },
+    include: {
+      revision: true,
     },
   });
 
