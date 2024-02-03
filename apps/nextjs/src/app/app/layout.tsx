@@ -1,3 +1,5 @@
+"use client";
+
 import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 
 /**
@@ -9,7 +11,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <SignedOut>
         <RedirectToSignIn />
       </SignedOut>
-      <SignedIn>{children}</SignedIn>
+      <SignedIn>
+        <main className="flex h-screen w-screen flex-col items-center gap-10 overflow-x-hidden p-5">
+          {children}
+        </main>
+      </SignedIn>
     </>
   );
 }

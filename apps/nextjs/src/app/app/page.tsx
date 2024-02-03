@@ -5,8 +5,7 @@ import { currentUser } from "@clerk/nextjs";
 import { prisma } from "@brain2/db";
 
 import { NoteView } from "~/components/note";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import Brain2Icon from "~/icons/Brain2Icon";
+import Header from "~/components/header";
 
 export default async function AppPage() {
   const user = await currentUser();
@@ -28,18 +27,9 @@ export default async function AppPage() {
   });
 
   return (
-    <main className="flex h-screen w-screen flex-col items-center gap-10 overflow-x-hidden p-5">
-      <header className="flex w-8/12 flex-row justify-between">
-        <Brain2Icon className="h-12 w-12" />
-        <Avatar className="rounded-full border border-gray-400">
-          <AvatarImage src={user.imageUrl} />
-          <AvatarFallback>
-            {user.firstName?.charAt(0)}
-            {user.lastName?.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-      </header>
+    <>
+      {user ? <Header user={user} /> : null}
       <NoteView notes={notes} className="w-8/12" />
-    </main>
+    </>
   );
 }
