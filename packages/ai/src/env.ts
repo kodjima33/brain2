@@ -23,7 +23,9 @@ export const env = createEnv({
     ...process.env,
     VERCEL_PROD_URL:
       process.env.VERCEL_ENV === "production"
-        ? "brain2-psi.vercel.app"
-        : process.env.VERCEL_URL,
+        ? "https://brain2-psi.vercel.app"
+        : process.env.VERCEL_ENV === "development"
+        ? `http://${process.env.VERCEL_URL}`
+        : `https://${process.env.VERCEL_URL}`,
   },
 });
