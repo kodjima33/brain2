@@ -14,6 +14,12 @@ export default authMiddleware({
   ],
 });
 
+// Clerk will apply on this route and all child routes
+const baseRoutes = ["/api", "/app"];
+
 export const config = {
-  matcher: ["/api/((?!.+\\.[\\w]+$|_next).*)", "/debug"],
+  matcher: [
+    "/debug",
+    ...baseRoutes.map((route) => route + "((?!.+\\.[\\w]+$|_next).*)"),
+  ],
 };
