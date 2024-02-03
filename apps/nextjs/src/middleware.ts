@@ -10,6 +10,7 @@ export default authMiddleware({
     "/api/debug",
     "/api/inngest",
     "/api/cron/digest/:span",
+    "/api/retrieval",
   ],
 });
 

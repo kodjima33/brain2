@@ -63,10 +63,16 @@ model Note {
   children Note[] @relation("noteDigest", fields: [childrenIds], references: [id])
   parents  Note[] @relation("noteDigest", fields: [parentIds], references: [id])
 
-  conversation ChatConversation?
-
   childrenIds String[]
   parentIds   String[]
+
+  forwardLinkIds  String[]
+  backwardLinkIds String[]
+
+  forwardLinks  Note[] @relation("links", fields: [forwardLinkIds], references: [id])
+  backwardLinks Note[] @relation("links", fields: [backwardLinkIds], references: [id])
+
+  conversation ChatConversation?
 
   digestStartDate DateTime @default(now())
   active          Boolean  @default(true)
