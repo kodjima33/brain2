@@ -1,9 +1,9 @@
+import { Document, DocumentInterface } from "@langchain/core/documents";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 import { Pinecone } from "@pinecone-database/pinecone";
-import { Document } from "@langchain/core/documents";
 
-import type { Note, NoteRevision } from "@brain2/db";
+import type { Note, NoteDigestSpan, NoteRevision } from "@brain2/db";
 
 import { env } from "..";
 
@@ -11,6 +11,14 @@ const pinecone = new Pinecone();
 const index = pinecone.Index(env.PINECONE_INDEX);
 
 type PopulatedNote = Note & { revision: NoteRevision };
+
+export interface NoteMetadata {
+  id: string;
+  type: "note";
+  span: NoteDigestSpan;
+  owner: string;
+  active: boolean;
+}
 
 /**
  * Get the vector store for retrieval
@@ -60,14 +68,18 @@ export async function embedNotes(notes: PopulatedNote[]) {
 /**
  * Get the k most similar notes to a given note
  */
-export async function getSimilarNotes(note: PopulatedNote, k: number) {
+export async function getSimilarNotes(
+  query: string,
+  owner: string,
+  span: NoteDigestSpan,
+  k: number,
+): Promise<DocumentInterface<NoteMetadata>[]> {
   const vectorStore = await getVectorStore();
-  const query = getDocumentFromNote(note).pageContent;
   const results = await vectorStore.similaritySearch(query, k, {
-    owner: note.id,
+    owner,
     type: "note",
-    span: note.digestSpan,
+    span,
     active: true,
   });
-  return results;
+  return results as DocumentInterface<NoteMetadata>[];
 }
