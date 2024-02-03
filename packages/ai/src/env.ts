@@ -5,6 +5,7 @@ export const env = createEnv({
   clientPrefix: "PUBLIC_",
   server: {
     OPENAI_API_KEY: z.string(),
+    VERCEL_PROD_URL: z.string(),
     // Langsmith
     LANGCHAIN_TRACING_V2: z.string(),
     LANGCHAIN_ENDPOINT: z.string().url(),
@@ -18,5 +19,11 @@ export const env = createEnv({
     PINECONE_INDEX: z.string(),
   },
   client: {},
-  runtimeEnv: process.env,
+  runtimeEnv: {
+    ...process.env,
+    VERCEL_PROD_URL:
+      process.env.VERCEL_ENV === "production"
+        ? "brain2-psi.vercel.app"
+        : process.env.VERCEL_URL,
+  },
 });

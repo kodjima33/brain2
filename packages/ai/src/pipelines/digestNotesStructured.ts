@@ -9,9 +9,8 @@ import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 
 import type { Note, NoteDigestSpan, NoteRevision } from "@brain2/db/edge";
-import { prisma } from "@brain2/db/edge";
 
-import { getSimilarNotes } from "../retrieval";
+import { env } from "../env";
 import { createChatModel } from "../openai";
 import { summarizeNotes } from "./summarizeNotes";
 
@@ -36,7 +35,7 @@ const digestParamSchema = z.object({
   nextSteps: z
     .string()
     .optional()
-    .describe("Further reflection questions or calls to action, if needed."),
+    .describe("Further reflection questions or calls to action, if needed. Use lists and bullet points."),
 });
 
 const digestFnSchema = {
@@ -54,7 +53,7 @@ const getLastNotesFnSchema = {
 const getSimilarNotesFnSchema = {
   name: "get_similar_notes",
   description: "Get similar notes that are potentially relevant",
-  parameters: zodToJsonSchema(z.void()),
+  parameters: zodToJsonSchema(z.object({})),
 };
 
 const promptTemplate = new SystemMessagePromptTemplate({
@@ -81,7 +80,31 @@ function serializeNote(note: PopulatedNote): SerializedNote {
 }
 
 const RETRIEVAL_COUNT = 10;
+const baseUrl = env.VERCEL_PROD_URL;
 
+/**
+ * Fetch similar notes, by calling our API since the pinecone client
+ * isn't supported on edge runtimes
+ */
+async function fetchSimilarNotes(
+  query: string,
+  owner: string,
+  span: NoteDigestSpan,
+  k: number,
+): Promise<PopulatedNote[]> {
+  const response = await fetch(`${baseUrl}/api/retrieval`, {
+    method: "POST",
+    body: JSON.stringify({ query, owner, span, k }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch similar notes");
+  }
+
+  return (await response.json()) as PopulatedNote[];
+}
+
+// Prepare the summary and similar note messages for digestion
 async function prepareMessages(notes: PopulatedNote[], span: NoteDigestSpan) {
   // Seed with system prompt
   const messages: BaseMessage[] = [
@@ -126,24 +149,12 @@ async function prepareMessages(notes: PopulatedNote[], span: NoteDigestSpan) {
   }
 
   // Find similar notes for digest
-  const similarNotes = await getSimilarNotes(
+  const similarNotes = await fetchSimilarNotes(
     highlights,
     refNote.owner,
     refNote.digestSpan,
     RETRIEVAL_COUNT,
   );
-
-  // Populate similar notes
-  const populatedSimilarNotes = await prisma.note.findMany({
-    where: {
-      id: {
-        in: similarNotes.map((note) => note.metadata.id),
-      },
-    },
-    include: {
-      revision: true,
-    },
-  });
 
   // Push related notes messages
   messages.push(
@@ -159,7 +170,7 @@ async function prepareMessages(notes: PopulatedNote[], span: NoteDigestSpan) {
     new FunctionMessage({
       name: "get_similar_notes",
       content: JSON.stringify(
-        populatedSimilarNotes.map((note) => ({
+        similarNotes.map((note) => ({
           id: note.id,
           title: note.revision.title,
           content: note.revision.content,
