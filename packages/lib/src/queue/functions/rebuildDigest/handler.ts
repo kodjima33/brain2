@@ -28,7 +28,7 @@ export const handler = inngestEdgeClient.createFunction(
       },
     });
 
-    const { title, highlights, reflection, nextSteps } =
+    const { title, highlights, reflection, nextSteps, relevantNoteIds } =
       await digestNotesStructured(note.parents, note.digestSpan);
     let content = `## Highlights\n\n${highlights}\n\n\n## Reflection\n\n${reflection}`;
     if (nextSteps) {
@@ -47,6 +47,9 @@ export const handler = inngestEdgeClient.createFunction(
             title,
             content,
           },
+        },
+        forwardLinks: {
+          connect: relevantNoteIds.map((id) => ({ id })),
         },
       },
     });

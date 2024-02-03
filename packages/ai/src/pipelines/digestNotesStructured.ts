@@ -195,6 +195,7 @@ interface DigestNotesResult {
   highlights: string;
   reflection: string;
   nextSteps?: string;
+  relevantNoteIds: string[];
 }
 
 /**
@@ -226,7 +227,5 @@ export async function digestNotesStructured(
     JSON.parse(args ?? ""),
   );
 
-  console.log("Relevant note ids", relevantNoteIds);
-
-  return { title, highlights, reflection, nextSteps };
+  return { title, highlights, reflection, nextSteps, relevantNoteIds };
 }

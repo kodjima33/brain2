@@ -1,11 +1,13 @@
 import { DateTime } from "luxon";
 
-import type { Note } from "@brain2/db/edge";
+import type { Note, NoteRevision } from "@brain2/db/edge";
 import { digestNotesStructured } from "@brain2/ai/pipelines/edge";
 import { generateId, prisma } from "@brain2/db/edge";
 
 import { inngestEdgeClient } from "../../clients";
 import { argSchema, eventName } from "./schema";
+
+type PopulatedNote = Note & { revision: NoteRevision };
 
 /**
  * Digest batches of notes, based on the current date/time and specified note digest span
@@ -46,10 +48,13 @@ export const handler = inngestEdgeClient.createFunction(
       orderBy: {
         createdAt: "asc",
       },
+      include: {
+        revision: true,
+      },
     });
 
     // Group notes by owner
-    const noteGroups: Record<string, Note[]> = {};
+    const noteGroups: Record<string, PopulatedNote[]> = {};
     for (const note of allNotes) {
       if (!noteGroups[note.owner]) {
         noteGroups[note.owner] = [];
@@ -59,7 +64,7 @@ export const handler = inngestEdgeClient.createFunction(
 
     // Digest each group
     for (const [owner, notes] of Object.entries(noteGroups)) {
-      const { title, highlights, reflection, nextSteps } =
+      const { title, highlights, reflection, nextSteps, relevantNoteIds } =
         await digestNotesStructured(notes, span);
       let content = `## Highlights\n\n${highlights}\n\n\n## Reflection\n\n${reflection}`;
       if (nextSteps) {
@@ -75,6 +80,9 @@ export const handler = inngestEdgeClient.createFunction(
           digestStartDate: startDate.toISO()!,
           parents: {
             connect: notes.map((note) => ({ id: note.id })),
+          },
+          forwardLinks: {
+            connect: relevantNoteIds.map((id) => ({ id })),
           },
           revision: {
             create: {
